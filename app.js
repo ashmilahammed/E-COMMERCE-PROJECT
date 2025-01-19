@@ -1,18 +1,27 @@
 const express = require("express");
 const app = express();
+const path = require("path");
 const env = require("dotenv").config();
 const db = require("./config/db");
-db()
-
+const userRouter = require("./routes/userRouter")
+db();
+ 
+  
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 
 
-app.use("/",(req,res)=>{
-    res.send("hello")
-})
+app.set("view engine","ejs");
+app.set("views",[path.join(__dirname,'views/user'),path.join(__dirname,'views/admin')])
+app.use(express.static(path.join(__dirname, "public")));
 
-app.listen(parseInt(process.env.PORT) , ()=>{
+ 
+
+app.use("/",userRouter)
+
+
+const PORT=5000 || process.env.PORT;
+app.listen(PORT , ()=>{
     console.log("server running on 5000")
 })
 
