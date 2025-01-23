@@ -7,7 +7,7 @@
     <meta name="keywords" content="Male_Fashion, unica, creative, html">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Male-Fashion | Template</title>
+    <title>BIG STEPPER</title>
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap"
@@ -22,8 +22,46 @@
     <link rel="stylesheet" href="css/owl.carousel.min.css" type="text/css">
     <link rel="stylesheet" href="css/slicknav.min.css" type="text/css">
     <link rel="stylesheet" href="css/style.css" type="text/css">
-</head>
 
+    <style>
+        #profile-name {
+            color : white;
+            font-size: 13px; 
+        }
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1000;
+            right:0;
+
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+        }
+        .dropdown-content a:hover {
+            background-color: #ff6c6c;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .header {
+            position: relative;
+            z-index: 50
+        }
+    </style>
+</head>
+  
 <body>
     <!-- Page Preloder -->
     <div id="preloder">
@@ -31,7 +69,7 @@
     </div>
 
     <!-- Offcanvas Menu Begin -->
-    <div class="offcanvas-menu-overlay"></div>
+    <!-- <div class="offcanvas-menu-overlay"></div>
     <div class="offcanvas-menu-wrapper">
         <div class="offcanvas__option">
             <div class="offcanvas__links">
@@ -57,7 +95,7 @@
         <div class="offcanvas__text">
             <p>Free shipping, 30-day return or refund guarantee.</p>
         </div>
-    </div>
+    </div> -->
     <!-- Offcanvas Menu End -->
 
     <!-- Header Section Begin -->
@@ -73,17 +111,33 @@
                     <div class="col-lg-6 col-md-5">
                         <div class="header__top__right">
                             <div class="header__top__links">
-                                <a href="#">Sign in</a>
-                                <a href="#">FAQs</a>
+                                <% if (locals.user) { %>
+                                    <div class="dropdown">
+                                        <a href="#" id="profile-name" class="sign-in-link"><%= locals.user.fullName %></a>
+                                        <div class="dropdown-content">
+
+                                            <a href="/userProfile">Profile</a>
+                                            <a href="/logout">Logout</a>
+
+                                        </div>
+                                    </div>
+                                <% } else { %>
+
+                                    <a href="/signup">Sign in</a>
+                                    <a href="/login">Log in</a>
+
+                                <% } %>
                             </div>
-                            <div class="header__top__hover">
+
+
+                            <!-- <div class="header__top__hover">
                                 <span>Usd <i class="arrow_carrot-down"></i></span>
                                 <ul>
                                     <li>USD</li>
                                     <li>EUR</li>
                                     <li>USD</li>
                                 </ul>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -101,7 +155,7 @@
                         <ul>
                             <li class="active"><a href="./index.html">Home</a></li>
                             <li><a href="./shop.html">Shop</a></li>
-                            <li><a href="#">Pages</a>
+                            <!-- <li><a href="#">Pages</a>
                                 <ul class="dropdown">
                                     <li><a href="./about.html">About Us</a></li>
                                     <li><a href="./shop-details.html">Shop Details</a></li>
@@ -109,14 +163,16 @@
                                     <li><a href="./checkout.html">Check Out</a></li>
                                     <li><a href="./blog-details.html">Blog Details</a></li>
                                 </ul>
-                            </li>
-                            <li><a href="./blog.html">Blog</a></li>
-                            <li><a href="./contact.html">Contacts</a></li>
+                            </li> -->
+                            <!-- <li><a href="./blog.html">Blog</a></li> -->
+                            <!-- <li><a href="./contact.html">Contacts</a></li> -->
+                           
                         </ul>
                     </nav>
                 </div>
                 <div class="col-lg-3 col-md-3">
                     <div class="header__nav__option">
+                        
                         <a href="#" class="search-switch"><img src="img/icon/search.png" alt=""></a>
                         <a href="#"><img src="img/icon/heart.png" alt=""></a>
                         <a href="#"><img src="img/icon/cart.png" alt=""> <span>0</span></a>

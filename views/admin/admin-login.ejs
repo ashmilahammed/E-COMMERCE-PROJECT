@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: url('/images/colorful.webp') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        .login-container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            width: 350px;
+            padding: 20px 30px;
+            text-align: center;
+        }
+
+        h1.brand {
+            font-size: 26px;
+            color: #8b5e34; 
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 18px;
+            color: black;
+            margin-bottom: 20px;
+        }
+
+        .input-container {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #8b5e34;
+        }
+
+        .btn {
+            background-color: black;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: #444;
+        }
+
+        .forgot-password {
+            display: block;
+            margin-top: 10px;
+            font-size: 12px;
+            color: gray;
+            text-decoration: none;
+        }
+
+        .forgot-password:hover {
+            color: #8b5e34;
+            text-decoration: underline;
+        }
+
+        .show-password-container {
+            margin-top: 5px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+        }
+
+        .show-password-container input[type="checkbox"] {
+            margin-right: 10px;
+            accent-color: #8b5e34; /* Change the checkbox color */
+            width: 15px;
+            height: 15px;
+           
+        }
+
+        .show-password-container label {
+            font-size: 13px;
+            color: rgb(42, 42, 42); /* Red color for the label */
+            font-weight:normal;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1 class="brand">BIG STEPPER</h1>
+        <h2>Admin Login</h2>
+        <form action="/admin/login" method="POST">
+            <div class="input-container">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="Email" required>
+            </div>
+            <div class="input-container">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            <div class="show-password-container">
+                <input type="checkbox" id="showPassword">
+                <label for="showPassword">Show Password</label>
+            </div>
+            <button type="submit" class="btn">Sign in</button>
+            <a href="/admin/forgot-password" class="forgot-password">Forget password?</a>
+        </form>
+    </div>
+
+    <script>
+        const showPasswordCheckbox = document.getElementById('showPassword');
+        const passwordField = document.getElementById('password');
+
+        showPasswordCheckbox.addEventListener('change', function() {
+            passwordField.type = this.checked ? 'text' : 'password';
+        });
+    </script>
+</body>
+</html>
