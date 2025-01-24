@@ -1,0 +1,341 @@
+<%- include('../../views/partials/admin/header') %>
+
+<style>
+    /* General styles */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #6d6d6d;
+    }
+    th {
+        background-color:  rgba(8, 129, 120, 0.2);
+        text-align: center;
+    }
+    .action-btn {
+        padding: 5px 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .edit-btn {
+        background-color: #007bff;
+        color: white;
+    }
+    .list-btn {
+        background-color: #4CAF50;
+        color: white;
+    }
+    .unlist-btn {
+        background-color: #f44336;
+        color: white;
+    }
+    .offer-btn {
+        background-color: #ffc107;
+        color: black;
+    }
+    .header {
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 2rem;
+        font-weight: bold;
+    }
+    .search-section {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    #searchInput {
+        padding: 10px;
+        width: 300px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    #searchBtn {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    #searchBtn:hover {
+        background-color: #0056b3;
+    }
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+    .pagination :hover{
+        background-color: rgb(237, 185, 112);
+    }
+    .pagination a {
+        padding: 8px 12px;
+        margin: 0 5px;
+        text-decoration: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        color: #555;
+    }
+    .pagination .active {
+        background-color: #d28416;
+        color: white;
+    }
+    /* Form styles */
+    .form-container {
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        margin: 20px 0;
+    }
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+    }
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 15px;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+    .error-message {
+        color:red;
+        padding-bottom: 10px;
+    }
+</style>
+
+<div class="container">
+    <h1 class="header">Category Management</h1>
+
+    <!-- Search Section -->
+    <div class="search-section">
+        <input type="text" id="searchInput" placeholder="Search categories...">
+        <button id="searchBtn">Search</button>
+    </div>
+
+    <!-- Category Table -->
+    <table>
+        <thead>
+            <tr>
+                <th>Category Name</th>
+                <th>Description</th>
+                <th>Offer Price</th>
+                <th>Offer Actions</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="categoryTableBody">
+            <% category.forEach(category => { %>
+            <tr>
+                <td><%= category.name %></td>
+                <td><%= category.description %></td>
+                <td><%= category.offerPrice || 'N/A' %></td>
+                <td>
+                    <a href="/admin/addOffer?categoryId=<%= category._id %>">
+                        <button class="action-btn offer-btn">Add Offer</button>
+                    </a>
+                    <a href="/admin/removeOffer?categoryId=<%= category._id %>">
+                        <button class="action-btn offer-btn">Remove Offer</button>
+                    </a>
+                </td>
+                <td>
+                    <% if (category.isListed) { %>
+                    <span class="badge list-btn">Listed</span>
+                    <% } else { %>
+                    <span class="badge unlist-btn">Unlisted</span>
+                    <% } %>
+                </td>
+                <td>
+                    <% if (category.isListed) { %>
+                    <a href="/admin/listCategory?categoryId=<%= category._id %>">
+                        <button class="action-btn unlist-btn">Unlist</button>
+                    </a>
+                    <% } else { %>
+                    <a href="/admin/unlistCategory?categoryId=<%= category._id %>">
+                        <button class="action-btn list-btn">List</button>
+                    </a>
+                    <% } %>
+                    <a href="/admin/editCategory?categoryId=<%= category._id %>">
+                        <button class="action-btn edit-btn">Edit</button>
+                    </a>
+                </td>
+            </tr>
+            <% }); %>
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <% if (currentPage > 1) { %>
+        <a href="/admin/category?page=<%= currentPage - 1 %>">Previous</a>
+        <% } %>
+
+        <% for (let i = 1; i <= totalPages; i++) { %>
+        <a href="/admin/category?page=<%= i %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+        <% } %>
+
+        <% if (currentPage < totalPages) { %>
+        <a href="/admin/category?page=<%= currentPage + 1 %>">Next</a>
+        <% } %>
+    </div>
+
+    <div class="form-container">
+        <h3>Create New Category</h3>
+        <form method="post" action="/admin/addCategory" onsubmit="return handleFormSubmit(event)">
+            <label for="categoryName" class="form-label">Category Name</label>
+            <input type="text" name="name" id="categoryName" class="form-control" placeholder="Enter category name">
+            <span id="name-error" class="error-message"></span> <!-- Error message container -->
+    
+            <label for="categoryDescription" class="form-label">Description</label>
+            <textarea name="description" id="categoryDescription" class="form-control" placeholder="Enter category description"></textarea>
+            <span id="description-error" class="error-message"></span> <!-- Error message container -->
+    
+            <button type="submit" class="btn-primary">Create Category</button>
+        </form>
+    </div>
+    
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script>
+    
+    function handleFormSubmit(event) {
+        event.preventDefault();
+        if(!validateForm()) {
+            return 
+        }
+        const name = document.getElementsByName("name") [0].value;
+        const description = document.getElementById("categoryDescription").value;
+
+        fetch('/admin/addCategory',{
+            method: 'POST',
+            headers: {
+                "content-type" : "application/json"
+            },
+            body: JSON.stringify({name,description})
+        })
+        .then(response => {
+            if(!response.ok){
+                return response.json().then(err => {
+                    throw new Error(err.error);
+                })
+            }
+            return response.json();
+        })
+        .then(data =>{
+            location.reload();
+        })
+        .catch(error => {
+            if(error.message === "Category already exists"){
+                Swal.fire({
+
+                    icon: "error",
+                    title: "OOPS",
+                    text: "Category already exists"
+
+                })
+            }else{
+                Swal.fire({
+                    icon: "error",
+                    title: "OOPS",
+                    text: "An error occured while adding the category"
+                })
+            }
+        })
+
+    }
+
+
+    function validateForm() {
+        clearErrorMessages();
+        const name = document.getElementsByName("name")[0].value.trim();
+        const description = document.getElementById("categoryDescription").value.trim();
+        isValid = true;
+
+
+        if(name === ""){
+            displayErrorMessage("name-error","Please enter a name.");
+            isValid = false;
+        }else if ( !/^[a-zA-Z\s]+$/.test(name)){
+            displayErrorMessage("name-error","Category name should contain only alphabetic characters");
+            isValid = false;
+        }
+
+        if(description === ""){
+            displayErrorMessage("description-error","Please enter a description.");
+            isValid = false;
+        }
+        return isValid;
+    }
+
+
+
+    function displayErrorMessage(elementId,message) {
+        var errorElement = document.getElementById(elementId);
+        errorElement.innerHTML = message;
+        errorElement.style.display = "block";
+    }
+
+
+    function clearErrorMessages() {
+        const errorElements = document.getElementsByClassName("error-message");
+        Array.from(errorElements).forEach((element) => {
+            element.innerHTML = "";
+            element.style.display = "none";
+        });
+    }
+
+
+
+
+    //search
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const categoryTableBody = document.getElementById('categoryTableBody');
+
+        searchBtn.addEventListener('click', performSearch);
+        searchInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') performSearch();
+        });
+
+        function performSearch() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const rows = categoryTableBody.querySelectorAll('tr');
+
+            rows.forEach(row => {
+                const name = row.cells[0].textContent.toLowerCase();
+                const description = row.cells[1].textContent.toLowerCase();
+
+                if (name.includes(searchTerm) || description.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    });
+</script>
+
+<%- include('../../views/partials/admin/footer') %>

@@ -56,7 +56,7 @@ const userSchema = new Schema({
         type : Schema.Types.ObjectId,
         ref : "Order"
     }],
-    CreatedOn :{
+    createdOn :{
         type : Date,
         default : Date.now,
     },

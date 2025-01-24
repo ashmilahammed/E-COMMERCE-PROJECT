@@ -3,7 +3,7 @@ const {Schema} = mongoose;
 
 
 const brandSchema = new Schema({
-    brabdName :{
+    brandName :{
         type : String,
         required : true,
     },
