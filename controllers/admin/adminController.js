@@ -66,7 +66,7 @@ const login = async (req, res) => {
 
     } catch (error) {
         console.log("Login error:", error);
-        return res.rendirect("/pageError");
+        return res.rendirect("/admin/pageError");
     }
 };
 
@@ -76,7 +76,7 @@ const loadDashboard = async (req,res) => {
         try {
             res.render("dashboard");
         } catch (error) {
-            res.redirect("/pageError")
+            res.redirect("/admin/pageError")
         }
     }
 }
@@ -95,7 +95,7 @@ const logout = async (req,res) => {
         
     } catch (error) {
         console.log("Unexpected error during logout",error);
-        res.redirect("/pageError")
+        res.redirect("/admin/pageError")
         
     }
 }

@@ -26,7 +26,7 @@ const categoryInfo = async (req,res) => {
         
     } catch (error) {
         console.error(error);
-        res.redirect("/pageError")
+        res.redirect("/admin/pageError")
         
     }
 }
@@ -62,7 +62,7 @@ const getListCategory = async (req,res) => {
         res.redirect("/admin/category")
 
     } catch (error) {
-        res.redirect("/pageError")
+        res.redirect("/admin/pageError")
     }
 }
 
@@ -75,7 +75,7 @@ const getUnlistCategory = async (req,res) => {
         res.redirect("/admin/category")
         
     } catch (error) {
-        res.redirect("/pageError")
+        res.redirect("/admin/pageError")
     }
 }
 
@@ -88,7 +88,7 @@ const getEditCategory = async (req,res) => {
         res.render("edit-category",{category : category})
         
     } catch (error) {
-        res.redirect("/pageError")
+        res.redirect("/admin/pageError")
         
     }
 }

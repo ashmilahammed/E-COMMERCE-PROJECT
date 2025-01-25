@@ -4,30 +4,55 @@ const Product = require("../../models/productSchema");
 
 
 
-const getBrandpage = async (req,res) => {
-    try {
+// const getBrandpage = async (req,res) => {
+//     try {
 
+//         const page = parseInt(req.query.page) || 1;
+//         const limit = 4;
+//         const skip = (page-1)*limit;
+
+//         const brandData = await Brand.find({}).sort({createdAt:-1}).skip(skip).limit(limit);
+//         const totalBrands = await Brand.countDocuments();
+//         const totalPages = Math.ceil(totalBrands/limit);
+//         const reverseBrand = brandData.reverse();
+//         res.render("brands",{
+//             brands: reverseBrand,
+//             currentPage: page,
+//             totalPages: totalPages,
+//             totalBrands: totalBrands,
+
+//         })
+        
+//     } catch (error) {
+//         console.error(error)
+//         res.redirect("/pageError")
+//     }
+// }
+
+const getBrandpage = async (req, res) => {
+    try {
+        
         const page = parseInt(req.query.page) || 1;
         const limit = 4;
-        const skip = (page-1)*limit;
+        const skip = (page - 1) * limit;
 
-        const brandData = await Brand.find({}).sort({createdAt:-1}).skip(skip).limit(limit);
+        const brandData = await Brand.find({}).sort({ createdAt: -1 }).skip(skip).limit(limit);
+
         const totalBrands = await Brand.countDocuments();
-        const totalPages = Math.ceil(totalBrands/limit);
-        const reverseBrand = brandData.reverse();
-        res.render("brands",{
-            brands: reverseBrand,
+        const totalPages = Math.ceil(totalBrands / limit);
+
+        res.render("brands", {
+            brands: brandData, // No need to reverse the order here
             currentPage: page,
             totalPages: totalPages,
             totalBrands: totalBrands,
-
-        })
-        
+        });
     } catch (error) {
-        console.error(error)
-        res.redirect("/pageError")
+        console.error(error);
+        res.status(500).send("Server error");
     }
-}
+};
+
 
 
 // const addBrand = async (req,res) =>{
@@ -137,14 +162,14 @@ const deleteBrand = async (req,res) => {
 
         const {brandId} = req.query;
         if(!brandId){
-            return res.status(400).redirect("/pageError")
+            return res.status(400).redirect("/admin/pageError")
         }
         await Brand.deleteOne({_id:brandId});
         res.redirect("/admin/brands")
         
     } catch (error) {
         console.log("Error deleting brand",error)
-        res.status(500).redirect("/pageError")
+        res.status(500).redirect("/admin/pageError")
     }
 }
 

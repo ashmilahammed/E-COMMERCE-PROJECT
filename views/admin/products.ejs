@@ -1,8 +1,208 @@
-<%- include("../../views/partials/admin/header") %>
+<%- include('../../views/partials/admin/header') %>
 
+<style>
+    /* Table styles */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #6d6d6d;
+    }
+    th {
+        background-color: rgba(8, 129, 120, 0.2);
+    }
+    .action-btn {
+        padding: 5px 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .block-btn {
+        background-color: #f44336;
+        color: white;
+    }
+    .unblock-btn {
+        background-color: #4CAF50;
+        color: white;
+    }
+    #title {
+        text-align: center; 
+        margin-bottom: 30px;
+        font-size: 2rem;
+        font-weight: bold;
+    }
+    .search-section {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center; 
+        margin-bottom: 20px;
+    }
+    #searchInput {
+        padding: 10px;
+        font-size: 1rem;
+        width: 300px; 
+        height: 40px;
+        max-width: 100%; 
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    #searchBtn {
+        padding: 1px 15px;
+        height: 40px;
+        font-size: 1rem;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    #searchBtn:hover {
+        background-color: #0056b3;
+    }
+    .column-header {
+        font-size: 14px; 
+        color: #3b3b3b; 
+    }
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+    .pagination a {
+        padding: 8px 12px;
+        margin: 0 5px;
+        text-decoration: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        color: #ad5017;
+    }
+    .pagination a:hover {
+        background-color: #daa675;
+    }
+    .pagination .active {
+        background-color: #d08420;
+        color: white;
+    }
+</style>
 
+<div class="container">
+    <h1 id="title">Products Management</h1>
 
+    <div class="search-section">
+        <input type="text" id="searchInput" placeholder="Search products or brands...">
+        <button id="searchBtn">Search</button>
+    </div>
 
+    <table>
+        <thead>
+            <tr>
+                <th class="column-header">Product Name</th>
+                <th class="column-header">Brand</th>
+                <th class="column-header">Category</th>
+                <th class="column-header">Sale Price</th>
+                <th class="column-header">Offer Price</th>
+                <th class="column-header">Offer</th>
+                <th class="column-header">Quantity</th>
+                <th class="column-header">Action</th>
+                <th class="column-header">Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Example product rows -->
 
+           
+            <% for(let i=0;i<products.length;i++) { %>
 
-<%- include("../../views/partials/admin/footer") %>
+            <tr>
+                <td><%= products[i].productName %></td>
+                <td><%= products[i].brand %></td>
+                <td><%= products[i].category.name %></td>
+                <td><%= products[i].salePrice %></td>
+                <td><%= products[i].offerPrice %></td>
+                
+                <td>
+                    <button class="action-btn" style="background-color: #2196F3; color: white;">Add Offer</button>
+                    <button class="action-btn" style="background-color: #FF5722; color: white;">Remove</button>
+                </td>
+
+                <td><%= products[i].quantity %></td>
+
+                <td>
+                    <% if (products[i].isBlocked === false) { %>
+                    <a href="/admin/blockProduct?productId=<%= products[i]._id %>">
+                        <button class="block-btn">Block</button>
+                    </a>
+                    <% } else { %>
+                    <a href="/admin/unblockProduct?productId=<%= products[i]._id %>">
+                        <button class="unblock-btn">UnBlock</button>
+                    </a>
+                    <% } %>
+                </td>
+                
+                <!-- <td>
+                    <% if(products[i].isBlocked === false) { %>
+                    <button class="block-btn">Block</button>
+                    <button class="unblock-btn">Unblock</button>
+                    <% } %>
+                </td> -->
+                <td>
+                    <button class="action-btn" style="background-color: #007bff; color: white;">Edit</button>
+                </td>
+            </tr>
+
+        <% } %>
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+
+    <div class="pagination">
+        <% if (currentPage > 1) { %>
+        <a href="/admin/products?page=<%= currentPage - 1 %>">Previous</a>
+        <% } %>
+
+        <% for (let i = 1; i <= totalPages; i++) { %>
+            <a href="/admin/products?page=<%= i %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+        <% } %>
+
+        <% if (currentPage < totalPages) { %>
+        <a href="/admin/products?page=<%= currentPage + 1 %>">Next</a>
+        <% } %>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const productTableBody = document.querySelector('tbody');
+
+        searchBtn.addEventListener('click', performSearch);
+        searchInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') performSearch();
+        });
+
+        function performSearch() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const rows = productTableBody.querySelectorAll('tr');
+
+            rows.forEach(row => {
+                const productName = row.cells[0].textContent.toLowerCase();
+                const brand = row.cells[1].textContent.toLowerCase();
+
+                if (productName.includes(searchTerm) || brand.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    });
+</script>
+
+<%- include('../../views/partials/admin/footer') %>
