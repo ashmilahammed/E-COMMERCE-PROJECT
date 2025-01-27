@@ -102,6 +102,7 @@
         <thead>
             <tr>
                 <th class="column-header">Product Name</th>
+                <!-- <th class="column-header">Description</th>   -->
                 <th class="column-header">Brand</th>
                 <th class="column-header">Category</th>
                 <th class="column-header">Sale Price</th>
@@ -120,6 +121,7 @@
 
             <tr>
                 <td><%= products[i].productName %></td>
+                <!-- <td><%= products[i].description %></td> -->
                 <td><%= products[i].brand %></td>
                 <td><%= products[i].category.name %></td>
                 <td><%= products[i].salePrice %></td>
@@ -143,15 +145,11 @@
                     </a>
                     <% } %>
                 </td>
-                
-                <!-- <td>
-                    <% if(products[i].isBlocked === false) { %>
-                    <button class="block-btn">Block</button>
-                    <button class="unblock-btn">Unblock</button>
-                    <% } %>
-                </td> -->
+
                 <td>
-                    <button class="action-btn" style="background-color: #007bff; color: white;">Edit</button>
+                    <a href="/admin/editProduct?productId=<%= products[i]._id %>">
+                        <button class="action-btn" style="background-color: #007bff; color: white;">Edit</button>
+                    </a>
                 </td>
             </tr>
 

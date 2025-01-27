@@ -43,6 +43,12 @@ router.get("/products",adminAuth,productController.GetAllProducts);
 
 router.get("/blockProduct",adminAuth,productController.blockProduct);
 router.get("/unblockProduct",adminAuth,productController.unblockProduct);
+router.get("/editProduct",adminAuth,productController.getEditProduct);
+router.post("/editProduct/:id",adminAuth,uploads.array("images",3),productController.editProduct);
+router.post("/deleteImage",adminAuth,productController.deleteSingleImage)
+
+
+
 
 
 module.exports = router;

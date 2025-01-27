@@ -2,12 +2,13 @@ const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/user/userController");
 const passport = require("passport");
+const {userAuth,adminAuth, isBlocked} = require("../middlewares/auth");
 
 
 
 router.get("/pageNotFound",userController.pageNotFound)
 //home page
-router.get("/",userController.loadHomepage)
+router.get("/",isBlocked,userController.loadHomepage)
 router.get("/logout",userController.logout)
 //sign up management
 router.get("/signup",userController.loadSignup)

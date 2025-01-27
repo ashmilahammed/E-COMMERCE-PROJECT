@@ -39,9 +39,28 @@ const adminAuth = (req,res,next) => {
 
 
 
+const isBlocked = async (req, res, next) => {
+    try {
+
+        if (!req.session.user) return next();
+        const user = await User.findById(req.session.user);
+        if (user && user.isblocked) {
+            console.log("User is blocked, redirecting to login.");
+            req.session.user = null;
+            return res.redirect('/login');
+        }
+        next();
+    } catch (error) {
+        console.error("Error in isBlocked middleware:", error);
+        res.redirect('/admin/pageError');
+    }
+};
+
+
 
 
 module.exports = {
     userAuth,
-    adminAuth
+    adminAuth,
+    isBlocked
 }
