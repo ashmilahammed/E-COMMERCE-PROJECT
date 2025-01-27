@@ -1,53 +1,73 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>404 - Page Not Found</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background-color: #f7f7f7;
-      color: #333;
-    }
-    .container {
-      text-align: center;
-      padding: 20px;
-    }
-    h1 {
-      font-size: 3rem;
-      margin: 0;
-      color: #f60e0e;
-    }
-    p {
-      font-size: 1.2rem;
-      margin: 10px 0 20px;
-    }
-    a {
-      display: inline-block;
-      padding: 10px 20px;
-      background-color: #007BFF;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-      font-size: 1rem;
-      transition: background-color 0.3s;
-    }
-    a:hover {
-      background-color: #0056b3;
-    }
-  </style>
-</head>
-<body>
+<%- include("../../views/partials/user/header") %>
+
+<style>
+  /* Scope all styles to the error-page class */
+  .error-page {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    color: #333;
+    padding: 20px 0;
+  }
+
+  .error-page .container {
+    text-align: center;
+    padding: 40px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+    margin: 50px auto;
+  }
+
+  .error-page .error-icon {
+    font-size: 80px;
+    color: #f60e0e;
+    margin-bottom: 20px;
+  }
+
+  .error-page h1 {
+    font-size: 3rem;
+    margin: 0;
+    color: #f60e0e;
+    font-weight: bold;
+  }
+
+  .error-page p {
+    font-size: 1.2rem;
+    margin: 10px 0 20px;
+    color: #666;
+  }
+
+  .error-page .error-button {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #007BFF;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+
+  .error-page .error-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+  }
+
+  .error-page .error-button:active {
+    transform: scale(1);
+  }
+</style>
+
+<div class="error-page">
   <div class="container">
+    <div class="error-icon">⚠️</div>
     <h1>Error Page</h1>
     <p>Oops! The page you're looking for doesn't exist.</p>
-    <a href="/">Go to Homepage</a>
+    <a href="/" class="error-button">Go to Homepage</a>
   </div>
-</body>
-</html>
+</div>
+
+<%- include("../../views/partials/user/footer") %>

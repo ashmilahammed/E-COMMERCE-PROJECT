@@ -17,39 +17,35 @@ const pageNotFound = async(req,res) => {
 }
 
 
-
-const loadHomepage = async(req,res) => {
+const loadHomepage = async (req, res) => {
     try {
-        
+        // Get the logged-in user from the session
         const user = req.session.user;
-        const categories = await Category.find({isListed:true});
-        let productData = await Product.find(
-            {
-                isBlocked:false,
-                category:{$in : categories.map(category => category._id)},
-                quantity:{$gt:0}
-            }
-        )
+        // Fetch listed categories
+        const categories = await Category.find({ isListed: true });
+        // Fetch products
+        let productData = await Product.find({
+            isBlocked: false,
+            category: { $in: categories.map((category) => category._id) },
+            quantity: { $gt: 0 },
+        });
 
-        productData.sort((a,b) => new Date(b.createdOn) - new Date(a.createdOn));
-        productData = productData.slice(0,4);
+        productData.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
+        productData = productData.slice(0, 4);
 
-
-        if(user){
-            
-            const userData = await User.findOne({_id:user._id});
-            res.render("home",{user: userData ,products: productData})
-
-        }else{
-            return res.render("home",{products: productData});
+        // Render the homepage with or without user data
+        if (user) {
+            const userData = await User.findOne({ _id: user._id });
+            return res.render("home", { user: userData, products: productData });
+        } else {
+            return res.render("home", { products: productData });
         }
-       
     } catch (error) {
-        console.log("Home page not found",error);
-        res.status(500).send("server error")
-        
+        console.error("Error loading homepage:", error);
+        res.status(500).send("An error occurred while loading the homepage. Please try again later.");
     }
-}
+};
+
 
 const loadSignup = async(req,res) => {
     try {
