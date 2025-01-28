@@ -103,13 +103,11 @@
         <div class="row">
             <div class="col-12">
                 <div class="content-header">
-                    <a href="/admin/products">
-                        <button
-                            style="border-radius: 10px;border-color:white;height: 30px  ;background-color: #ff9028;color: white;"
-                            type="button">
-                            Back to Products
-                        </button>
-                    </a>
+                    <button onclick="checkImagesAndGoBack()"
+                        style="border-radius: 10px;border-color:white;height: 30px;background-color: #ff9028;color: white;"
+                        type="button">
+                        Back to Products
+                    </button>
                     <h2 class="content-title">Edit Product</h2>
                 </div>
             </div>
@@ -508,7 +506,7 @@
             const name = document.getElementsByName('productName')[0].value;
             const description = document.getElementById('descriptionid').value;
             const brand = document.getElementsByName('brand')[0].value;
-            const price = document.getElementsByName('regularPrice')[0].value;
+            const price = document.getElementsByName('regularPrice')[0].value.trim();
             const saleprice = document.getElementsByName('salePrice')[0].value;
             const color = document.getElementsByName('color')[0].value;
             const size = document.getElementsByName('size')[0].value;
@@ -637,6 +635,38 @@
             errorElements.forEach(element => {
                 element.textContent = '';
             });
+        }
+
+        function checkImagesAndGoBack() {
+            // Get all images from the thumbnails container
+            const existingImages = document.querySelectorAll('.image-container img');
+            const newImageInputs = document.querySelectorAll('input[type="file"]');
+            
+            // Count existing images
+            const existingImageCount = existingImages.length;
+            
+            // Count new images selected
+            let newImageCount = 0;
+            newImageInputs.forEach(input => {
+                if (input.files && input.files.length > 0) {
+                    newImageCount++;
+                }
+            });
+            
+            // Total image count
+            const totalImages = existingImageCount + newImageCount;
+            
+            if (totalImages < 3) {
+                Swal.fire({
+                    title: 'Warning!',
+                    text: 'Please ensure there are at least 3 images before leaving the page.',
+                    icon: 'warning',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#ff9028'
+                });
+            } else {
+                window.location.href = '/admin/products';
+            }
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>

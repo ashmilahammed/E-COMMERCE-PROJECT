@@ -2,6 +2,7 @@
 
     <head>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     </head>
     <style>
         .error-message {
@@ -357,9 +358,21 @@
             const color = document.getElementsByName('color')[0].value;
             const size = document.getElementsByName('size')[0].value;
             const category = document.getElementsByName('category')[0].value;
-            const images = document.getElementById('input1')
+            const input1 = document.getElementById('input1');
+            const input2 = document.getElementById('input2');
+            const input3 = document.getElementById('input3');
             const quantity = document.getElementsByName('quantity')[0].value;
             let isValid = true
+
+            // Check if exactly 3 images are selected
+            if (!input1.files.length || !input2.files.length || !input3.files.length) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Image Required',
+                    text: 'Must contain 3 images!'
+                });
+                isValid = false;
+            }
 
             if (name.trim() === "") {
                 displayErrorMessage('productName-error', 'Please enter a product name.');
@@ -417,10 +430,6 @@
             }
 
 
-            if (images.files.length === 0) {
-                displayErrorMessage("images-error", 'Please select an image.');
-                isValid = false;
-            }
             return isValid;
         }
 
@@ -449,123 +458,3 @@
 
     <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
     <%- include("../../views/partials/admin/footer") %>
-
-
-
-
-
-        <!-- <div class="card mb-2">
-        <div class="card-header">
-            <h4>Choose images</h4>
-        </div>
-        <div class="border row">
-            <div id="addedImagesContainer" class="thumbnails-container"></div>
-        </div>
-     
-        <div class="row">
-            <div class="card-body align-items-center" style="margin-bottom: 20px;">
-                <img src="" alt="" id="imgView1">
-                <input class="form-control" type="file" name="images" id="input1"
-                    accept="image/png, image/jpeg, image/jpg"
-                    onchange="viewImage1(event), viewImage(event, 1)">
-                <div id="images-error" class="error-message"></div>
-            </div>
-            <div class="image-cropper d-flex align-items-center"
-                style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
-                <img src="" id="croppedImg1" alt="">
-                <button type="button" id="saveButton1" class="btn-sm btn-primary">Save</button>
-            </div>
-        </div>
-     
-        <div class="row">
-            <div class="card-body align-items-center" style="margin-bottom: 20px;">
-                <img src="" alt="" id="imgView2">
-
-
-                <input class="form-control" type="file" name="images" id="input2"
-                    accept="image/png, image/jpeg, image/jpg"
-                    onchange="viewImage2(event),viewImage(event, 2)">
-            </div>
-            <div class="image-cropper d-flex align-items-center"
-                style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
-                <img src="" id="croppedImg2" alt="">
-                <button type="button" id="saveButton2" class="btn-sm btn-primary">Save</button>
-            </div>
-        </div>
-       
-        <div class="row">
-            <div class="card-body align-items-center" style="margin-bottom: 20px;">
-                <img src="" alt="" id="imgView3">
-
-
-                <input class="form-control" type="file" name="images" id="input3"
-                    accept="image/png, image/jpeg, image/jpg"
-                    onchange="viewImage3(event),viewImage(event, 3)">
-            </div>
-            <div class="image-cropper d-flex align-items-center"
-                style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
-                <img src="" id="croppedImg3" alt="">
-                <button type="button" id="saveButton3" class="btn-sm btn-primary">Save</button>
-            </div>
-        </div>
-
-    </div> -->
-
-
-
-
-
-        <!-- //crop
-    // function viewImage(event,index) {
-    //     let input = event.target;
-    //     let reader = new FileReader();
-    //     reader.onload = function (){
-    //         let dataURL = reader.result;
-    //         let image = document.getElementById("imgView"+ index);
-    //         image.src = dataURL;
-    //         let cropper = new Cropper( image, {
-    //             aspectRatio : 1,
-    //             ViewMode : 1,
-    //             guides : true,
-    //             background : false,
-    //             autoCropArea : 1,
-    //             zoomable : true
-    //         });
-
-    //         let cropperContainer = document.querySelector("#croppedImg" + index).parentNode;
-    //         cropperContainer.style.display = "block";
-
-    //         //save 
-    //         let saveButton = document.querySelector("#saveButton"+ index);
-    //         saveButton.addEventListener('click',async function (){
-
-    //             let croppedCanvas = cropper.getCroppedCanvas();
-    //             let croppedImage = document.getElementById("croppedImage" + index);
-    //             croppedImage.src = croppedCanvas.toDataURL("image/jpeg",1.0);
-
-
-    //             let timestamp = new Date().getTime();
-    //             let fileName = `cropped-img-${timestamp}-${index}.png`;
-
-
-
-    //             await croppedCanvas.toBlob(blob => {
-    //                 let input = document.getElementById('input'+index);
-    //                 let imgFile = new File([blob] , fileName,blob )
-    //                 const fileList = new DataTransfer();
-    //                 fileList.items.add(imgFile);
-    //                 input.files = fileList.files
-    //             });
-
-
-    //             cropperContainer.style.display = 'none';
-    //             cropper.destroy();
-
-
-    //         });
-
-    //     };
-
-    //     reader.readAsDataURL(input.files[0]);
-
-    // } -->
