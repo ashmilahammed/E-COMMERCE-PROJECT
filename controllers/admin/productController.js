@@ -3,7 +3,7 @@ const Category = require("../../models/categorySchema");
 const Brand = require("../../models/brandSchema");
 const User = require("../../models/userSchema")
 const fs = require("fs");
-const path = require('path');
+const path = require("path");
 const sharp = require("sharp");
 const { error } = require("console");
 const { response } = require("express");
@@ -237,55 +237,25 @@ const editProduct = async (req,res) => {
 }
 
 
-const deleteSingleImage = async (req, res) => {
+const deleteSingleImage = async (req,res) => {
     try {
-        console.log('Request body:', req.body); // Debug log
-        const { imageNameToServer, productIdToServer } = req.body;
+
+        const {imageNameToServer, productIdToServer} = req.body;
+        const product = await Product.findByIdAndUpdate(productIdToServer,{$pull: {productImage:imageNameToServer}});
+
+        const imagePath = path.join("public","uploads","re-image",imageNameToServer);
+        if(fs.existsSync(imagePath)) {
+            await fs.unlinkSync(imagePath);
+            console.log(`Image ${imageNameToServer} deleted Successfully.`)
+        }else {
+           console.log(`Image ${imageNameToServer} not Found`) 
+        }
+        res.send({status:true});
+
         
-        if (!imageNameToServer || !productIdToServer) {
-            console.log('Missing required fields:', { imageNameToServer, productIdToServer }); // Debug log
-            return res.status(400).json({
-                status: false,
-                message: 'Image name and product ID are required'
-            });
-        }
-
-        // Update the product first
-        const product = await Product.findByIdAndUpdate(
-            productIdToServer,
-            { $pull: { productImage: imageNameToServer } },
-            { new: true }
-        );
-
-        if (!product) {
-            return res.status(404).json({
-                status: false,
-                message: 'Product not found'
-            });
-        }
-
-        // Delete the image file
-        const imagePath = path.join(process.cwd(), "public", "uploads", "re-image", imageNameToServer);
-        console.log('Image path:', imagePath); // Debug log
-        
-        if (fs.existsSync(imagePath)) {
-            fs.unlinkSync(imagePath);
-            console.log(`Image ${imageNameToServer} deleted successfully`);
-        } else {
-            console.log(`Image ${imageNameToServer} not found in filesystem`);
-        }
-
-        return res.json({
-            status: true,
-            message: 'Image deleted successfully'
-        });
     } catch (error) {
-        console.error('Error in deleteSingleImage:', error);
-        return res.status(500).json({
-            status: false,
-            message: 'Error deleting image',
-            error: error.message
-        });
+        console.error(error);
+        res.redirect("/admin/pageError")
     }
 }
 

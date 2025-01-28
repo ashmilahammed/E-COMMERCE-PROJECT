@@ -33,6 +33,7 @@
 
         .btn {
             margin-top: 15px;
+            background-color:#088178;
         }
 
         .image-preview {
@@ -208,7 +209,7 @@
 
 
                             <div class="text-center">
-                                <button class="btn btn-primary btn-md rounded font-sm hover-up" type="button"
+                                <button class="btn btn-primary btn-md rounded font-sm hover-up" style="background-color: rgb(0, 187, 0);" type="button"
                                     onclick="validateAndSubmit()">Publish</button>
                             </div>
                         </form>
@@ -383,13 +384,10 @@
             }
 
 
-
             if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0) {
                 displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price.');
                 isValid = false;
             }
-
-
 
 
             if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {

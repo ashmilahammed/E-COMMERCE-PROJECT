@@ -434,7 +434,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     const remainingImages = document.querySelectorAll('.image-container').length;
-                    if (remainingImages <= 3) {
+                    if (remainingImages <= 0) {
                         Swal.fire(
                             'Cannot Delete',
                             'Minimum 3 images are required for the product',
@@ -499,45 +499,89 @@
                 }
             });
         }
+        
 
         function validateForm() {
             clearErrorMessages();
             const skipImageValidation = document.getElementById('skipImageValidation').checked;
             
-            // Basic validation for required fields
             const name = document.getElementsByName('productName')[0].value;
             const description = document.getElementById('descriptionid').value;
-            const regularPrice = document.getElementsByName('regularPrice')[0].value;
-            const salePrice = document.getElementsByName('salePrice')[0].value;
+            const brand = document.getElementsByName('brand')[0].value;
+            const price = document.getElementsByName('regularPrice')[0].value;
+            const saleprice = document.getElementsByName('salePrice')[0].value;
+            const color = document.getElementsByName('color')[0].value;
+            const size = document.getElementsByName('size')[0].value;
+            const category = document.getElementsByName('category')[0].value;
             const quantity = document.getElementsByName('quantity')[0].value;
+            let isValid = true
+
+            if (name.trim() === "") {
+                displayErrorMessage('productName-error', 'Please enter a product name.');
+                isValid = false;
+            } else if (!/^[a-zA-Z\s]+$/.test(name.trim())) {
+                displayErrorMessage('productName-error', 'Product name should contain only alphabetic characters.');
+                isValid = false;
+            }
+
+            if (description.trim() === "") {
+                displayErrorMessage('description-error', 'Please enter a product description.');
+                isValid = false;
+            } else if (!/^[a-zA-Z\s]+$/.test(description.trim())) {
+                displayErrorMessage('description-error', 'Product description should contain only alphabetic characters.');
+                isValid = false;
+            }
+
+
+            if (parseInt(quantity) < 0) {
+                displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
+                isValid = false;
+            }
+
+
+            if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0) {
+                displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price.');
+                isValid = false;
+            }
+
+
+            if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {
+                displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price.');
+                isValid = false;
+            }
+            if (parseFloat(price) <= parseFloat(saleprice)) {
+                displayErrorMessage('regularPrice-error', 'Regular price must be greater than sale price.');
+                isValid = false;
+            }
+
+
+            if (quantity.trim() === "") {
+                displayErrorMessage('quantity-error', 'Please enter quantity.');
+                isValid = false;
+            }
+
+
+            if (color.trim() === "") {
+                displayErrorMessage('color-error', 'Please enter a color.');
+                isValid = false;
+            }
+
+            if (size.trim() === "") {
+                displayErrorMessage('size-error', 'Please enter a size.');
+                isValid = false;
+            }
+        
+
+
+         function displayErrorMessage(elementId, message) {
+             var errorElement = document.getElementById(elementId);
+             errorElement.innerText = message;
+             errorElement.style.display = "block";
+         }
+
+
+
             
-            let isValid = true;
-
-            if (!name.trim()) {
-                document.getElementById('productName-error').textContent = 'Product name is required';
-                isValid = false;
-            }
-
-            if (!description.trim()) {
-                document.getElementById('description-error').textContent = 'Description is required';
-                isValid = false;
-            }
-
-            if (!regularPrice.trim()) {
-                document.getElementById('regularPrice-error').textContent = 'Regular price is required';
-                isValid = false;
-            }
-
-            if (!salePrice.trim()) {
-                document.getElementById('salePrice-error').textContent = 'Sale price is required';
-                isValid = false;
-            }
-
-            if (!quantity.trim()) {
-                document.getElementById('quantity-error').textContent = 'Quantity is required';
-                isValid = false;
-            }
-
             // Skip image validation if checkbox is checked
             if (!skipImageValidation) {
                 // Get total number of images (existing + new)
@@ -586,6 +630,7 @@
 
             return isValid;
         }
+
 
         function clearErrorMessages() {
             const errorElements = document.querySelectorAll('.error-message');

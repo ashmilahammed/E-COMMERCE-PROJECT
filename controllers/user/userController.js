@@ -165,6 +165,7 @@ const securePassword = async (password) => {
     }
 }
 
+
 const verifyOtp = async(req,res) => {
     try {
 
@@ -204,6 +205,7 @@ const verifyOtp = async(req,res) => {
         
     }
 }
+
 
 const resendOtp = async (req,res) => {
     try {
@@ -318,6 +320,19 @@ const logout = async (req, res) => {
 };
 
 
+const loadShoppingpage = async (req,res) => {
+    try {
+
+        res.render("shop")
+        
+    } catch (error) {
+        res.redirect("/pageNotFouund")
+    }
+}
+
+
+
+
 
 module.exports = {
     pageNotFound,
@@ -328,5 +343,6 @@ module.exports = {
     resendOtp,
     loadLogin,
     login,
-    logout
+    logout,
+    loadShoppingpage
 }
