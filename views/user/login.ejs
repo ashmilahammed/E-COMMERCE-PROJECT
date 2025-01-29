@@ -189,8 +189,9 @@
         }
     </style>
 </head>
+
 <body>
-    <form action="/login" method="post">
+    <form action="/login" method="post" id="loginForm">
         <div class="container">
             <div class="card">
                 <!-- Image Container -->
@@ -200,16 +201,23 @@
                 <div class="content-panel">
                     <div class="login-panel">
                         <h4>Log in to your account</h4>
-                        <button type="button" class="btn-google">Log In with Google</button>
+                        <a href="/auth/google">
+
+                            <button type="button" class="btn-google">Log In with Google</button>
+
+                        </a>
+                    
 
                         <div class="divider"><p>OR</p></div>
 
                         <div class="login-with-email">
                             <label for="email">Email address</label>
-                            <input type="email" id="email" name="email" placeholder="Enter your email address" required />
+                            <input type="email" id="email" name="email" placeholder="Enter your email address" />
+                            <span id="emailError" class="error-message"></span>
 
                             <label for="password">Password</label>
-                            <input type="password" id="password" name="password" placeholder="Enter your password" required />
+                            <input type="password" id="password" name="password" placeholder="Enter your password" />
+                            <span id="passwordError" class="error-message"></span>
                         </div>
 
                         <!-- Show Password -->
@@ -217,13 +225,12 @@
                             <input type="checkbox" id="showPassword" />
                             <label for="showPassword">Show Password</label>
                         </div>
+
                         <% if(locals.message && message.length > 0) { %>
                             <div class="message" style="color: red;">
                                 <%=message%>
                             </div>
-                            <!-- <p class="message" style="color: red;"><%= message %></p> -->
                         <% } %>
-                     
 
                         <button type="submit" class="btn">Continue</button>
 
@@ -238,14 +245,48 @@
     </form>
 
     <script>
-        const showPasswordCheckbox = document.getElementById("showPassword");
+        const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+        const form = document.getElementById("loginForm");
+        const emailField = document.getElementById("email");
         const passwordField = document.getElementById("password");
+        const emailError = document.getElementById("emailError");
+        const passwordError = document.getElementById("passwordError");
 
-        // Toggle password visibility
-        showPasswordCheckbox.addEventListener("change", () => {
-            const type = showPasswordCheckbox.checked ? "text" : "password";
-            passwordField.type = type;
+        form.addEventListener("submit", function (event) {
+            let valid = true;
+            emailError.textContent = "";
+            passwordError.textContent = "";
+
+            if (emailField.value.trim() === "") {
+                emailError.textContent = "Email is required.";
+                valid = false;
+            } else if (!emailPattern.test(emailField.value)) {
+                emailError.textContent = "Enter a valid email address.";
+                valid = false;
+            }
+
+            if (passwordField.value.trim() === "") {
+                passwordError.textContent = "Password is required.";
+                valid = false;
+            }
+
+            if (!valid) {
+                event.preventDefault(); // Prevent form submission
+            }
+        });
+
+        document.getElementById("showPassword").addEventListener("change", () => {
+            passwordField.type = passwordField.type === "password" ? "text" : "password";
         });
     </script>
+
+    <style>
+        .error-message {
+            color: red;
+            font-size: 14px;
+        }
+    </style>
 </body>
+
+
 </html>

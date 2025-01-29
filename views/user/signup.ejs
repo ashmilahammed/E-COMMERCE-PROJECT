@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,101 +11,123 @@
       margin: 0;
       padding: 0;
     }
+
     body {
       font-family: Arial, sans-serif;
-      background: linear-gradient(to right, #000000, rgb(177, 177, 177));
+      background: linear-gradient(to right, #121212, #1e1e1e);
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      color: #fff;
     }
+
     .container {
       display: flex;
       width: 70%;
-      /* height: 650px; */
       max-width: 950px;
-      background: #fff;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      background: #222;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
       border-radius: 10px;
       overflow: hidden;
     }
+
     .image-section {
       flex: 1;
-      background: url('/images/nike\ white.webp') no-repeat center center / cover; 
+      background: url('/images/nike\ white.webp') no-repeat center center / cover;
       background-size: cover;
     }
+
     .form-section {
       flex: 1;
       padding: 30px;
+      background: #1a1a1a;
     }
+
     .form-section h2 {
       margin-bottom: 20px;
-      color: #333;
+      color: #fff;
       text-align: center;
     }
+
     .form-group {
       margin-bottom: 15px;
     }
+
     .form-group label {
       display: block;
       margin-bottom: 5px;
       font-weight: bold;
-      color: #555;
+      color: #ddd;
     }
+
     .form-group input {
       width: 100%;
       padding: 10px;
-      border: 1px solid #ddd;
+      background: #333;
+      border: 1px solid #444;
       border-radius: 5px;
+      color: #fff;
     }
-    .signup-btn, .google-btn {
+
+    .form-group input::placeholder {
+      color: #888;
+    }
+
+    .signup-btn,
+    .google-btn {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       border: none;
       border-radius: 5px;
       font-size: 16px;
       cursor: pointer;
       margin-top: 10px;
+      transition: 0.3s ease;
     }
+
     .signup-btn {
       background-color: #007BFF;
       color: white;
     }
+
     .signup-btn:hover {
       background-color: #0056b3;
     }
+
     .google-btn {
       background-color: #ff594a;
       color: white;
     }
+
     .google-btn:hover {
       background-color: #c23321;
     }
+
     .login-link {
       text-align: center;
       margin-top: 15px;
     }
+
     .login-link a {
       text-decoration: none;
       color: #007BFF;
     }
+
     .login-link a:hover {
       text-decoration: underline;
     }
-    #heading {
-      color:black;
-    }
-    #or{
-      color: #333;
-      justify-content: center;
-      padding-left: 200px;
+
+    #errorOr {
+      color: #ddd;
+      text-align: center;
       padding-top: 10px;
     }
+
     .error-message {
       color: red;
-      font-size: 0.75rem;
-      min-height: 1em; 
-      display: none; /* Ensure the height is always reserved */
+      font-size: 0.8rem;
+      display: none;
     }
 
     .show-password-container {
@@ -113,12 +135,20 @@
       align-items: center;
       gap: 5px;
       margin-top: 10px;
-      color: #333;
+      color: #ddd;
       font-size: 14px;
     }
 
+    #or {
+      color: #b0b0b0;
+      justify-content: center;
+      padding-left: 215px;
+      padding-top: 10px;
+    }
   </style>
+
 </head>
+
 <body>
 
   <div class="container">
@@ -129,76 +159,79 @@
     <div class="form-section">
       <h2 id="heading">Create Account</h2>
 
-      <% if (typeof message !== 'undefined') { %>
-        <p class="message" style="color: red;"><%= message %></p>
+      <% if (typeof message !=='undefined' ) { %>
+        <p class="message" style="color: red;">
+          <%= message %>
+        </p>
         <% } %>
 
-      <form id="signForm" method="post" action="/signup">
-        <!-- Full Name -->
-        <div class="form-group">
-          <label for="fullName">Full Name</label>
-          <input type="text" id="fullName" name="fullName" placeholder="Enter your full name">
-          <div id="errorName" class="error-message"></div>
-        </div>
+          <form id="signForm" method="post" action="/signup">
+            <!-- Full Name -->
+            <div class="form-group">
+              <label for="fullName">Full Name</label>
+              <input type="text" id="fullName" name="fullName" placeholder="Enter your full name">
+              <div id="errorName" class="error-message"></div>
+            </div>
 
-        <!-- Email -->
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" placeholder="Enter your email">
-          <div id="errorEmail" class="error-message"></div>
-        </div>
+            <!-- Email -->
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" placeholder="Enter your email">
+              <div id="errorEmail" class="error-message"></div>
+            </div>
 
-        <!-- Phone Number -->
-        <div class="form-group">
-          <label for="phone">Phone Number</label>
-          <input type="tel" id="phone" name="phone" placeholder="Enter your phone number">
-          <div id="errorPhone" class="error-message"></div>
-        </div>
+            <!-- Phone Number -->
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" name="phone" placeholder="Enter your phone number">
+              <div id="errorPhone" class="error-message"></div>
+            </div>
 
-        <!-- Password -->
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" name="password" placeholder="Enter your password">
-          <div id="errorPassword" class="error-message"></div>
-        </div>
+            <!-- Password -->
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" id="password" name="password" placeholder="Enter your password">
+              <div id="errorPassword" class="error-message"></div>
+            </div>
 
-        <!-- Confirm Password -->
-        <div class="form-group">
-          <label for="confirm-password">Confirm Password</label>
-          <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" >
-          <div id="errorConfirmPassword" class="error-message"></div>
-        </div>
+            <!-- Confirm Password -->
+            <div class="form-group">
+              <label for="confirm-password">Confirm Password</label>
+              <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password">
+              <div id="errorConfirmPassword" class="error-message"></div>
+            </div>
 
-        <!-- Show Password -->
-        <div class="show-password-container">
-           <input type="checkbox" id="showPassword" />
-           <label for="showPassword">Show Password</label>
-        </div>
+            <!-- Show Password -->
+            <div class="show-password-container">
+              <input type="checkbox" id="showPassword" />
+              <label for="showPassword">Show Password</label>
+            </div>
 
-        <!-- Sign Up Button -->
-        <button type="submit" class="signup-btn">Sign Up</button>
-        <div id="or">or</div>
-        <!-- Sign Up with Google -->
-        <button type="button" class="google-btn" onclick="redirectToGoogle()">Sign Up with Google</button>
+            <!-- Sign Up Button -->
+            <button type="submit" class="signup-btn">Sign Up</button>
+            <div id="or">or</div>
+            <!-- Sign Up with Google -->
+            <button type="button" class="google-btn" onclick="redirectToGoogle()">Sign Up with Google</button>
 
-        <!-- Login Link -->
-        <div class="login-link">
-          Already have an account? <a href="/login">Log in</a>
-        </div>
-      </form>
+            <!-- Login Link -->
+            <div class="login-link">
+              Already have an account? <a href="/login">Log in</a>
+            </div>
+          </form>
     </div>
   </div>
 
 </body>
+
 </html>
 
 
 
 <script>
 
-function redirectToGoogle() {
-        window.location.href = '/auth/google';
-    }
+  function redirectToGoogle() {
+    window.location.href = '/auth/google';
+  }
 
   const nameid = document.getElementById("fullName");
   const emailid = document.getElementById("email");
@@ -214,31 +247,31 @@ function redirectToGoogle() {
 
   const signForm = document.getElementById("signForm")
 
-  function nameValidateChecking (){
-      
-     const nameValue = nameid.value;
-     const namePattern = /^[A-Za-z\s]+$/;
+  function nameValidateChecking() {
 
-     if(nameValue.trim()===""){
+    const nameValue = nameid.value;
+    const namePattern = /^[A-Za-z\s]+$/;
+
+    if (nameValue.trim() === "") {
 
       errorName.style.display = "block";
       errorName.innerHTML = "please enter a Valid name."
-     }else if(!namePattern.test(nameValue)){
+    } else if (!namePattern.test(nameValue)) {
 
       errorName.style.display = "block";
       errorName.innerHTML = "Name can only contain alphabets and spaces."
-     }else {
+    } else {
 
       errorName.style.display = "none";
       errorName.innerHTML = "";
-     }
+    }
   }
 
 
-  function emailValidateChecking (){
+  function emailValidateChecking() {
 
     const emailValue = emailid.value;
-    const emailPattern =  /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
     // if(!emailPattern.test(emailValue)){
     //   errorEmail.style.display = "block";
@@ -248,32 +281,32 @@ function redirectToGoogle() {
     //   errorEmail.innerHTML = "";
     // }
     if (!emailPattern.test(emailValue)) {
-    errorEmail.style.display = "block";
-    errorEmail.innerHTML = "Invalid email format.";
-  } else {
-    errorEmail.style.display = "none";
-  }
+      errorEmail.style.display = "block";
+      errorEmail.innerHTML = "Invalid email format.";
+    } else {
+      errorEmail.style.display = "none";
+    }
   }
 
 
-  function phoneValidateChecking (){
+  function phoneValidateChecking() {
 
     const phoneValue = phoneid.value;
-    
-    if(phoneValue.trim()===""){
+
+    if (phoneValue.trim() === "") {
       errorPhone.style.display = "block";
       errorPhone.innerHTML = "Enter a Valid Phone number";
-    }else if(phoneValue.length !== 10){
+    } else if (phoneValue.length !== 10) {
       errorPhone.style.display = "block";
       errorPhone.innerHTML = "Phone number must be 10 digits."
-    }else {
+    } else {
       errorPhone.style.display = "none";
       errorPhone.innerHTML = "";
     }
   }
 
 
-  function passwordValidateChecking (){
+  function passwordValidateChecking() {
 
     const passwordValue = passwordid.value;
     const CpasswordValue = Cpasswordid.value;
@@ -281,21 +314,21 @@ function redirectToGoogle() {
     const digit = /\d/;
     // const digitPattern = /^[0-9]+$/;
 
-    if(passwordValue.length < 8){
-      errorPassword.style.display ="block";
+    if (passwordValue.length < 8) {
+      errorPassword.style.display = "block";
       errorPassword.innerHTML = "Should Contain atleast 8 characters"
-    }else if(!alpha.test(passwordValue) || !digit.test(passwordValue)){
+    } else if (!alpha.test(passwordValue) || !digit.test(passwordValue)) {
       errorPassword.style.display = "block";
       errorPassword.innerHTML = "Password must contain alphabets and numbers."
-    }else {
-      errorPassword.style.display ="none";
+    } else {
+      errorPassword.style.display = "none";
       errorPassword.innerHTML = "";
     }
 
-    if(passwordValue !== CpasswordValue){
+    if (passwordValue !== CpasswordValue) {
       errorConfirmPassword.style.display = "block";
       errorConfirmPassword.innerHTML = "Passwords do not Match."
-    }else {
+    } else {
       errorConfirmPassword.style.display = "none";
       errorConfirmPassword.innerHTML = "";
     }
@@ -304,38 +337,38 @@ function redirectToGoogle() {
 
 
 
-  document.addEventListener("DOMContentLoaded", function(){
-    signForm.addEventListener("submit", function(e){
+  document.addEventListener("DOMContentLoaded", function () {
+    signForm.addEventListener("submit", function (e) {
 
       nameValidateChecking();
       emailValidateChecking();
       phoneValidateChecking();
       passwordValidateChecking();
 
-      if(
+      if (
         !nameid ||
         !emailid ||
         !phoneid ||
         !passwordid ||
         !Cpasswordid ||
-        
+
         !errorName ||
-        !errorEmail || 
+        !errorEmail ||
         !errorPhone ||
         !errorPassword ||
         !errorConfirmPassword ||
-        !signForm 
-      ){
+        !signForm
+      ) {
         console.error("One or More elements not found")
       }
 
-      if(
+      if (
         errorName.innerHTML ||
         errorEmail.innerHTML ||
         errorPhone.innerHTML ||
         errorPassword.innerHTML ||
-        errorConfirmPassword.innerHTML 
-      ){
+        errorConfirmPassword.innerHTML
+      ) {
         e.preventDefault()
       }
 
@@ -346,12 +379,12 @@ function redirectToGoogle() {
   const passwordField = document.getElementById("password");
   const confirmPasswordField = document.getElementById("confirm-password");
 
-    // Toggle password visibility
-    showPasswordCheckbox.addEventListener("change", () => {
-      const type = showPasswordCheckbox.checked ? "text" : "password";
-      passwordField.type = type;
-      confirmPasswordField.type = type;
-    });
+  // Toggle password visibility
+  showPasswordCheckbox.addEventListener("change", () => {
+    const type = showPasswordCheckbox.checked ? "text" : "password";
+    passwordField.type = type;
+    confirmPasswordField.type = type;
+  });
 
 
 </script>

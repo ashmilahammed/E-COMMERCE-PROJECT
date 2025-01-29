@@ -44,7 +44,7 @@ const isBlocked = async (req, res, next) => {
 
         if (!req.session.user) return next();
         const user = await User.findById(req.session.user);
-        if (user && user.isblocked) {
+        if (user && user.isBlocked) {
             console.log("User is blocked, redirecting to login.");
             req.session.user = null;
             return res.redirect('/login');

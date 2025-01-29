@@ -57,6 +57,7 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 
 
 
+
 app.get('/dashboard', (req, res) => {
     res.render('dashboard'); // Render dashboard.ejs
   });
@@ -64,8 +65,8 @@ app.get('/dashboard', (req, res) => {
 
 
 
-const PORT= 5000 || process.env.PORT 
-app.listen(PORT , ()=>{
+const PORT= process.env.PORT
+app.listen(PORT, ()=>{
     console.log(`Server running on ${PORT}`)
 })
 
