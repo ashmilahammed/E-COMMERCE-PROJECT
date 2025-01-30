@@ -257,6 +257,34 @@ td {
         if (!validateForm()) {
             return;
         }
+
+        const brandName = document.getElementsByName("brandName")[0].value;
+        
+        // Get all existing brand names from the table
+        const existingBrands = Array.from(document.querySelectorAll('#brandTableBody tr td:first-child'))
+            .map(td => td.textContent);
+
+        // Check if brand exists in any case format
+        const exists = existingBrands.some(existingBrand => {
+            const newBrandLower = brandName.toLowerCase();
+            const existingBrandLower = existingBrand.toLowerCase();
+            const newBrandCapitalized = brandName.charAt(0).toUpperCase() + brandName.slice(1).toLowerCase();
+            const existingBrandCapitalized = existingBrand.charAt(0).toUpperCase() + existingBrand.slice(1).toLowerCase();
+            
+            return newBrandLower === existingBrandLower || 
+                   newBrandCapitalized === existingBrandCapitalized;
+        });
+
+        if (exists) {
+            Swal.fire({
+                icon: "error",
+                title: "Brand Already Exists",
+                text: "This brand name already exists.",
+                confirmButtonColor: '#d33'
+            });
+            return;
+        }
+
         const formData = new FormData(event.target);
 
         fetch('/admin/addBrand', {
@@ -277,8 +305,9 @@ td {
         .catch(error => {
             Swal.fire({
                 icon: "error",
-                title: "Oops",
+                title: "Error",
                 text: error.message || "An error occurred while adding the brand",
+                confirmButtonColor: '#d33'
             });
         });
     }

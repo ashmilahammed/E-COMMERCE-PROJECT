@@ -225,8 +225,23 @@
         if(!validateForm()) {
             return 
         }
-        const name = document.getElementsByName("name") [0].value;
+        const name = document.getElementsByName("name")[0].value;
         const description = document.getElementById("categoryDescription").value;
+
+        // Get all existing category names from the table
+        const existingCategories = Array.from(document.querySelectorAll('#categoryTableBody tr td:first-child'))
+            .map(td => td.textContent.toLowerCase());
+
+        // Check if category exists (case-insensitive)
+        if (existingCategories.includes(name.toLowerCase())) {
+            Swal.fire({
+                icon: "error",
+                title: "Category Already Exists",
+                text: "This category name already exists (case-insensitive).",
+                confirmButtonColor: '#d33'
+            });
+            return;
+        }
 
         fetch('/admin/addCategory',{
             method: 'POST',
@@ -249,11 +264,9 @@
         .catch(error => {
             if(error.message === "Category already exists"){
                 Swal.fire({
-
                     icon: "error",
                     title: "OOPS",
                     text: "Category already exists"
-
                 })
             }else{
                 Swal.fire({
@@ -263,7 +276,6 @@
                 })
             }
         })
-
     }
 
 

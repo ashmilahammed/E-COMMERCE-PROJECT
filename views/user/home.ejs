@@ -100,6 +100,8 @@
         .product-content-wrap a:hover {
             background-color: #ff4c4c;
         }
+
+        
     </style>
     <!-- Hero Section Begin -->
     <section class="hero">
@@ -110,8 +112,8 @@
                         <div class="col-xl-5 col-lg-7 col-md-8">
                             <div class="hero__text">
                                 <h6>Summer Collection</h6>
-                                <h2>Fall - Winter Collections 2030</h2>
-                                <p>A specialist label creating luxury essentials. Ethically crafted with an unwavering
+                                <h2 class="description-1">Fall - Winter Collections 2030</h2>
+                                <p class="description-2">A specialist label creating luxury essentials. Ethically crafted with an unwavering
                                     commitment to exceptional quality.</p>
                                 <a href="#" class="primary-btn">Shop now <span class="arrow_right"></span></a>
                                 <div class="hero__social">
@@ -160,7 +162,7 @@
                             <img src="img/banner/banner-1.jpg" alt="">
                         </div>
                         <div class="banner__item__text">
-                            <h2>Clothing Collections 2030</h2>
+                            <h2>Shoes Collections 2030</h2>
                             <a href="#">Shop now</a>
                         </div>
                     </div>
@@ -171,7 +173,7 @@
                             <img src="img/banner/banner-2.jpg" alt="">
                         </div>
                         <div class="banner__item__text">
-                            <h2>Accessories</h2>
+                            <h2>Best Products</h2>
                             <a href="#">Shop now</a>
                         </div>
                     </div>
@@ -505,9 +507,12 @@
                                     <a href="/productDetails?id=<%= products[i]._id %>">
                                         <img class="default-img"
                                             src="/uploads/re-image/<%= products[i].productImage[0] %>"
-                                            alt="<%= products[i].productName %>">
+                                            alt="<%= products[i].productName %>">                                      
                                     </a>
+                                
+                        
                                 </div>
+                               
 
                             </div>
 
@@ -524,9 +529,11 @@
                                 <h6>
                                     <%= products[i].productName %>
                                 </h6>
+                                <h6><%= products[i].brand %></h6>
                                 <h5>
-                                    <%= products[i].salePrice %>
+                                    ₹.<%= products[i].salePrice %> <span><strike>₹.<%= products[i].regularPrice %></strike>
                                 </h5>
+                                
                                 <a href="/addToCart?id=<%= products[i]._id %>">Add to cart</a>
                             </div>
                         </div>

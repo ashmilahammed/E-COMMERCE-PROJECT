@@ -21,22 +21,23 @@ const pageNotFound = async(req,res) => {
 const loadHomepage = async (req, res) => {
     try {
         // Get the logged-in user from the session
-        const user = req.session.user;
-        // Fetch listed categories
+        const userId = req.session.user;
+       
         const categories = await Category.find({ isListed: true });
-        // Fetch products
+       
         let productData = await Product.find({
             isBlocked: false,
             category: { $in: categories.map((category) => category._id) },
             quantity: { $gt: 0 },
         });
+        const brands = await Brand.find({isBlocked:false});
 
         productData.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
         productData = productData.slice(0, 4);
 
         // Render the homepage with or without user data
-        if (user) {
-            const userData = await User.findOne({ _id: user._id });
+        if (userId) {
+            const userData = await User.findById(userId);
             return res.render("home", { user: userData, products: productData });
         } else {
             return res.render("home", { products: productData });

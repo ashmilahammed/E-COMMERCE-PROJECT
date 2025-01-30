@@ -152,7 +152,7 @@
                         <div class="breadcrumb__text">
                             <h4>Shop</h4>
                             <div class="breadcrumb__links">
-                                <a href="./index.html">Home</a>
+                                <a href="/">Home</a>
                                 <span>Shop</span>
                             </div>
                         </div>
@@ -252,30 +252,31 @@
                                         <div id="collapseFour" class="collapse show" data-parent="#accordionExample">
                                             <div class="card-body">
                                                 <div class="shop__sidebar__size">
-                                                    <label for="xs">xs
+                                                    <label for="xs">5
                                                         <input type="radio" id="xs">
                                                     </label>
-                                                    <label for="sm">s
+                                                    <label for="sm">5.5
                                                         <input type="radio" id="sm">
                                                     </label>
-                                                    <label for="md">m
+                                                    <label for="md">6
                                                         <input type="radio" id="md">
                                                     </label>
-                                                    <label for="xl">xl
+                                                    <label for="xl">6.5
                                                         <input type="radio" id="xl">
                                                     </label>
-                                                    <label for="2xl">2xl
+                                                    <label for="2xl">7
                                                         <input type="radio" id="2xl">
                                                     </label>
-                                                    <label for="xxl">xxl
+                                                    <label for="xxl">7.5
                                                         <input type="radio" id="xxl">
                                                     </label>
-                                                    <label for="3xl">3xl
+                                                    <label for="3xl">8
                                                         <input type="radio" id="3xl">
                                                     </label>
-                                                    <label for="4xl">4xl
-                                                        <input type="radio" id="4xl">
+                                                    <label for="3xl">9
+                                                        <input type="radio" id="3xl">
                                                     </label>
+                                                    
                                                 </div>
                                             </div>
                                         </div>
@@ -374,10 +375,8 @@
 
                         <div class="row">
 
-                            <div class="col-lg-4 col-md-6 col-sm-6">
-
-                                <% for(let i=0;i<products.length;i++) { %>
-                                
+                            <% for(let i=0;i<products.length;i++) { %>
+                            <div class="col-lg-4 col-md-6 col-sm-6">  
                                 <div class="product__item">
                                     <div class="product__item__pic set-bg" data-setbg="">
 
@@ -418,7 +417,7 @@
                                     </div>
                                 </div>
 
-                            <% } %>
+                           
                             </div>
 
 
@@ -478,7 +477,7 @@
                             
                             
 
-
+                            <% } %>
                             <!-- product session end -->
                         </div>
 
