@@ -325,6 +325,41 @@
     </section>
     <!-- Shop Details Section End -->
 
+    
+
+    <!-- <div class="container">
+        <div class="row">
+        <% for(let i=0;i<relatedProducts.length;i++) { %>  
+
+            <div class="col-md-3 col-sm-6">
+                <div class="single-product-wrapper">
+                    <a href="/productDetails?id=<%= relatedProducts[i]._id %>">
+                        <div class="product-img">
+                            <img src="uploads/product-images/<%= relatedProducts[i].productImage[0] %>" alt="<%=relatedProducts[i].productName %>">
+                            <% if(relatedProducts[i].productImage[1]) { %>
+                                <img class="hover-img" src="uploads/product-images/<%= relatedProducts[i].productImage[1] %>" alt="">
+                            <% } %>
+                            <div class="product-favourite">
+                                <a href="/addToWishlist?id=<%= relatedProducts[i]._id  %>" class="favme fa fa-heart"></a>
+                            </div>
+                        </div>
+                        <div class="product-description">
+                            <h6><%= relatedProducts[i].productName %></h6>
+                            <p class="product-price">₹<%= relatedProducts[i].salePrice %></p>
+                        </div>
+                    </a>
+                    <div class="add-to-cart-btn">
+                        <a href="/addToCart?id=<%= relatedProducts[i]._id %>" class="btn essence-btn">Add to Cart</a>
+                    </div>
+                </div>
+            </div>
+        
+        <% } %>
+    </div>
+    </div> -->
+
+
+
     <!-- Related Section Begin -->
     <section class="related spad">
         <div class="container">
@@ -335,11 +370,12 @@
             </div>
             <div class="row">
 
+                <% for(let i=0;i<relatedProducts.length;i++) { %> 
 
                 <div class="col-lg-3 col-md-6 col-sm-6 col-sm-6">
                     <div class="product__item">
                         <div class="product__item__pic set-bg" data-setbg="">
-                            <img src="/images/NIKE+DUNK+LOW+QS.png" alt="">
+                            <img src="uploads/product-images/<%= relatedProducts[i].productImage[0] %>" alt="<%=relatedProducts[i].productName %>">
                             <span class="label">New</span>
                             <ul class="product__hover">
                                 <li><a href="#"><img src="img/icon/heart.png" alt=""></a></li>
@@ -348,7 +384,10 @@
                             </ul>
                         </div>
                         <div class="product__item__text">
-                            <h6>Nike Dunk Low RETRO</h6>
+
+                            <h6><%= relatedProducts[i].productName %></h6>
+                            <h6>Brand: <%= relatedProducts[i].brand %></h6>
+
                             <a href="#" class="add-cart">+ Add To Cart</a>
                             <div class="rating">
                                 <i class="fa fa-star-o"></i>
@@ -357,7 +396,8 @@
                                 <i class="fa fa-star-o"></i>
                                 <i class="fa fa-star-o"></i>
                             </div>
-                            <h5>₹ 10 465.00</h5>
+                            <h5>₹.<%= relatedProducts[i].salePrice %> <span style="color: grey; font-size: small;"> <strike>₹.<%= relatedProducts[i].regularPrice %></strike></h5></span>
+
                             <div class="product__color__select">
                                 <label for="pc-1">
                                     <input type="radio" id="pc-1">
@@ -373,7 +413,7 @@
                     </div>
                 </div>
 
-                <div class="col-lg-3 col-md-6 col-sm-6 col-sm-6">
+                <!-- <div class="col-lg-3 col-md-6 col-sm-6 col-sm-6">
                     <div class="product__item">
                         <div class="product__item__pic set-bg" data-setbg="">
                             <img src="/images/NIKE+DUNK+LOW+RETRO+SE.png" alt="">
@@ -443,9 +483,12 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
                
+
+            <% } %>
             </div>
+
         </div>
     </section>
     <!-- Related Section End -->

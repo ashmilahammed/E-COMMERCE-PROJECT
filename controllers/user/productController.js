@@ -18,12 +18,22 @@ const productDetails = async (req,res) => {
         const categoryOffer = findCategory ?.categoryOffer || 0;
         const productOffer = product.productOffer || 0;
         const totalOffer = categoryOffer + productOffer;
+
+
+        const relatedProducts = await Product.find({
+            category: findCategory,
+            _id: { $ne: productId }, //exclude the current product
+            isBlocked: false // exclude blocked products
+        }).limit(4)
+        
+
         res.render("product-details",{
             user : userData,
             product: product,
             quantity: product.quantity,
             totalOffer: totalOffer,
-            catgeory: findCategory
+            catgeory: findCategory,
+            relatedProducts: relatedProducts
         });
         
     } catch (error) {
@@ -31,6 +41,7 @@ const productDetails = async (req,res) => {
         res.redirect("/pageNotFound")
     }
 }
+
 
 
 

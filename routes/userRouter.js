@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/user/userController");
+const profileController = require("../controllers/user/profileController");
 const passport = require("passport");
 const {userAuth,adminAuth, isBlocked} = require("../middlewares/auth");
 const productController = require("../controllers/user/productController")
@@ -25,10 +26,20 @@ router.post("/login",userController.login);
 router.get("/logout",userController.logout);
 
 //home page and Shop
-router.get("/",userController.loadHomepage);
-router.get("/shop",userAuth,userController.loadShoppingpage)
+router.get("/",isBlocked,userController.loadHomepage);
+router.get("/shop",userAuth,userController.loadShoppingpage);
 
-// isBlocked -use correctly
+//Profile management
+router.get("/forgot-password",profileController.getForgotPassword);
+router.post("/forgot-email-valid",profileController.forgotEmailValid);
+router.post("/verify-PassForgot-otp",profileController.verifyForgotPassOtp);
+router.get("/reset-password",profileController.getResetPassPage);
+router.post("/resend-forgot-otp",profileController.resendOtp);
+router.post("/reset-password",profileController.postNewPassword);
+
+router.get("/userProfile",userAuth,profileController.userProfile);
+router.get("/change-email",userAuth,profileController.changeEmail);
+router.post("/change-email",userAuth,profileController.changeEmailValid);
 
 //Product management
 router.get("/productDetails",userAuth,productController.productDetails)

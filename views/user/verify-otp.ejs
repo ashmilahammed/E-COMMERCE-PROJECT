@@ -16,12 +16,12 @@
              justify-content: center;
              align-items: center;
              height: 100vh;
-             background: linear-gradient(135deg, #ffecf8, #ffebfa);
+             background: linear-gradient(135deg, #ffffff, #ffffff);
              color: #fff;
          }
  
          .container {
-             background: #ffffff;
+             background: #f1f1f1;
              border-radius: 10px;
              box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
              width: 90%;
@@ -34,7 +34,7 @@
          .container h1 {
              font-size: 24px;
              margin-bottom: 1rem;
-             color: #ff758c;
+             color: #ff2449;
          }
  
          .input-group {
@@ -44,7 +44,7 @@
          .input-group input {
              width: 100%;
              padding: 10px;
-             border: 2px solid #ff758c;
+             border: 2px solid #ff2449;
              border-radius: 5px;
              font-size: 16px;
          }
@@ -55,7 +55,7 @@
              margin-top: 10px;
              font-size: 16px;
              color: #fff;
-             background: #ff758c;
+             background: #ff3e5e;
              border: none;
              border-radius: 5px;
              cursor: pointer;
@@ -63,7 +63,7 @@
          }
  
          .btn:hover {
-             background: #ff5671;
+             background: #db0024;
          }
  
          .timer {
@@ -81,7 +81,7 @@
          .link {
              display: block;
              margin-top: 2rem;
-             color: #ff758c;
+             color: #ff2449;
              text-decoration: none;
              font-size: 14px;
          }
@@ -136,7 +136,7 @@
          const verifyButton = document.getElementById('verify-btn');
          const otpExpiredMessage = document.getElementById('otp-expired-message');
  
-         let timeLeft = 45;
+         let timeLeft = 50;
          const countdown = setInterval(() => {
              timeLeft--;
              timerElement.textContent = timeLeft;
@@ -193,7 +193,7 @@
     
     function resendOTP() {
     // Reset the timer
-    timeLeft = 45;
+    timeLeft = 50;
     timerElement.textContent = timeLeft;
     otpExpiredMessage.style.display = 'none';
     verifyButton.disabled = false;
@@ -253,63 +253,3 @@
  </html>
  
 
- <!-- //  // Resend OTP button logic
- //  resendButton.addEventListener('click', () => {
- //      alert('A new OTP has been sent to your email.');
- //      timeLeft = 60;
- //      timerElement.textContent = timeLeft;
- //      otpExpiredMessage.style.display = 'none';
- //      verifyButton.disabled = false;
- //      resendButton.disabled = true;
- //      document.getElementById('timer-text').style.display = 'block';
-
- //      // Restart timer
- //      const countdown = setInterval(() => {
- //          timeLeft--;
- //          timerElement.textContent = timeLeft;
-
- //          if (timeLeft <= 0) {
- //              clearInterval(countdown);
- //              resendButton.disabled = false;
- //              verifyButton.disabled = true;
- //              otpExpiredMessage.style.display = 'block';
- //              document.getElementById('timer-text').style.display = 'none';
- //          }
- //      }, 1000);
- //  });
- -->
-<!-- 
- // function resendOTP() {
-    //     clearInterval(timerInterval);
-    //     time = 30;
-    //     document.getElementById("otp").disabled = false;
-    //     document.getElementById("timer-text").classList.remove("expired");
-    //     startTimer();
-    //     $.ajax({
-    //         type : "POST",
-    //         url : "resend-otp",
-    //         success : function (response) {
-    //             if(response.success){
-
-    //                 Swal.fire({
-    //                     icon : "success",
-    //                     title : "success",
-    //                     text : "OTP resend Successfully.",
-    //                     showConfirmButton : false,
-    //                     timer : 1500,
-        
-    //                 })
-    //             }else {
-    //                 Swal.fire({
-    //                     icon : "error",
-    //                     title : "Error",
-    //                     text : "An error occured while resending OTP. Please try again.",
-
-    //                 })
-    //             }
-    //         }
-    //     })
-
-    //     return false;
-    // }
- -->

@@ -20,7 +20,7 @@ const pageNotFound = async(req,res) => {
 
 const loadHomepage = async (req, res) => {
     try {
-        // Get the logged-in user from the session
+     
         const userId = req.session.user;
        
         const categories = await Category.find({ isListed: true });

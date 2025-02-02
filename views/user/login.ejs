@@ -26,7 +26,7 @@
             display: flex;
             flex-direction: row;
             width: 930px;
-            height: 550px;
+            height: 590px;
             background: #1e1e1e;
             color: white;
             border-radius: 10px;
@@ -141,14 +141,37 @@
             color: #fff;
         }
 
-        .show-password-container {
-            margin-top: 10px;
-            text-align: left;
+        /* Password Options Container */
+        .password-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
         }
 
-        .show-password-container label {
-            font-size: 0.9rem;
-            color: #9f9f9f;
+        .show-password {
+            display: flex;
+            align-items: center;
+            gap: 5px;;
+            font-size: small;
+        }
+
+        .show-password input[type="checkbox"] {
+            margin: 0;
+        }
+
+        .forgot-password {
+            margin: 0;
+        }
+
+        .forgot-password a {
+            color: #2f7fff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
         }
 
         .link-container {
@@ -187,6 +210,11 @@
             line-height: 1.5;
             color: #ccc;
         }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+        }
     </style>
 </head>
 
@@ -220,10 +248,15 @@
                             <span id="passwordError" class="error-message"></span>
                         </div>
 
-                        <!-- Show Password -->
-                        <div class="show-password-container">
-                            <input type="checkbox" id="showPassword" />
-                            <label for="showPassword">Show Password</label>
+                        <!-- Password Options Container -->
+                        <div class="password-options">
+                            <div class="show-password">
+                                <input type="checkbox" id="showPassword" />
+                                <label id="" for="showPassword">Show Password</label>
+                            </div>
+                            <div class="forgot-password">
+                                <a href="/forgot-password">Forgot Password?</a>
+                            </div>
                         </div>
 
                         <% if(locals.message && message.length > 0) { %>
@@ -280,12 +313,6 @@
         });
     </script>
 
-    <style>
-        .error-message {
-            color: red;
-            font-size: 14px;
-        }
-    </style>
 </body>
 
 
