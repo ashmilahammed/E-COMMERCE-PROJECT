@@ -34,7 +34,7 @@
 
         .btn {
             margin-top: 15px;
-            background-color:#088178;
+            background-color: #088178;
         }
 
         .image-preview {
@@ -61,7 +61,7 @@
             border-radius: 8px;
         }
     </style>
-    
+
     <section class="content-main">
         <div class="row">
             <div class="col-12">
@@ -122,11 +122,11 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-6 mb-4">
+                                <!-- <div class="col-md-6 mb-4">
                                     <label class="form-label">Color</label>
                                     <input name="color" type="text" class="form-control border">
                                     <div id="color-error" class="error-message"></div>
-                                </div>
+                                </div> -->
                                 <div class="col-md-6 mb-4">
                                     <label class="form-label">Size</label>
                                     <input name="size" type="text" class="form-control border">
@@ -210,8 +210,11 @@
 
 
                             <div class="text-center">
-                                <button class="btn btn-primary btn-md rounded font-sm hover-up" style="background-color: rgb(0, 187, 0);" type="button"
-                                    onclick="validateAndSubmit()">Publish</button>
+                                <button class="btn btn-primary btn-md rounded font-sm hover-up"
+                                    style="background-color: rgb(0, 187, 0);" type="button"
+                                    onclick="validateAndSubmit()">
+                                    Publish
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -224,9 +227,21 @@
 
     <script>
 
+
         function validateAndSubmit() {
             if (validateForm()) {
-                document.forms[0].submit()
+                // Show loading state
+                Swal.fire({
+                    title: 'Publishing...',
+                    text: 'Please wait while we process your submission',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // Submit the form
+                document.querySelector('form').submit();
             }
         }
 
@@ -347,108 +362,100 @@
 
 
 
-
         function validateForm() {
             clearErrorMessages();
+            let isValid = true;
+
+            // Get all form values
             const name = document.getElementsByName('productName')[0].value;
             const description = document.getElementById('descriptionid').value;
-            const brand = document.getElementsByName('brand')[0].value;
-            const price = document.getElementsByName('regularPrice')[0].value;
-            const saleprice = document.getElementsByName('salePrice')[0].value;
-            const color = document.getElementsByName('color')[0].value;
+            const regularPrice = document.getElementsByName('regularPrice')[0].value;
+            const salePrice = document.getElementsByName('salePrice')[0].value;
             const size = document.getElementsByName('size')[0].value;
-            const category = document.getElementsByName('category')[0].value;
+            const quantity = document.getElementsByName('quantity')[0].value;
             const input1 = document.getElementById('input1');
             const input2 = document.getElementById('input2');
             const input3 = document.getElementById('input3');
-            const quantity = document.getElementsByName('quantity')[0].value;
-            let isValid = true
 
-            // Check if exactly 3 images are selected
-            if (!input1.files.length || !input2.files.length || !input3.files.length) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Image Required',
-                    text: 'Must contain 3 images!'
-                });
-                isValid = false;
-            }
-
+            // Validate product name
             if (name.trim() === "") {
                 displayErrorMessage('productName-error', 'Please enter a product name.');
                 isValid = false;
-            } else if (!/^[a-zA-Z\s]+$/.test(name.trim())) {
-                displayErrorMessage('productName-error', 'Product name should contain only alphabetic characters.');
+            } else if (!/^[a-zA-Z0-9\s]+$/.test(name.trim())) {
+                displayErrorMessage('productName-error', 'Product name should contain only alphanumeric characters.');
                 isValid = false;
             }
 
+            // Validate description
             if (description.trim() === "") {
                 displayErrorMessage('description-error', 'Please enter a product description.');
                 isValid = false;
-            } else if (!/^[a-zA-Z\s\.,-]+$/.test(description.trim())) {
-                displayErrorMessage('description-error', 'Product description should contain only alphabetic characters.');
+            }
+
+            // Validate prices
+            if (!regularPrice || regularPrice.trim() === "") {
+                displayErrorMessage('regularPrice-error', 'Please enter a regular price.');
+                isValid = false;
+            } else if (!/^\d+(\.\d{1,2})?$/.test(regularPrice) || parseFloat(regularPrice) <= 0) {
+                displayErrorMessage('regularPrice-error', 'Please enter a valid positive price.');
                 isValid = false;
             }
 
-
-            if (parseInt(quantity) < 0) {
-                displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
+            if (!salePrice || salePrice.trim() === "") {
+                displayErrorMessage('salePrice-error', 'Please enter a sale price.');
+                isValid = false;
+            } else if (!/^\d+(\.\d{1,2})?$/.test(salePrice) || parseFloat(salePrice) <= 0) {
+                displayErrorMessage('salePrice-error', 'Please enter a valid positive price.');
                 isValid = false;
             }
 
-
-            if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0) {
-                displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price.');
-                isValid = false;
-            }
-
-
-            if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {
-                displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price.');
-                isValid = false;
-            }
-            if (parseFloat(price) <= parseFloat(saleprice)) {
+            if (parseFloat(regularPrice) <= parseFloat(salePrice)) {
                 displayErrorMessage('regularPrice-error', 'Regular price must be greater than sale price.');
                 isValid = false;
             }
 
-
-            if (quantity.trim() === "") {
+            // Validate quantity
+            if (!quantity || quantity.trim() === "") {
                 displayErrorMessage('quantity-error', 'Please enter quantity.');
                 isValid = false;
-            }
-
-
-            if (color.trim() === "") {
-                displayErrorMessage('color-error', 'Please enter a color.');
+            } else if (!/^\d+$/.test(quantity) || parseInt(quantity) <= 0) {
+                displayErrorMessage('quantity-error', 'Please enter a valid positive quantity.');
                 isValid = false;
             }
 
+            // Validate size
             if (size.trim() === "") {
                 displayErrorMessage('size-error', 'Please enter a size.');
                 isValid = false;
             }
 
+            // Validate images
+            if (!input1.files.length || !input2.files.length || !input3.files.length) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Image Required',
+                    text: 'Please upload all 3 product images!'
+                });
+                isValid = false;
+            }
 
             return isValid;
         }
 
-
         function displayErrorMessage(elementId, message) {
-            var errorElement = document.getElementById(elementId);
-            errorElement.innerText = message;
-            errorElement.style.display = "block";
+            const errorElement = document.getElementById(elementId);
+            if (errorElement) {
+                errorElement.innerText = message;
+                errorElement.style.display = "block";
+            }
         }
-
 
         function clearErrorMessages() {
             const errorElements = document.getElementsByClassName('error-message');
             Array.from(errorElements).forEach(element => {
                 element.innerText = '';
+                element.style.display = 'none';
             });
-            const errorMessage = document.getElementById('errorMessage');
-
-
         }
 
 

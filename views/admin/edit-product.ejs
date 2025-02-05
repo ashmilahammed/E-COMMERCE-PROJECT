@@ -119,8 +119,8 @@
                             onsubmit="return validateForm()">
                             <div class="mb-4">
                                 <label for="product_name" class="form-label">Product Name</label>
-                                <input type="text" placeholder="Type here" name="productName"   value="<%= product.productName %>"
-                                 class="form-control border" id="product_name">
+                                <input type="text" placeholder="Type here" name="productName"
+                                    value="<%= product.productName %>" class="form-control border" id="product_name">
                                 <div id="productName-error" class="error-message"></div>
                             </div>
                             <div class="mb-4">
@@ -149,14 +149,14 @@
                             <div class="row">
                                 <div class="col-md-4 mb-4">
                                     <label class="form-label">Regular Price</label>
-                                    <input placeholder="Rs." name="regularPrice" type="text"  value="<%= product.regularPrice %> "
-                                     class="form-control border" >
+                                    <input placeholder="Rs." name="regularPrice" type="text"
+                                        value="<%= product.regularPrice %> " class="form-control border">
                                     <div id="regularPrice-error" class="error-message"></div>
                                 </div>
                                 <div class="col-md-4 mb-4">
                                     <label class="form-label">Sale Price</label>
-                                    <input placeholder="Rs." name="salePrice" type="text" value="<%= product.salePrice %>"
-                                     class="form-control border">
+                                    <input placeholder="Rs." name="salePrice" type="text"
+                                        value="<%= product.salePrice %>" class="form-control border">
                                     <div id="salePrice-error" class="error-message"></div>
                                 </div>
                                 <div class="col-md-4 mb-4">
@@ -167,12 +167,12 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-6 mb-4">
+                                <!-- <div class="col-md-6 mb-4">
                                     <label class="form-label">Color</label>
-                                    <input name="color" type="text" value="<%= product.color %>"
+                                    <input name="color" type="text" value=""
                                         class="form-control border">
                                     <div id="color-error" class="error-message"></div>
-                                </div>
+                                </div> -->
                                 <div class="col-md-6 mb-4">
                                     <label class="form-label">Size</label>
                                     <input name="size" type="text" value="<%= product.size %>"
@@ -191,7 +191,7 @@
 
                                         </option>
 
-                                    <% } %>
+                                        <% } %>
                                 </select>
                                 <div id="category-error" class="error-message"></div>
                             </div>
@@ -200,7 +200,8 @@
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h4>Product Images (Min: 3, Max: 4)</h4>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="skipImageValidation" name="skipImageValidation">
+                                        <input class="form-check-input" type="checkbox" id="skipImageValidation"
+                                            name="skipImageValidation">
                                         <label class="form-check-label" for="skipImageValidation">
                                             Skip Image Validation
                                         </label>
@@ -208,14 +209,16 @@
                                 </div>
 
                                 <div class="thumbnails-container">
-                                    <% for(let i = 0; i < product.productImage.length; i++) { %>
+                                    <% for(let i=0; i < product.productImage.length; i++) { %>
                                         <div class="image-container">
-                                            <input type="hidden" value="<%= product.productImage[i] %>" name="existingImages">
-                                            <img src="/uploads/re-image/<%= product.productImage[i] %>" alt="Product Image">
+                                            <input type="hidden" value="<%= product.productImage[i] %>"
+                                                name="existingImages">
+                                            <img src="/uploads/re-image/<%= product.productImage[i] %>"
+                                                alt="Product Image">
                                             <i onclick="deleteSingleImage('<%= product.productImage[i] %>','<%= product._id %>')"
                                                 class="fas fa-times delete-icon"></i>
                                         </div>
-                                    <% } %>
+                                        <% } %>
                                 </div>
 
                                 <div class="card-body">
@@ -281,7 +284,9 @@
                             <div class="text-center">
                                 <button class="btn btn-primary btn-md rounded font-sm hover-up"
                                     style="background-color:rgb(5, 185, 5);" type="button"
-                                    onclick="validateAndSubmit()">Update</button>
+                                    onclick="validateAndSubmit()">
+                                    Update
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -295,9 +300,61 @@
     <script>
 
         function validateAndSubmit() {
-            if (validateForm()) {
-                document.forms[0].submit()
+            if (!validateForm()) {
+                return false;
             }
+
+            let existingImages = document.querySelectorAll('.thumbnails-container .image-container').length; // Count displayed images
+            let newImagesCount = 0;
+
+            let newImageInputs = document.querySelectorAll('input[type="file"]');
+
+            // Count only files that are actually selected
+            newImageInputs.forEach(input => {
+                if (input.files.length > 0) {
+                    newImagesCount++;
+                }
+            });
+
+            let totalImages = existingImages + newImagesCount;
+
+
+            if (totalImages < 3) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Image Validation Error',
+                    text: 'Minimum 3 images should be added!'
+                });
+                return false;
+            }
+
+            if (totalImages > 4) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Image Validation Error',
+                    text: 'Maximum 4 images should be added!'
+                });
+                return false;
+            }
+
+            //  Show loading indicator in button
+            const button = document.querySelector('button[type="button"]');
+            button.innerHTML = 'Updating...';
+            button.disabled = true;
+
+
+            Swal.fire({
+                title: 'Updating Product',
+                text: 'Please wait while we update the product...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            setTimeout(() => {
+                document.forms[0].submit();
+            }, 200);  
         }
 
 
@@ -420,7 +477,7 @@
 
         function deleteSingleImage(imageName, productId) {
             console.log('Deleting image:', { imageName, productId }); // Debug log
-            
+
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -440,7 +497,7 @@
                         );
                         return;
                     }
-                    
+
                     // Show loading state
                     Swal.fire({
                         title: 'Deleting...',
@@ -463,177 +520,131 @@
                             productIdToServer: productId
                         })
                     })
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.json().then(data => {
-                                throw new Error(data.message || 'Server error');
-                            });
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.status === true) {
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().then(data => {
+                                    throw new Error(data.message || 'Server error');
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.status === true) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Deleted!',
+                                    text: data.message || 'Image has been deleted successfully.',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                throw new Error(data.message || 'Failed to delete image');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
                             Swal.fire({
-                                icon: 'success',
-                                title: 'Deleted!',
-                                text: data.message || 'Image has been deleted successfully.',
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => {
-                                location.reload();
+                                icon: 'error',
+                                title: 'Error!',
+                                text: error.message || 'Something went wrong while deleting the image.',
                             });
-                        } else {
-                            throw new Error(data.message || 'Failed to delete image');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error!',
-                            text: error.message || 'Something went wrong while deleting the image.',
                         });
-                    });
                 }
             });
         }
-        
+
+
 
         function validateForm() {
             clearErrorMessages();
-            const skipImageValidation = document.getElementById('skipImageValidation').checked;
-            
+            let isValid = true;
+
             const name = document.getElementsByName('productName')[0].value;
             const description = document.getElementById('descriptionid').value;
-            const brand = document.getElementsByName('brand')[0].value;
             const price = document.getElementsByName('regularPrice')[0].value.trim();
-            const saleprice = document.getElementsByName('salePrice')[0].value;
-            const color = document.getElementsByName('color')[0].value;
+            const saleprice = document.getElementsByName('salePrice')[0].value.trim();
             const size = document.getElementsByName('size')[0].value;
-            const category = document.getElementsByName('category')[0].value;
-            const quantity = document.getElementsByName('quantity')[0].value;
-            let isValid = true
+            const quantity = document.getElementsByName('quantity')[0].value.trim();
 
+            // Product Name Validation
             if (name.trim() === "") {
                 displayErrorMessage('productName-error', 'Please enter a product name.');
                 isValid = false;
-            } else if (!/^[a-zA-Z\s]+$/.test(name.trim())) {
-                displayErrorMessage('productName-error', 'Product name should contain only alphabetic characters.');
+            } else if (!/^[a-zA-Z0-9\s]+$/.test(name.trim())) {
+                displayErrorMessage('productName-error', 'Product name should contain only alphanumeric characters and spaces.');
                 isValid = false;
             }
 
+            // Description Validation
             if (description.trim() === "") {
                 displayErrorMessage('description-error', 'Please enter a product description.');
                 isValid = false;
-            } else if (!/^[a-zA-Z\s\.,-]+$/.test(description.trim())) {
-                displayErrorMessage('description-error', 'Product description should contain only alphabetic characters.');
+            } else if (!/^[a-zA-Z0-9\s\.,()-]+$/.test(description.trim())) {
+                displayErrorMessage('description-error', 'Product description contains invalid characters.');
                 isValid = false;
             }
 
-
-            if (parseInt(quantity) < 0) {
-                displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
+            // Price Validations
+            if (price === "") {
+                displayErrorMessage('regularPrice-error', 'Please enter a regular price.');
+                isValid = false;
+            } else if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) <= 0) {
+                displayErrorMessage('regularPrice-error', 'Please enter a valid positive price.');
                 isValid = false;
             }
 
-
-            if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0) {
-                displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price.');
+            if (saleprice === "") {
+                displayErrorMessage('salePrice-error', 'Please enter a sale price.');
+                isValid = false;
+            } else if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) <= 0) {
+                displayErrorMessage('salePrice-error', 'Please enter a valid positive price.');
                 isValid = false;
             }
 
-
-            if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {
-                displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price.');
-                isValid = false;
-            }
             if (parseFloat(price) <= parseFloat(saleprice)) {
                 displayErrorMessage('regularPrice-error', 'Regular price must be greater than sale price.');
                 isValid = false;
             }
 
-
-            if (quantity.trim() === "") {
+            // Quantity Validation
+            if (quantity === "") {
                 displayErrorMessage('quantity-error', 'Please enter quantity.');
                 isValid = false;
-            }
-
-
-            if (color.trim() === "") {
-                displayErrorMessage('color-error', 'Please enter a color.');
+            } else if (!/^\d+$/.test(quantity) || parseInt(quantity) < 0) {
+                displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
                 isValid = false;
             }
 
+            // Size Validation
             if (size.trim() === "") {
                 displayErrorMessage('size-error', 'Please enter a size.');
                 isValid = false;
             }
-        
 
-
-         function displayErrorMessage(elementId, message) {
-             var errorElement = document.getElementById(elementId);
-             errorElement.innerText = message;
-             errorElement.style.display = "block";
-         }
+            return isValid; // This was missing in your code
 
 
 
-            
-            // Skip image validation if checkbox is checked
-            if (!skipImageValidation) {
-                // Get total number of images (existing + new)
-                const existingImages = document.querySelectorAll('.image-container').length;
-                const newImageInputs = document.querySelectorAll('input[type="file"]');
-                let newImagesCount = 0;
-                
-                // Count only files that are actually selected
-                newImageInputs.forEach(input => {
-                    if (input.files && input.files.length > 0) {
-                        newImagesCount++;
-                    }
-                });
-
-                const totalImages = existingImages + newImagesCount;
-
-                if (totalImages < 3) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Image Validation Error',
-                        text: 'Minimum 3 images are required!'
-                    });
-                    return false;
-                }
-
-                if (totalImages > 4) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Image Validation Error',
-                        text: 'Maximum 4 images are allowed!'
-                    });
-                    return false;
+            function displayErrorMessage(elementId, message) {
+                const errorElement = document.getElementById(elementId);
+                if (errorElement) {  // Add null check
+                    errorElement.innerText = message;
+                    errorElement.style.display = "block";
                 }
             }
 
-            if (isValid) {
-                Swal.fire({
-                    title: 'Updating Product',
-                    text: 'Please wait while we update the product...',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-            }
-
-            return isValid;
         }
 
 
         function clearErrorMessages() {
             const errorElements = document.querySelectorAll('.error-message');
             errorElements.forEach(element => {
-                element.textContent = '';
+                if (element) {  // Add null check
+                    element.textContent = '';
+                    element.style.display = 'none';
+                }
             });
         }
 
@@ -641,21 +652,20 @@
             // Get all images from the thumbnails container
             const existingImages = document.querySelectorAll('.image-container img');
             const newImageInputs = document.querySelectorAll('input[type="file"]');
-            
-            // Count existing images
+
+
             const existingImageCount = existingImages.length;
-            
-            // Count new images selected
+
             let newImageCount = 0;
             newImageInputs.forEach(input => {
                 if (input.files && input.files.length > 0) {
                     newImageCount++;
                 }
             });
-            
+
             // Total image count
             const totalImages = existingImageCount + newImageCount;
-            
+
             if (totalImages < 3) {
                 Swal.fire({
                     title: 'Warning!',
@@ -670,4 +680,6 @@
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
+
+
     <%- include("../../views/partials/admin/footer") %>

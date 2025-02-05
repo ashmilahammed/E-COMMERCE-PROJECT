@@ -24,10 +24,6 @@ const productSchema = new Schema({
         type: Number,
         default: 0,
     },
-    color: {
-        type: String,
-        required: true,
-    },
     size: {
         type: Number,
         required: true,
@@ -56,10 +52,7 @@ const productSchema = new Schema({
     },
 
     // variants: [{
-    //     color: {
-    //         type: String,
-    //         required: true,
-    //     },
+       
     //     size: {
     //         type: Number,
     //         required: true,
@@ -75,10 +68,6 @@ const productSchema = new Schema({
     //     quantity: {
     //         type: Number,
     //         default: true,
-    //     },
-    //     productImage: {
-    //         type: [String],
-    //         required: true,
     //     },
     //     status: {
     //         type: String,

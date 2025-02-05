@@ -237,27 +237,61 @@ const editProduct = async (req,res) => {
 }
 
 
-const deleteSingleImage = async (req,res) => {
+
+const deleteSingleImage = async (req, res) => {
     try {
+        const { imageNameToServer, productIdToServer } = req.body;
 
-        const {imageNameToServer, productIdToServer} = req.body;
-        const product = await Product.findByIdAndUpdate(productIdToServer,{$pull: {productImage:imageNameToServer}});
+        // Remove image reference from database
+        await Product.findByIdAndUpdate(productIdToServer, {
+            $pull: { productImage: imageNameToServer }
+        });
 
-        const imagePath = path.join("public","uploads","re-image",imageNameToServer);
-        if(fs.existsSync(imagePath)) {
-            await fs.unlinkSync(imagePath);
-            console.log(`Image ${imageNameToServer} deleted Successfully.`)
-        }else {
-           console.log(`Image ${imageNameToServer} not Found`) 
+        const imagePath = path.join("public", "uploads", "re-image", imageNameToServer);
+
+        if (fs.existsSync(imagePath)) {
+            try {
+                await fs.promises.unlink(imagePath); // Asynchronous deletion
+                console.log(`Image ${imageNameToServer} deleted successfully.`);
+            } catch (unlinkErr) {
+                console.error(`Failed to delete image: ${unlinkErr.message}`);
+                return res.status(500).json({ status: false, message: "Failed to delete image from server." });
+            }
+        } else {
+            console.log(`Image ${imageNameToServer} not found.`);
         }
-        res.send({status:true});
 
-        
+        res.json({ status: true, message: "Image deleted successfully." });
+
     } catch (error) {
         console.error(error);
-        res.redirect("/admin/pageError")
+        res.redirect("/admin/pageError");
     }
-}
+};
+
+
+
+// const deleteSingleImage = async (req,res) => {
+//     try {
+
+//         const {imageNameToServer, productIdToServer} = req.body;
+//         const product = await Product.findByIdAndUpdate(productIdToServer,{$pull: {productImage:imageNameToServer}});
+
+//         const imagePath = path.join("public","uploads","re-image",imageNameToServer);
+//         if(fs.existsSync(imagePath)) {
+//             await fs.unlinkSync(imagePath);
+//             console.log(`Image ${imageNameToServer} deleted Successfully.`)
+//         }else {
+//            console.log(`Image ${imageNameToServer} not Found`) 
+//         }
+//         res.send({status:true});
+
+        
+//     } catch (error) {
+//         console.error(error);
+//         res.redirect("/admin/pageError")
+//     }
+// }
 
 
 
