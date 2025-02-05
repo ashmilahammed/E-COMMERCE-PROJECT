@@ -1,4 +1,31 @@
 <%- include("../../views/partials/user/header") %>
+<style>
+    .product__details__option__size label {
+        display: inline-block;
+        padding: 6px 15px;
+        font-size: 14px;
+        color: #111111;
+        font-weight: 700;
+        border: 1px solid #e5e5e5;
+        margin-bottom: 10px;
+        margin-right: 5px;
+        cursor: pointer;
+    }
+    .product__details__option__size label.unavailable {
+        color: #cccccc;
+        cursor: not-allowed;
+        text-decoration: line-through;
+    }
+    .product__details__option__size label input {
+        position: absolute;
+        visibility: hidden;
+    }
+    .product__details__option__size label.active {
+        background: #111111;
+        border-color: #111111;
+        color: #ffffff;
+    }
+</style>
 
     <!-- Shop Details Section Begin -->
 
@@ -138,22 +165,19 @@
                             <h3> ₹.<%= product.salePrice %> <span>₹.<%= product.regularPrice %> </span></h3>
                             
                             <p><%= product.description %></p>
+
                             <div class="product__details__option">
                                 <div class="product__details__option__size">
                                     <span>Size:</span>
-                                    <label for="xxl">5
-                                        <input type="radio" id="xxl">
-                                    </label>
-                                    <label class="active" for="xl">6
-                                        <input type="radio" id="xl">
-                                    </label>
-                                    <label for="l">7
-                                        <input type="radio" id="l">
-                                    </label>
-                                    <label for="sm">8
-                                        <input type="radio" id="sm">
-                                    </label>
+                                    <% if (product.size) { %>
+                                        <label for="size-<%= product.size %>"><%= product.size %>
+                                            <input type="radio" id="size-<%= product.size %>" name="size" value="<%= product.size %>" checked>
+                                        </label>
+                                    <% } else { %>
+                                        <p>No size available</p>
+                                    <% } %>
                                 </div>
+
                                 <!-- color  -->
                                 <!-- <div class="product__details__option__color">
                                     <span>Color:</span>
@@ -180,7 +204,7 @@
                                         <input type="text" value="1">
                                     </div>
                                 </div>
-                                <a href="#" class="primary-btn">add to cart</a>
+                                <a href="/cart" class="primary-btn">add to cart</a>
                             </div>
                             <div class="product__details__btns__option">
                                 <a href="#"><i class="fa fa-heart"></i> add to wishlist</a>
@@ -191,13 +215,16 @@
                                 <ul>
                                     <li><span>In Stock:</span> <%= product.quantity %> left</li>
                                     <li><span>Category:</span> <%= product.category.name %></li>
-                                    <!-- <li><span>Tag:</span> </li> -->
+                                   
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </div>
                 <!-- product details end  -->
+
+               
+            
 
 
                 <div class="row">
@@ -447,44 +474,8 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-3 col-md-6 col-sm-6 col-sm-6">
-                    <div class="product__item sale">
-                        <div class="product__item__pic set-bg" data-setbg="">
-                            <img src="/images/NIKE+DUNK+LOW+RETRO.png" alt="">
-                            <span class="label">Sale</span>
-                            <ul class="product__hover">
-                                <li><a href="#"><img src="img/icon/heart.png" alt=""></a></li>
-                                <li><a href="#"><img src="img/icon/compare.png" alt=""> <span>Compare</span></a></li>
-                                <li><a href="#"><img src="img/icon/search.png" alt=""></a></li>
-                            </ul>
-                        </div>
-                        <div class="product__item__text">
-                            <h6>Nike Dunk Low RETRO</h6>
-                            <a href="#" class="add-cart">+ Add To Cart</a>
-                            <div class="rating">
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star-o"></i>
-                            </div>
-                            <h5>₹ 9 895.00</h5>
-                            <div class="product__color__select">
-                                <label for="pc-7">
-                                    <input type="radio" id="pc-7">
-                                </label>
-                                <label class="active black" for="pc-8">
-                                    <input type="radio" id="pc-8">
-                                </label>
-                                <label class="grey" for="pc-9">
-                                    <input type="radio" id="pc-9">
-                                </label>
-                            </div>
-                        </div>
-                    </div>
                 </div> -->
-               
+                              
 
             <% } %>
             </div>
@@ -551,4 +542,44 @@
             image.style.transition = 'transform 0.1s ease-out';
         });
     });
+
+
+
+
+                    // Assume this is the array of available sizes for the product
+                    const availableSizes = [5, 7]; // Example: only sizes 5 and 7 are available
+                
+                    // All possible sizes
+                    const allSizes = [5, 6, 7, 8];
+                
+                    // Function to create size options
+                    function createSizeOptions() {
+                        const sizeOptionsContainer = document.getElementById('sizeOptions');
+                        
+                        allSizes.forEach(size => {
+                            const label = document.createElement('label');
+                            label.htmlFor = `size-${size}`;
+                            label.textContent = size;
+                
+                            const input = document.createElement('input');
+                            input.type = 'radio';
+                            input.id = `size-${size}`;
+                            input.name = 'size';
+                            input.value = size;
+                
+                            if (!availableSizes.includes(size)) {
+                                label.classList.add('unavailable');
+                                input.disabled = true;
+                            }
+                
+                            label.appendChild(input);
+                            sizeOptionsContainer.appendChild(label);
+                        });
+                    }
+                
+                    // Call the function when the DOM is fully loaded
+                    document.addEventListener('DOMContentLoaded', createSizeOptions);
+             
+                
+                
 </script>

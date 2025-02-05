@@ -4,7 +4,8 @@ const userController = require("../controllers/user/userController");
 const profileController = require("../controllers/user/profileController");
 const passport = require("passport");
 const {userAuth,adminAuth, isBlocked} = require("../middlewares/auth");
-const productController = require("../controllers/user/productController")
+const productController = require("../controllers/user/productController");
+const cartController = require("../controllers/user/cartController")
 
 
 
@@ -53,6 +54,13 @@ router.post("/addAddress",userAuth,profileController.postAddAddress);
 router.get("/editAddress",userAuth,profileController.editAddress);
 router.post("/editAddress",userAuth,profileController.postEditAddress);
 router.get("/deleteAddress",userAuth,profileController.deleteAddress);
+
+//cart management
+router.get("/cart",userAuth,cartController.cartPage);
+// router.post("/addToCart",userAuth, cartController.addToCart)
+// router.post("/changeQuantity", userAuth,cartController.changeQuantity)
+// router.get("/deleteItem", userAuth, cartController.deleteProduct)
+
 
 //Product management
 router.get("/productDetails",userAuth,productController.productDetails)

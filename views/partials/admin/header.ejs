@@ -13,9 +13,118 @@
     <meta property="og:image" content="">
     <!-- Favicon -->
     <link rel="shortcut icon" type="image/x-icon" href="/admin/assets/imgs/theme/favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Montserrat:wght@300&display=swap" rel="stylesheet">
     <!-- Template CSS -->
     <link href="/admin/assets/css/main.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"/> 
+    <style>
+        .brand-wrap {
+            text-decoration: none !important;
+            padding: 0.5rem 1rem;
+        }
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 600;
+            color: #1a1a1a;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            transition: all 0.3s ease;
+            margin: 0;
+            line-height: 1.2;
+        }
+        .logo-text span {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 10px;
+            font-weight: 300;
+            letter-spacing: 6px;
+            display: block;
+            text-align: center;
+            color: #666;
+            margin-top: -2px;
+        }
+        .brand-wrap:hover .logo-text {
+            color: #ff3a3a;
+        }
+        .brand-wrap:hover .logo-text span {
+            color: #333;
+        }
+
+        /* Menu Styles */
+        .menu-aside {
+            background: transparent;
+        }
+
+        .menu-item {
+            margin: 2px 0;
+            border-radius: 4px;
+        }
+
+        .menu-item .menu-link {
+            padding: 12px 20px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            background: transparent;
+        }
+
+        .menu-item .menu-link i,
+        .menu-item .menu-link .text {
+            transition: all 0.2s ease;
+        }
+
+        /* Active state */
+        .menu-item.active .menu-link {
+            background: #f0f0f0;
+        }
+
+        /* Hover state */
+        .menu-item:not(.active) .menu-link:hover {
+            background: #dbdbdb;
+        }
+
+        .menu-item:not(.active) .menu-link:hover i,
+        .menu-item:not(.active) .menu-link:hover .text {
+            color: #848484;
+        }
+
+        /* Main content area */
+        .main-wrap {
+            background: white;
+        }
+
+        .navbar-aside {
+            border-right: 1px solid #eee;
+            background: white;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuItems = document.querySelectorAll('.menu-item');
+            
+            menuItems.forEach(item => {
+                const link = item.querySelector('.menu-link');
+                
+                link.addEventListener('click', function(e) {
+                    // Remove active class from all items
+                    menuItems.forEach(i => i.classList.remove('active'));
+                    // Add active class to clicked item
+                    item.classList.add('active');
+                });
+            });
+
+            // Set active based on current URL
+            const currentPath = window.location.pathname;
+            menuItems.forEach(item => {
+                const link = item.querySelector('.menu-link');
+                if (link && link.getAttribute('href') === currentPath) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        });
+    </script>
 </head>
 
 <body>
@@ -23,8 +132,10 @@
     <aside class="navbar-aside" id="offcanvas_aside">
         <div class="aside-top">
             <a href="/dashboard" class="brand-wrap">
-                <!-- <img src="/assets/imgs/theme/logo.svg" class="logo" alt="Evara Dashboard"> -->
-                 <H3>BIG STEPPER</H3>
+                <div class="logo-text">
+                    Big Stepper
+                    <span>PREMIUM</span>
+                </div>
             </a>
             <div>
                 <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i> </button>
@@ -32,7 +143,7 @@
         </div>
         <nav>
             <ul class="menu-aside">
-                <li class="menu-item active">
+                <li class="menu-item">
                     <a class="menu-link" href="/dashboard"> <i class="icon material-icons md-home"></i>
                         <span class="text">Dashboard</span>
                     </a>
@@ -205,6 +316,3 @@
             </div>
         </header>
         <section class="content-main">
-
-
-
