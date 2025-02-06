@@ -20,27 +20,60 @@ const pageNotFound = async(req,res) => {
 
 const loadHomepage = async (req, res) => {
     try {
-     
         const userId = req.session.user;
-       
         const categories = await Category.find({ isListed: true });
        
         let productData = await Product.find({
             isBlocked: false,
             category: { $in: categories.map((category) => category._id) },
-            quantity: { $gt: 0 },
-        });
-        const brands = await Brand.find({isBlocked:false});
+            'variants.quantity': { $gt: 0 } 
+        }).populate('category')
+          .populate('brand')
+          .sort({ createdOn: -1 })
+          .limit(8);
 
-        productData.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
-        productData = productData.slice(0, 4);
+        // Format product data
+        productData = productData.map(product => {
+            const formattedProduct = product.toObject();
+            
+            // Get available sizes from variants
+            if (formattedProduct.variants && formattedProduct.variants.length > 0) {
+                formattedProduct.availableSizes = [...new Set(
+                    formattedProduct.variants
+                        .filter(v => v.quantity > 0)
+                        .map(v => v.size)
+                )].sort((a, b) => a - b);
+
+                // Get the regular and sale prices
+                const activeVariant = formattedProduct.variants.find(v => v.quantity > 0);
+                if (activeVariant) {
+                    formattedProduct.regularPrice = activeVariant.regularPrice;
+                    formattedProduct.salePrice = activeVariant.salePrice;
+                }
+            }
+
+            return formattedProduct;
+        });
+
+        // Filter out products with no active variants
+        productData = productData.filter(product => 
+            product.variants && 
+            product.variants.some(variant => variant.quantity > 0)
+        );
 
         // Render the homepage with or without user data
         if (userId) {
             const userData = await User.findById(userId);
-            return res.render("home", { user: userData, products: productData });
+            return res.render("home", { 
+                user: userData, 
+                products: productData,
+                categories: categories
+            });
         } else {
-            return res.render("home", { products: productData });
+            return res.render("home", { 
+                products: productData,
+                categories: categories 
+            });
         }
     } catch (error) {
         console.error("Error loading homepage:", error);
@@ -117,7 +150,7 @@ async function sendVerificationEmail(email,otp) {
 }
 
 
-const signup = async (req,res) => {
+const signup = async (req, res) => {
     try {
         
        const {fullName,phone,email,password} = req.body;
@@ -308,7 +341,6 @@ const logout = async (req, res) => {
 
 const loadShoppingpage = async (req,res) => {
     try {
-
         const user = req.session.user;
         const userData = await User.findOne({_id:user});
         const categories = await Category.find({isListed:true});
@@ -316,26 +348,60 @@ const loadShoppingpage = async (req,res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = 9;
         const skip = (page-1)*limit;
-        const products = await Product.find(({
+
+        // Fetch products with variants and populate category and brand
+        let products = await Product.find({
             isBlocked: false,
             category: {$in: categoryIds},
-            quantity: {$gt: 0}
+            'variants.quantity': { $gt: 0 }
+        })
+        .populate('category')
+        .populate('brand')
+        .sort({createdOn: -1})
+        .skip(skip)
+        .limit(limit);
 
-        })).sort({createdOn: -1}).skip(skip).limit(limit);
+        // Format product data
+        products = products.map(product => {
+            const formattedProduct = product.toObject();
+            
+            // Get available sizes from variants
+            if (formattedProduct.variants && formattedProduct.variants.length > 0) {
+                formattedProduct.availableSizes = [...new Set(
+                    formattedProduct.variants
+                        .filter(v => v.quantity > 0)
+                        .map(v => v.size)
+                )].sort((a, b) => a - b);
 
+                // Get the regular and sale prices
+                const activeVariant = formattedProduct.variants.find(v => v.quantity > 0);
+                if (activeVariant) {
+                    formattedProduct.regularPrice = activeVariant.regularPrice;
+                    formattedProduct.salePrice = activeVariant.salePrice;
+                }
+            }
+
+            return formattedProduct;
+        });
+
+        // Filter out products with no active variants
+        products = products.filter(product => 
+            product.variants && 
+            product.variants.some(variant => variant.quantity > 0)
+        );
+
+        // Count total products for pagination
         const totalProducts = await Product.countDocuments({
-            isBlocked : false,
-            category : {$in: categoryIds},
-            quantity : {$gt : 0}
-
+            isBlocked: false,
+            category: {$in: categoryIds},
+            'variants.quantity': { $gt: 0 }
         });
 
         const totalPages = Math.ceil(totalProducts/limit);
-
         const brands = await Brand.find({isBlocked:false});
         const categoriesWithIds = categories.map(category => ({_id:category._id, name:category.name}));
 
-        res.render("shop",{
+        res.render("shop", {
             user: userData,
             products: products,
             category: categoriesWithIds,
@@ -343,11 +409,11 @@ const loadShoppingpage = async (req,res) => {
             totalProducts: totalProducts,
             currentPage: page,
             totalPages: totalPages,
-
-        })
+        });
         
     } catch (error) {
-        res.redirect("/pageNotFouund")
+        console.error("Error loading shop page:", error);
+        res.redirect("/pageNotFound");
     }
 }
 
