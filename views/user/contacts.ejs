@@ -1,0 +1,120 @@
+<%- include("../../views/partials/user/header") %>
+
+
+<style>
+
+input:focus, textarea:focus {
+    border-color: #e74c3c; 
+    background-color: #fff; 
+    color: #000; 
+}
+
+</style>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+
+
+    <!-- Map Begin -->
+    <!-- <div class="map">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d111551.9926412813!2d-90.27317134641879!3d38.606612219170856!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x54eab584e432360b%3A0x1c3bb99243deb742!2sUnited%20States!5e0!3m2!1sen!2sbd!4v1597926938024!5m2!1sen!2sbd" height="500" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+    </div> -->
+    <!-- Map End -->
+
+    <!-- Contact Section Begin -->
+    <section class="contact spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <div class="contact__text">
+                        <div class="section-title">
+                            <span>Information</span>
+                            <h2>Contact Us</h2>
+                            <p>As you might expect of a company that began as a high-end interiors contractor, we pay
+                                strict attention.</p>
+                        </div>
+                        <ul>
+                            <li>
+                                <h4>Kerala</h4>
+                                <p>Fort kochi,Ernakulam <br />+91 918-877-2165</p>
+                            </li>
+                            <li>
+                                <h4>Mumbai</h4>
+                                <p>109 Avenue Léon, Navi Mumbai <br />+91 345-423-9893</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6">
+                    <div class="contact__form">
+                        <form action="#">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <input type="text"  placeholder="Name" style="border: 2px solid rgb(105, 105, 105)" >
+                                </div>
+                                <div class="col-lg-6">
+                                    <input type="text" placeholder="Email" style="border: 2px solid rgb(105, 105, 105)">
+                                </div>
+                                <div class="col-lg-12">
+                                    <textarea placeholder="Message" style="border: 2px solid rgb(105, 105, 105)"></textarea>
+                                    <button type="submit" class="site-btn">Send Message</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Contact Section End -->
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelector("form").addEventListener("submit", function(event) {
+                event.preventDefault(); // Prevent form from reloading
+    
+                // Get input values
+                let nameInput = document.querySelector('input[placeholder="Name"]');
+                let emailInput = document.querySelector('input[placeholder="Email"]');
+                let messageInput = document.querySelector('textarea[placeholder="Message"]');
+    
+                let name = nameInput.value.trim();
+                let email = emailInput.value.trim();
+                let message = messageInput.value.trim();
+    
+                // Validate fields
+                if (name === "" || email === "" || message === "") {
+                    Toastify({
+                        text: "Please fill in all fields!",
+                        duration: 2000,
+                        gravity: "top",
+                        position: "center",
+                        backgroundColor: "linear-gradient(to right, #e74c3c, #e74c3c)", // Red color for error
+                        close: true
+                    }).showToast();
+                    return; // Stop form submission
+                }
+    
+                // Success message
+                Toastify({
+                    text: "Message Sent Successfully!",
+                    duration: 2000,
+                    gravity: "top",
+                    position: "center",
+                    backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)", // Green color for success
+                    close: true
+                }).showToast();
+    
+                // Clear input fields after success
+                nameInput.value = "";
+                emailInput.value = "";
+                messageInput.value = "";
+            });
+        });
+    </script>
+    
+  
+
+    <%- include("../../views/partials/user/footer") %>

@@ -5,7 +5,9 @@ const profileController = require("../controllers/user/profileController");
 const passport = require("passport");
 const {userAuth,adminAuth, isBlocked} = require("../middlewares/auth");
 const productController = require("../controllers/user/productController");
-const cartController = require("../controllers/user/cartController")
+const cartController = require("../controllers/user/cartController");
+const checkoutController = require("../controllers/user/checkoutController");
+const wishlistController = require("../controllers/user/wishlistController");
 
 
 
@@ -57,17 +59,25 @@ router.get("/deleteAddress",userAuth,profileController.deleteAddress);
 
 //cart management
 router.get("/cart",userAuth,cartController.cartPage);
-// router.post("/addToCart",userAuth, cartController.addToCart)
-// router.post("/changeQuantity", userAuth,cartController.changeQuantity)
-// router.get("/deleteItem", userAuth, cartController.deleteProduct)
+// router.post("/addToCart",userAuth, cartController.addToCart);
+// router.post("/changeQuantity", userAuth,cartController.changeQuantity);
+// router.get("/deleteItem", userAuth, cartController.deleteProduct);
+
+
+//checkout management
+router.get("/checkOut",userAuth,checkoutController.getcheckOutPage);
 
 
 //Product management
-router.get("/productDetails",userAuth,productController.productDetails)
+router.get("/productDetails",userAuth,productController.productDetails);
+
+
+//wishlist management
+router.get("/wishlist",userAuth,wishlistController.getwishList);
 
 
 
 
 
-
+router.get("/contacts",userAuth,userController.contactPage)    
 module.exports = router

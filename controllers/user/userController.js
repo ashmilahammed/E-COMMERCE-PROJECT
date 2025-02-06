@@ -352,6 +352,29 @@ const loadShoppingpage = async (req,res) => {
 }
 
 
+const contactPage = async (req,res) => {
+    try {
+        const userId = req.session.user;
+        if (!userId) {
+            return res.redirect("/login");  
+        }
+
+        const userData = await User.findById(userId);
+        if (!userData) {
+            return res.redirect("/pageNotFound"); 
+        }
+
+        res.render("contacts", {
+            user: userData
+        });
+
+    } catch (error) {
+        console.error("Error loading contact page:", error);
+        res.redirect("/pageNotFound");
+    }
+}
+
+
 
 
 
@@ -365,5 +388,6 @@ module.exports = {
     loadLogin,
     login,
     logout,
-    loadShoppingpage
+    loadShoppingpage,
+    contactPage
 }

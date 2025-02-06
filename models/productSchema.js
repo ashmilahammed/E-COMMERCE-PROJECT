@@ -82,6 +82,7 @@ const productSchema = new Schema({
         default: false,
     },
 
+
 }, { timestamps: true });
 
 

@@ -251,7 +251,7 @@ const deleteSingleImage = async (req, res) => {
 
         if (fs.existsSync(imagePath)) {
             try {
-                await fs.promises.unlink(imagePath); // Asynchronous deletion
+                await fs.promises.unlink(imagePath); 
                 console.log(`Image ${imageNameToServer} deleted successfully.`);
             } catch (unlinkErr) {
                 console.error(`Failed to delete image: ${unlinkErr.message}`);
