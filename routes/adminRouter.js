@@ -17,7 +17,7 @@ router.get("/pageError",adminController.pageError)
 //login Management;
 router.get("/login",adminController.loadLogin);
 router.post("/login",adminController.login);
-router.get("/",adminController.loadDashboard);
+router.get("/",adminAuth,adminController.loadDashboard);
 router.get("/logout",adminController.logout);
 //users management;
 router.get("/users",adminAuth,customerController.customerInfo);

@@ -18,11 +18,13 @@ router.get("/signup",userController.loadSignup);
 router.post("/signup",userController.signup);
 router.post("/verify-otp",userController.verifyOtp);
 router.post("/resend-otp",userController.resendOtp);
+
 router.get('/auth/google',passport.authenticate('google',{scope:['profile','email']}));
 router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/signup' }), (req, res) => {
     req.session.user = req.session.passport.user
     res.redirect('/');
 })
+
 //login management
 router.get("/login",userController.loadLogin);
 router.post("/login",userController.login);
@@ -59,10 +61,9 @@ router.get("/deleteAddress",userAuth,profileController.deleteAddress);
 
 //cart management
 router.get("/cart",userAuth,cartController.cartPage);
-// router.post("/addToCart",userAuth, cartController.addToCart);
-// router.post("/changeQuantity", userAuth,cartController.changeQuantity);
-// router.get("/deleteItem", userAuth, cartController.deleteProduct);
-
+router.post("/cart/add",userAuth,cartController.addToCart);
+router.post("/cart/update-quantity",userAuth,cartController.updateQuantity);
+router.post("/cart/remove-item",userAuth,cartController.removeItem);
 
 //checkout management
 router.get("/checkOut",userAuth,checkoutController.getcheckOutPage);

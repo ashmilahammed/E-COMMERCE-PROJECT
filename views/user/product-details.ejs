@@ -194,16 +194,11 @@
                                         <% product.availableSizes.forEach(size => { %>
                                             <% const variant = product.variants.find(v => v.size === size && v.quantity > 0); %>
                                             <% if (variant) { %>
-                                                <label for="size-<%= size %>" class="<%= variant.quantity === 0 ? 'unavailable' : '' %>"
-                                                       data-variant='<%= JSON.stringify({
-                                                           size: variant.size,
-                                                           quantity: variant.quantity,
-                                                           price: variant.regularPrice,
-                                                           salePrice: variant.salePrice
-                                                       }) %>'>
-                                                    <%= size %>
+                                                <label for="size-<%= size %>" class="size-option">
                                                     <input type="radio" id="size-<%= size %>" name="size" value="<%= size %>" 
-                                                           <%= variant.quantity === 0 ? 'disabled' : '' %>>
+                                                           data-price="<%= variant.salePrice %>" 
+                                                           data-regular-price="<%= variant.regularPrice %>">
+                                                    <%= size %>
                                                 </label>
                                             <% } %>
                                         <% }); %>
@@ -211,34 +206,14 @@
                                         <p>No sizes available</p>
                                     <% } %>
                                 </div>
-
-                                <!-- color  -->
-                                <!-- <div class="product__details__option__color">
-                                    <span>Color:</span>
-                                    <label class="c-1" for="sp-1">
-                                        <input type="radio" id="sp-1">
-                                    </label>
-                                    <label class="c-2" for="sp-2">
-                                        <input type="radio" id="sp-2">
-                                    </label>
-                                    <label class="c-3" for="sp-3">
-                                        <input type="radio" id="sp-3">
-                                    </label>
-                                    <label class="c-4" for="sp-4">
-                                        <input type="radio" id="sp-4">
-                                    </label>
-                                    <label class="c-9" for="sp-9">
-                                        <input type="radio" id="sp-9">
-                                    </label>
-                                </div> -->
                             </div>
                             <div class="product__details__cart__option">
                                 <div class="quantity">
                                     <div class="pro-qty">
-                                        <input type="text" value="1">
+                                        <input type="number" value="1" min="1" id="quantity">
                                     </div>
                                 </div>
-                                <a href="/cart" class="primary-btn">add to cart</a>
+                                <button class="primary-btn" onclick="addToCart('<%= product._id %>')" id="addToCartBtn" disabled>Add to cart</button>
                             </div>
                             <div class="product__details__btns__option">
                                 <a href="#"><i class="fa fa-heart"></i> add to wishlist</a>
@@ -474,6 +449,7 @@
                 <!-- <div class="col-lg-3 col-md-6 col-sm-6 col-sm-6">
                     <div class="product__item">
                         <div class="product__item__pic set-bg" data-setbg="">
+
                             <img src="/images/NIKE+DUNK+LOW+RETRO+SE.png" alt="">
                             <ul class="product__hover">
                                 <li><a href="#"><img src="img/icon/heart.png" alt=""></a></li>
@@ -601,7 +577,73 @@
     Fancybox.bind("[data-fancybox]", {
         // Custom options if needed
     });
+
+
     
+    // Handle size selection
+    const sizeOptions = document.querySelectorAll('input[name="size"]');
+    const addToCartBtn = document.getElementById('addToCartBtn');
+    const priceElement = document.getElementById('product-price');
+
+    sizeOptions.forEach(option => {
+        option.addEventListener('change', function() {
+            // Enable add to cart button
+            addToCartBtn.disabled = false;
+            
+            // Update price display
+            const salePrice = this.dataset.price;
+            const regularPrice = this.dataset.regularPrice;
+            priceElement.innerHTML = `₹.${salePrice} <span>₹.${regularPrice}</span>`;
+        });
+    });
+
+    
+
+    // Add to cart function
+    async function addToCart(productId) {
+        try {
+            const selectedSize = document.querySelector('input[name="size"]:checked');
+            if (!selectedSize) {
+                alert('Please select a size');
+                return;
+            }
+
+            const quantity = document.getElementById('quantity').value;
+            if (quantity < 1) {
+                alert('Please select a valid quantity');
+                return;
+            }
+
+            const response = await fetch('/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    productId: productId,
+                    size: parseInt(selectedSize.value),
+                    quantity: parseInt(quantity)
+                })
+            });
+
+            const data = await response.json();
+            
+            if (data.success) {
+                // Update cart count in header if it exists
+                const cartCountElement = document.querySelector('.cart-count');
+                if (cartCountElement) {
+                    cartCountElement.textContent = data.cartCount;
+                }
+                
+                alert(data.message);
+            } else {
+                alert(data.message || 'Error adding product to cart');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error adding product to cart');
+        }
+    }
 </script>
 
 <%- include("../../views/partials/user/footer") %>

@@ -304,8 +304,7 @@ const login = async (req, res) => {
        if (!passwordMatch) {
             return res.render("login", { message: "Incorrect Password." });
        }
-
-       // Store the entire user data in the session, not just the user ID
+      
        req.session.user = findUser;
        // Optionally, pass the user data to the view
        res.locals.user = findUser;
@@ -324,13 +323,9 @@ const logout = async (req, res) => {
         // Clear user data before destroying session
         req.session.user = null;
 
-        req.session.destroy((err) => {
-            if (err) {
-                console.log("Session destruction error", err.message);
-                return res.redirect("/pageNotFound");
-            }
-            return res.redirect("/login");
-        });
+        delete req.session.user;
+
+        res.redirect("/login");
 
     } catch (error) {
         console.log("Logout error", error);

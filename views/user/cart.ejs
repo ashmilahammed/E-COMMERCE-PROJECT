@@ -28,86 +28,138 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Product</th>
-                                    <th>Quantity</th>
-                                    <th>Total</th>
-                                    <th></th>
+                                    <th style="width: 250px; padding: 10px;">Product</th>
+                                    <th style="width: 100px; text-align: center; padding: 10px;">Size</th>
+                                    <th style="width: 150px; text-align: center; padding: 10px;">Quantity</th>
+                                    <th style="width: 120px; text-align: right; padding: 10px;">Total</th>
+                                    <th style="width: 50px; text-align: center; padding: 10px;"></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td class="product__cart__item">
-                                        <div class="product__cart__item__pic">
-                                            <img src="img/shopping-cart/cart-1.jpg" alt="">
-                                        </div>
-                                        <div class="product__cart__item__text">
-                                            <h6>T-shirt Contrast Pocket</h6>
-                                            <h5>$98.49</h5>
-                                        </div>
-                                    </td>
-                                    <td class="quantity__item">
-                                        <div class="quantity">
-                                            <div class="pro-qty-2">
-                                                <input type="text" value="1">
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="cart__price">$ 30.00</td>
-                                    <td class="cart__close"><i class="fa fa-close"></i></td>
-                                </tr>
-                                
-                                <!-- <tr>
-                                    <td class="product__cart__item">
-                                        <div class="product__cart__item__pic">
-                                            <img src="img/shopping-cart/cart-2.jpg" alt="">
-                                        </div>
-                                        <div class="product__cart__item__text">
-                                            <h6>Diagonal Textured Cap</h6>
-                                            <h5>$98.49</h5>
-                                        </div>
-                                    </td>
-                                    <td class="quantity__item">
-                                        <div class="quantity">
-                                            <div class="pro-qty-2">
-                                                <input type="text" value="1">
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="cart__price">$ 32.50</td>
-                                    <td class="cart__close"><i class="fa fa-close"></i></td>
-                                </tr> -->
-                               
-                                
+                                <% if (cart && cart.items && cart.items.length > 0) { %>
+                                    <% cart.items.forEach(item => { %>
+                                        <tr>
+                                            <td class="product__cart__item" style="width: 250px; padding: 10px;">
+                                                <div class="product__cart__item__pic" style="width: 80px; height: 80px; float: left; margin-right: 15px; overflow: hidden;">
+                                                    <img src="/uploads/re-image/<%= item.productId.productImage[0] %>" 
+                                                         alt="<%= item.productId.productName %>"
+                                                         style="width: 100%; height: 100%; object-fit: cover;">
+                                                </div>
+                                                <div class="product__cart__item__text" style="overflow: hidden; padding-top: 10px;">
+                                                    <h6 style="margin-bottom: 5px; font-size: 14px; word-wrap: break-word;color: rgb(63, 63, 63);">
+                                                        <%= item.productId.productName %>
+                                                    </h6>
+                                                    <br>
+                                                    <h5 style="font-size: 15px;font-weight: bold; color: #2d2d2d;">₹.<%= item.price %></h5>
+                                                </div>
+                                            </td>
+                                            <td class="cart__size" style="width: 100px; text-align: center; vertical-align: middle; padding: 10px;">
+                                                <%= item.size %>
+                                            </td>
+                                            <td class="quantity__item" style="width: 150px; text-align: center; vertical-align: middle; padding: 70px;">
+                                                <div class="quantity">
+                                                    <div class="pro-qty-2">
+                                                        <input type="text" value="<%= item.quantity %>" 
+                                                               onchange="updateQuantity('<%= item.productId._id %>', '<%= item.size %>', this.value)"
+                                                               style="width: 50px; text-align: center;">
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="cart__price" style="width: 120px; text-align: right; vertical-align: middle; padding: 10px;">
+                                                ₹.<%= item.totalPrice %>
+                                            </td>
+                                            <td class="cart__close" style="width: 50px; text-align: center; vertical-align: middle; padding: 10px;">
+                                                <i class="fa fa-close" onclick="removeItem('<%= item.productId._id %>', '<%= item.size %>')"></i>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="5" class="text-center">Your cart is empty</td>
+                                    </tr>
+                                <% } %>
                             </tbody>
                         </table>
                     </div>
                     <div class="row">
                         <div class="col-lg-6 col-md-6 col-sm-6">
                             <div class="continue__btn">
-                                <a href="/">Continue Shopping</a>
+                                <a href="/shop">Continue Shopping</a>
                             </div>
                         </div>
-                        <!-- <div class="col-lg-6 col-md-6 col-sm-6">
-                            <div class="continue__btn update__btn">
-                                <a href="#"><i class="fa fa-spinner"></i> Update cart</a>
-                            </div>
-                        </div> -->
                     </div>
                 </div>
                 <div class="col-lg-4">
-                    
                     <div class="cart__total">
                         <h6>Cart total</h6>
                         <ul>
-                            <li>Subtotal <span>$ 169.50</span></li>
-                            <li>Total <span>$ 169.50</span></li>
+                            <li>Total <span>₹.<%= cart ? cart.cartTotal : 0 %></span></li>
                         </ul>
-                        <a href="/checkOut" class="primary-btn">Proceed to checkout</a>
+                        <% if (cart && cart.items && cart.items.length > 0) { %>
+                            <a href="/checkout" class="primary-btn">Proceed to checkout</a>
+                        <% } %>
                     </div>
                 </div>
             </div>
         </div>
     </section>
     <!-- Shopping Cart Section End -->
+
+<script>
+async function updateQuantity(productId, size, quantity) {
+    try {
+        const response = await fetch('/cart/update-quantity', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                productId,
+                size: parseInt(size),
+                quantity: parseInt(quantity)
+            })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            location.reload(); // Refresh to show updated cart
+        } else {
+            alert(data.message || 'Error updating quantity');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error updating quantity');
+    }
+}
+
+async function removeItem(productId, size) {
+    if (!confirm('Are you sure you want to remove this item?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch('/cart/remove-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                productId,
+                size: parseInt(size)
+            })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            location.reload(); // Refresh to show updated cart
+        } else {
+            alert(data.message || 'Error removing item');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error removing item');
+    }
+}
+</script>
 
 <%- include("../../views/partials/user/footer") %>

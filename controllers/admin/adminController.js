@@ -4,12 +4,12 @@ const bcrypt = require("bcrypt");
 
 
 
-const pageError = async (req,res) => {
+const pageError = async (req, res) => {
     res.render('error-admin')
 }
 
 
-const loadLogin = (req,res) => {
+const loadLogin = (req, res) => {
     try {
         if (req.session.admin) {
             return res.redirect("/admin/dashboard");
@@ -38,11 +38,11 @@ const loadLogin = (req,res) => {
 //         }else {
 //             return res.redirect('/login')
 //         }
-        
+
 //     } catch (error) {
 //         console.log("login error",error);
 //         return res.redirect("/pageNotFound")
-        
+
 //     }
 // }
 
@@ -71,31 +71,26 @@ const login = async (req, res) => {
 };
 
 
-const loadDashboard = async (req,res) => {
-    if(req.session.admin) {
-        try {
-            res.render("dashboard");
-        } catch (error) {
-            res.redirect("/admin/pageError")
-        }
+const loadDashboard = async (req, res) => {
+    try {
+        res.render("dashboard"); 
+    } catch (error) {
+        res.redirect("/admin/pageError");
     }
 }
 
 
-const logout = async (req,res) => {
+const logout = async (req, res) => {
     try {
-        req.session.destroy(err =>{
-            if(err){
-                console.log("Error in destroying session",err);
-                return res.redirect("/pageError")
-            }
-            return res.redirect("/admin/login")
-        })
-        
+
+        delete req.session.admin;
+
+        res.redirect("/admin/login");
+
     } catch (error) {
-        console.log("Unexpected error during logout",error);
+        console.log("Unexpected error during logout", error);
         res.redirect("/admin/pageError")
-        
+
     }
 }
 

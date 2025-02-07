@@ -46,21 +46,13 @@ app.use("/admin",adminRouter);
 
 
 app.use((req, res, next) => {
-    res.locals.user = req.session.user || null;     // Set user if logged in
+    res.locals.user = req.session.user || null;    
     next();
 });
 
 
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
-
-
-
-
-
-app.get('/dashboard', (req, res) => {
-    res.render('dashboard'); // Render dashboard.ejs
-  });
 
 
 

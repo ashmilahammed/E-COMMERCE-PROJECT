@@ -65,7 +65,6 @@ const securePassword = async (password) => {
 /////////////
 const getForgotPassword = async (req ,res) => {
     try {
-
         res.render("forgot-password")
         
     } catch (error) {
@@ -121,8 +120,11 @@ const verifyForgotPassOtp = async (req,res) =>{
 
 const getResetPassPage = async (req,res) =>{
     try {
-
-        res.render("reset-password")
+        const userId = req.session.user;
+        const userData = await User.findById(userId);
+        res.render("reset-password",{
+            user: userData
+        })
         
     } catch (error) {
         res.redirect("/pageNotFound")
@@ -198,7 +200,11 @@ const userProfile = async (req,res) => {
 
 const changeEmail = async (req,res) => {
     try {
-        res.render("change-email")
+        const userId = req.session.user;
+        const userData = await User.findById(userId);
+        res.render("change-email",{
+            user : userData
+        })
         
     } catch (error) {
         res.redirect("/pageNotFound")
@@ -221,7 +227,12 @@ const changeEmailValid = async (req,res) => {
                 req.session.userData = req.body;
                 req.session.email = email;
 
-                res.render("change-email-otp");
+                const userId = req.session.user;
+                const userData = await User.findById(userId);
+
+                res.render("change-email-otp",{
+                    user : userData
+                });
                 console.log("Email sent:",email);
                 console.log("OTP:",otp);
                 
@@ -247,10 +258,15 @@ const verifyEmailOtp = async (req,res) => {
     try {
 
         const enteredOtp = req.body.otp;
+
+        const userId = req.session.user;
+        const userData = await User.findById(userId);
+
         if(enteredOtp === req.session.userOtp){
             req.session.userData = req.body.userData;
             res.render("new-email",{
                 userData : req.session.userData,
+                user : userData
 
             })
         }else {
@@ -280,10 +296,13 @@ const updateEmail = async (req,res) => {
 }
 
 
-
 const changePassword = async (req,res) => {
     try {
-        res.render("change-password")
+        const userId = req.session.user;
+        const userData = await User.findById(userId);
+        res.render("change-password",{
+            user:userData
+        })
     } catch (error) {
         res.redirect("/pageNotFound")
     }
@@ -296,6 +315,9 @@ const changePasswordValid = async (req,res) => {
         const {email} = req.body;
         const userExists = await User.findOne({email});
 
+        const userId = req.session.user;
+        const userData = await User.findById(userId);
+
         if(userExists) {
             const otp = generateOtp();
             const emailSent = await sendVerificationEmail(email,otp);
@@ -303,7 +325,9 @@ const changePasswordValid = async (req,res) => {
                 req.session.userOtp = otp;
                 req.session.userData = req.body;
                 req.session.email = email;
-                res.render("change-password-otp");
+                res.render("change-password-otp",{
+                    user : userData
+                });
                 console.log('OTP:',otp);
                 
             }else {

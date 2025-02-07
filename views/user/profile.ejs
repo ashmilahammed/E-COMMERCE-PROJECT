@@ -5,11 +5,11 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     :root {
-      --sidebar-bg: #3b3b3b;
+      --sidebar-bg: hsl(0, 100%, 70%);
       /* Change this color to update the sidebar background */
       --sidebar-text: #ffffff;
       /* Change this color to update the sidebar text color */
-      --sidebar-hover: rgba(255, 255, 255, 0.1);
+      --sidebar-hover: rgba(0, 0, 0, 0.1);
       /* Change this color to update the hover effect */
     }
 
@@ -40,7 +40,7 @@
         class="sidebar bg-gray-800 text-white w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out">
         <a href="#" class="text-white flex items-center space-x-2 px-4">
           <i class="fas fa-user-circle text-2xl"></i>
-          <span class="text-2xl font-extrabold">Dashboard</span>
+          <span style="color: rgb(255, 255, 255);" class="text-2xl font-extrabold">Welcome</span>
         </a>
         <nav>
           <a href="#"
@@ -68,7 +68,7 @@
             data-target="wallet-history">
             <i class="fas fa-history mr-2"></i>Wallet History
           </a>
-          <a href="/logout"
+          <a href="#"  onclick="event.preventDefault(); window.location.href='/logout';"
             class="sidebar-item block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white">
             <i class="fas fa-sign-out-alt mr-2"></i>Logout
           </a>
