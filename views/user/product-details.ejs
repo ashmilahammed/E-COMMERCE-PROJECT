@@ -1,51 +1,87 @@
 <%- include("../../views/partials/user/header") %>
-<style>
-    
-    .product__details__option__size label {
-        display: inline-block;
-        padding: 6px 15px;
-        font-size: 14px;
-        color: #111111;
-        font-weight: 700;
-        border: 1px solid #e5e5e5;
-        margin-bottom: 10px;
-        margin-right: 5px;
-        cursor: pointer;
-    }
-    .product__details__option__size label.unavailable {
-        color: #cccccc;
-        cursor: not-allowed;
-        text-decoration: line-through;
-    }
-    .product__details__option__size label input {
-        position: absolute;
-        visibility: hidden;
-    }
-    .product__details__option__size label.active {
-        background: #111111;
-        border-color: #111111;
-        color: #ffffff;
-    }
+    <style>
+        .product__details__option__size label {
+            display: inline-block;
+            padding: 6px 15px;
+            font-size: 14px;
+            color: #111111;
+            font-weight: 700;
+            border: 1px solid #e5e5e5;
+            margin-bottom: 10px;
+            margin-right: 5px;
+            cursor: pointer;
+        }
 
-    .product-image-zoom {
-        position: relative;
-        overflow: hidden;
-        width: 100%;
-        height: 500px;
-    }
+        .product__details__option__size label.unavailable {
+            color: #cccccc;
+            cursor: not-allowed;
+            text-decoration: line-through;
+        }
 
-    .zoomable-image {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        transition: transform 0.3s ease;
-    }
+        .product__details__option__size label input {
+            position: absolute;
+            visibility: hidden;
+        }
 
-    .product-image-zoom:hover .zoomable-image {
-        transform: scale(1.5);
-        cursor: zoom-in;
-    }
-</style>
+        .product__details__option__size label.active {
+            background: #111111;
+            border-color: #111111;
+            color: #ffffff;
+        }
+
+        .product-image-zoom {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            height: 500px;
+        }
+
+        .zoomable-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .product-image-zoom:hover .zoomable-image {
+            transform: scale(1.5);
+            cursor: zoom-in;
+        }
+
+        /* Toast styles */
+        #toast-container {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+        }
+
+        .toast-message {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            margin-bottom: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .toast-message.show {
+            opacity: 1;
+        }
+
+        .toast-message.success {
+            background-color: #dff0d8;
+            border-color: #d6e9c6;
+            color: #3c763d;
+        }
+
+        .toast-message.error {
+            background-color: #f2dede;
+            border-color: #ebccd1;
+            color: #a94442;
+        }
+    </style>
 
     <!-- Shop Details Section Begin -->
 
@@ -112,20 +148,21 @@
 
                             <% for(let i=0; i<product.productImage.length; i++) { %>
 
-                                <div class="tab-pane <%= i === 0 ? 'active' : '' %>" id="tabs-<%= i+1 %>" role="tabpanel">
+                                <div class="tab-pane <%= i === 0 ? 'active' : '' %>" id="tabs-<%= i+1 %>"
+                                    role="tabpanel">
                                     <div class="product__details__pic__item">
                                         <div class="product-image-zoom">
-                                            <img class="zoomable-image" src="/uploads/re-image/<%= product.productImage[i] %>" 
-                                                 alt="product image" 
-                                                 data-fancybox="gallery">
+                                            <img class="zoomable-image"
+                                                src="/uploads/re-image/<%= product.productImage[i] %>"
+                                                alt="product image" data-fancybox="gallery">
                                         </div>
                                     </div>
                                 </div>
 
-                            <% } %>
+                                <% } %>
                         </div>
                     </div>
-                    
+
 
 
                     <!-- <div class="col-lg-6 col-md-9">
@@ -162,18 +199,21 @@
             </div>
         </div>
         <!-- image section finish -->
-         
+
         <div class="product__details__content">
             <div class="container">
                 <div class="row d-flex justify-content-center">
                     <div class="col-lg-8">
                         <div class="product__details__text">
 
-                            <h3><%= product.productName %></h3>
+                            <h3>
+                                <%= product.productName %>
+                            </h3>
 
-                            <h5>Brand : <%= product.brand %></h5>
+                            <h5>Brand : <%= product.brand %>
+                            </h5>
                             <br>
- 
+
                             <div class="rating">
                                 <i class="fa fa-star"></i>
                                 <i class="fa fa-star"></i>
@@ -182,29 +222,34 @@
                                 <i class="fa fa-star-o"></i>
                                 <span> - 5 Reviews</span>
                             </div>
-                            <h3 id="product-price"> ₹.<%= product.salePrice %> <span>₹.<%= product.regularPrice %> </span></h3>
-                           
-                            
-                            <p><%= product.description %></p>
+                            <h3 id="product-price"> ₹.<%= product.salePrice %> <span>₹.<%= product.regularPrice %>
+                                    </span></h3>
+
+
+                            <p>
+                                <%= product.description %>
+                            </p>
 
                             <div class="product__details__option">
                                 <div class="product__details__option__size">
                                     <span>Size:</span>
-                                    <% if (product.availableSizes && product.availableSizes.length > 0) { %>
-                                        <% product.availableSizes.forEach(size => { %>
-                                            <% const variant = product.variants.find(v => v.size === size && v.quantity > 0); %>
-                                            <% if (variant) { %>
-                                                <label for="size-<%= size %>" class="size-option">
-                                                    <input type="radio" id="size-<%= size %>" name="size" value="<%= size %>" 
-                                                           data-price="<%= variant.salePrice %>" 
-                                                           data-regular-price="<%= variant.regularPrice %>">
-                                                    <%= size %>
-                                                </label>
-                                            <% } %>
-                                        <% }); %>
-                                    <% } else { %>
-                                        <p>No sizes available</p>
-                                    <% } %>
+                                    <% if (product.availableSizes && product.availableSizes.length> 0) { %>
+                                        <% product.availableSizes.forEach(size=> { %>
+                                            <% const variant=product.variants.find(v=> v.size === size && v.quantity >
+                                                0); %>
+                                                <% if (variant) { %>
+                                                    <label for="size-<%= size %>" class="size-option">
+                                                        <input type="radio" id="size-<%= size %>" name="size"
+                                                            value="<%= size %>" data-price="<%= variant.salePrice %>"
+                                                            data-regular-price="<%= variant.regularPrice %>">
+                                                        <%= size %>
+                                                    </label>
+                                                    <% } %>
+                                                        <% }); %>
+                                                        
+                                                            <% } else { %>
+                                                                <p>No sizes available</p>
+                                                             <% } %>
                                 </div>
                             </div>
                             <div class="product__details__cart__option">
@@ -213,7 +258,8 @@
                                         <input type="number" value="1" min="1" id="quantity">
                                     </div>
                                 </div>
-                                <button class="primary-btn" onclick="addToCart('<%= product._id %>')" id="addToCartBtn" disabled>Add to cart</button>
+                                <button class="primary-btn" onclick="addToCart('<%= product._id %>')" id="addToCartBtn"
+                                    disabled>Add to cart</button>
                             </div>
                             <div class="product__details__btns__option">
                                 <a href="#"><i class="fa fa-heart"></i> add to wishlist</a>
@@ -225,16 +271,18 @@
 
                                     <!-- stock  -->
                                     <li id="product-quantity">
-                                        <span>In Stock:</span> 
-                                        <% if(product.totalQuantity > 0) { %>
+                                        <span>In Stock:</span>
+                                        <% if(product.totalQuantity> 0) { %>
                                             <%= product.totalQuantity %> left
-                                        <% }else { %>
-                                            No Stock Left
-                                        <% } %>
+                                         <% }else { %>
+                                                    No Stock Left
+                                         <% } %>
                                     </li>
 
-                                    <li><span>Category:</span> <%= product.category.name %></li>
-                                   
+                                    <li><span>Category:</span>
+                                        <%= product.category.name %>
+                                    </li>
+
                                 </ul>
                             </div>
                         </div>
@@ -242,8 +290,8 @@
                 </div>
                 <!-- product details end  -->
 
-               
-            
+
+
 
 
                 <div class="row">
@@ -252,15 +300,15 @@
                             <ul class="nav nav-tabs" role="tablist">
                                 <li class="nav-item">
                                     <a class="nav-link active" data-toggle="tab" href="#tabs-5"
-                                    role="tab">Description</a>
+                                        role="tab">Description</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" data-toggle="tab" href="#tabs-6" role="tab">Customer
-                                    Previews(5)</a>
+                                        Previews(5)</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" data-toggle="tab" href="#tabs-7" role="tab">Additional
-                                    information</a>
+                                        information</a>
                                 </li>
                             </ul>
                             <div class="tab-content">
@@ -269,7 +317,7 @@
                                         <p class="note">Nam tempus turpis at metus scelerisque placerat nulla deumantos
                                             solicitud felis. Pellentesque diam dolor, elementum etos lobortis des mollis
                                             ut risus. Sedcus faucibus an sullamcorper mattis drostique des commodo
-                                        pharetras loremos.</p>
+                                            pharetras loremos.</p>
                                         <div class="product__details__tab__content__item">
                                             <h5>Products Infomation</h5>
                                             <p>A Pocket PC is a handheld computer, which features many of the same
@@ -309,7 +357,7 @@
                                         <p class="note">Nam tempus turpis at metus scelerisque placerat nulla deumantos
                                             solicitud felis. Pellentesque diam dolor, elementum etos lobortis des mollis
                                             ut risus. Sedcus faucibus an sullamcorper mattis drostique des commodo
-                                        pharetras loremos.</p>
+                                            pharetras loremos.</p>
                                         <div class="product__details__tab__content__item">
                                             <h5>Products Infomation</h5>
                                             <p>A Pocket PC is a handheld computer, which features many of the same
@@ -330,7 +378,7 @@
                                                 tend to have a shine to them compared to wool and cotton suits, this can
                                                 make the suit look cheap. The texture of velvet is luxurious and
                                                 breathable. Velvet is a great choice for dinner party jacket and can be
-                                            worn all year round.</p>
+                                                worn all year round.</p>
                                         </div>
                                     </div>
                                 </div>
@@ -342,39 +390,6 @@
         </div>
     </section>
     <!-- Shop Details Section End -->
-
-    
-
-    <!-- <div class="container">
-        <div class="row">
-        <% for(let i=0;i<relatedProducts.length;i++) { %>  
-
-            <div class="col-md-3 col-sm-6">
-                <div class="single-product-wrapper">
-                    <a href="/productDetails?id=<%= relatedProducts[i]._id %>">
-                        <div class="product-img">
-                            <img src="uploads/product-images/<%= relatedProducts[i].productImage[0] %>" alt="<%=relatedProducts[i].productName %>">
-                            <% if(relatedProducts[i].productImage[1]) { %>
-                                <img class="hover-img" src="uploads/product-images/<%= relatedProducts[i].productImage[1] %>" alt="">
-                            <% } %>
-                            <div class="product-favourite">
-                                <a href="/addToWishlist?id=<%= relatedProducts[i]._id  %>" class="favme fa fa-heart"></a>
-                            </div>
-                        </div>
-                        <div class="product-description">
-                            <h6><%= relatedProducts[i].productName %></h6>
-                            <p class="product-price">₹<%= relatedProducts[i].salePrice %></p>
-                        </div>
-                    </a>
-                    <div class="add-to-cart-btn">
-                        <a href="/addToCart?id=<%= relatedProducts[i]._id %>" class="btn essence-btn">Add to Cart</a>
-                    </div>
-                </div>
-            </div>
-        
-        <% } %>
-    </div>
-    </div> -->
 
 
 
@@ -388,11 +403,11 @@
             </div>
             <div class="row">
 
-                <% for(let i=0;i<relatedProducts.length;i++) { %> 
+                <% for(let i=0;i<relatedProducts.length;i++) { %>
 
-                <div class="col-lg-3 col-md-6 col-sm-6 col-sm-6">
-                    <div class="product__item">
-                        <!-- <div class="product__item__pic set-bg" data-setbg="">
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-6">
+                        <div class="product__item">
+                            <!-- <div class="product__item__pic set-bg" data-setbg="">
 
                             <img src="uploads/product-images/<%= relatedProducts[i].productImage[0] %>" alt="<%=relatedProducts[i].productName %>">
                             
@@ -402,248 +417,292 @@
                                 <li><a href="#"><img src="img/icon/compare.png" alt=""> <span>Compare</span></a></li>
                                 <li><a href="#"><img src="img/icon/search.png" alt=""></a></li>
                             </ul>
-                        </div> -->
-                        <div class="product__item__pic set-bg" data-setbg="">
-                            <a href="/productDetails?id=<%= relatedProducts[i]._id %>">
-                                <img src="uploads/product-images/<%= relatedProducts[i].productImage[0] %>" alt="<%= relatedProducts[i].productName %>">
-                            </a>
-                            
-                            <span class="label">New</span>
-                            <ul class="product__hover">
-                                <li><a href="#"><img src="img/icon/heart.png" alt=""></a></li>
-                                <li><a href="#"><img src="img/icon/compare.png" alt=""> <span>Compare</span></a></li>
-                                <li><a href="#"><img src="img/icon/search.png" alt=""></a></li>
-                            </ul>
-                        </div>
-                        
-                        <div class="product__item__text">
+                            </div> -->
+                            <div class="product__item__pic set-bg" data-setbg="">
+                                <a href="/productDetails?id=<%= relatedProducts[i]._id %>">
+                                    <img src="uploads/product-images/<%= relatedProducts[i].productImage[0] %>"
+                                        alt="<%= relatedProducts[i].productName %>">
+                                </a>
 
-                            <h6><%= relatedProducts[i].productName %></h6>
-                            <h6>Brand: <%= relatedProducts[i].brand %></h6>
-
-                            <a href="#" class="add-cart">+ Add To Cart</a>
-                            <div class="rating">
-                                <i class="fa fa-star-o"></i>
-                                <i class="fa fa-star-o"></i>
-                                <i class="fa fa-star-o"></i>
-                                <i class="fa fa-star-o"></i>
-                                <i class="fa fa-star-o"></i>
+                                <span class="label">New</span>
+                                <ul class="product__hover">
+                                    <li><a href="#"><img src="img/icon/heart.png" alt=""></a></li>
+                                    <!-- <li><a href="#"><img src="img/icon/compare.png" alt=""> <span>Compare</span></a>
+                                    </li>
+                                    <li><a href="#"><img src="img/icon/search.png" alt=""></a></li> -->
+                                </ul>
                             </div>
-                            <h5>₹.<%= relatedProducts[i].salePrice %> <span style="color: grey; font-size: small;"> <strike>₹.<%= relatedProducts[i].regularPrice %></strike></h5></span>
 
-                            <div class="product__color__select">
-                                <label for="pc-1">
-                                    <input type="radio" id="pc-1">
-                                </label>
-                                <label class="active black" for="pc-2">
-                                    <input type="radio" id="pc-2">
-                                </label>
-                                <label class="grey" for="pc-3">
-                                    <input type="radio" id="pc-3">
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                            <div class="product__item__text">
 
-                <!-- <div class="col-lg-3 col-md-6 col-sm-6 col-sm-6">
-                    <div class="product__item">
-                        <div class="product__item__pic set-bg" data-setbg="">
+                                <h6>
+                                    <%= relatedProducts[i].productName %>
+                                </h6>
+                                <h6>Brand: <%= relatedProducts[i].brand %>
+                                </h6>
 
-                            <img src="/images/NIKE+DUNK+LOW+RETRO+SE.png" alt="">
-                            <ul class="product__hover">
-                                <li><a href="#"><img src="img/icon/heart.png" alt=""></a></li>
-                                <li><a href="#"><img src="img/icon/compare.png" alt=""> <span>Compare</span></a></li>
-                                <li><a href="#"><img src="img/icon/search.png" alt=""></a></li>
-                            </ul>
-                        </div>
-                        <div class="product__item__text">
-                            <h6>Nike Dunk Low </h6>
-                            <a href="#" class="add-cart">+ Add To Cart</a>
-                            <div class="rating">
-                                <i class="fa fa-star-o"></i>
-                                <i class="fa fa-star-o"></i>
-                                <i class="fa fa-star-o"></i>
-                                <i class="fa fa-star-o"></i>
-                                <i class="fa fa-star-o"></i>
-                            </div>
-                            <h5>₹ 13 895.00</h5>
-                            <div class="product__color__select">
-                                <label for="pc-4">
-                                    <input type="radio" id="pc-4">
-                                </label>
-                                <label class="active black" for="pc-5">
-                                    <input type="radio" id="pc-5">
-                                </label>
-                                <label class="grey" for="pc-6">
-                                    <input type="radio" id="pc-6">
-                                </label>
+                                <a href="#" class="add-cart">+ Add To Cart</a>
+                                <div class="rating">
+                                    <i class="fa fa-star-o"></i>
+                                    <i class="fa fa-star-o"></i>
+                                    <i class="fa fa-star-o"></i>
+                                    <i class="fa fa-star-o"></i>
+                                    <i class="fa fa-star-o"></i>
+                                </div>
+                                <h5>₹.<%= relatedProducts[i].salePrice %> <span style="color: grey; font-size: small;">
+                                            <strike>₹.<%= relatedProducts[i].regularPrice %></strike></h5></span>
+
+                                <!-- <div class="product__color__select">
+                                    <label for="pc-1">
+                                        <input type="radio" id="pc-1">
+                                    </label>
+                                    <label class="active black" for="pc-2">
+                                        <input type="radio" id="pc-2">
+                                    </label>
+                                    <label class="grey" for="pc-3">
+                                        <input type="radio" id="pc-3">
+                                    </label>
+                                </div> -->
                             </div>
                         </div>
                     </div>
-                </div> -->
-                              
-
-            <% } %>
+                    
+                    <% } %>
             </div>
 
         </div>
     </section>
     <!-- Related Section End -->
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css">
-<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css">
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const productId = '<%= product._id %>'; // Get the current product ID
-        const sizeLabels = document.querySelectorAll('.product__details__option__size label:not(.unavailable)');
+    
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const productId = '<%= product._id %>'; // Get the current product ID
+            const sizeLabels = document.querySelectorAll('.product__details__option__size label:not(.unavailable)');
+            const priceElement = document.getElementById('product-price');
+            const quantityElement = document.getElementById('product-quantity');
+
+            // Function to update price and quantity based on variant data
+            function updateProductDetails(variantData) {
+                //  price
+                if (variantData.salePrice && variantData.salePrice !== variantData.price) {
+                    priceElement.innerHTML = `₹.${variantData.salePrice} <span>₹.${variantData.price}</span>`;
+                } else {
+                    priceElement.innerHTML = `₹.${variantData.price}`;
+                }
+                //quantity
+                quantityElement.innerHTML = `Stock: ${variantData.quantity}`;
+            }
+
+            // Function to save selected size to localStorage
+            function saveSelectedSize(size) {
+                localStorage.setItem(`selectedSize_${productId}`, size);
+            }
+
+            // Function to get selected size from localStorage
+            function getSelectedSize() {
+                return localStorage.getItem(`selectedSize_${productId}`);
+            }
+
+            // Add click event listeners to size labels
+            sizeLabels.forEach(label => {
+                label.addEventListener('click', function () {
+                    // Remove active class from all labels
+                    sizeLabels.forEach(l => l.classList.remove('active'));
+
+                    // Add active class to clicked label
+                    this.classList.add('active');
+
+                    // Get variant data and update details
+                    const variantData = JSON.parse(this.dataset.variant);
+                    updateProductDetails(variantData);
+
+                    // Save selected size
+                    saveSelectedSize(variantData.size);
+                });
+            });
+
+            // Check for previously selected size on page load
+            const savedSize = getSelectedSize();
+            if (savedSize) {
+                const savedSizeLabel = document.querySelector(`label[for="size-${savedSize}"]`);
+                if (savedSizeLabel && !savedSizeLabel.classList.contains('unavailable')) {
+                    // Simulate click on the saved size label
+                    savedSizeLabel.click();
+                    // Check the radio input
+                    const radioInput = document.getElementById(`size-${savedSize}`);
+                    if (radioInput) {
+                        radioInput.checked = true;
+                    }
+                }
+            }
+        });
+
+
+                                                           // Toast Notification Function
+        function showToast(message, type = 'success') {
+            const toastContainer = document.getElementById('toast-container');
+            
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.classList.add('toast-message', type);
+            toast.textContent = message;
+            
+            // Add to container
+            toastContainer.appendChild(toast);
+            
+            // Trigger show animation
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10);
+            
+          
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toastContainer.removeChild(toast);
+                }, 300);
+            }, 1500);
+        }
+
+
+                                                                   //zoom
+        const zoomContainers = document.querySelectorAll('.product-image-zoom');
+
+        zoomContainers.forEach(container => {
+            const img = container.querySelector('.zoomable-image');
+
+            container.addEventListener('mousemove', function (e) {
+                const rect = container.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width;
+                const y = (e.clientY - rect.top) / rect.height;
+
+                img.style.transformOrigin = `${x * 100}% ${y * 100}%`;
+            });
+        });
+
+        // Initialize Fancybox for click-to-zoom
+        Fancybox.bind("[data-fancybox]", {
+            // Custom options if needed
+        });
+
+                                                      // Handle size selection
+        const sizeOptions = document.querySelectorAll('input[name="size"]');
+        const addToCartBtn = document.getElementById('addToCartBtn');
         const priceElement = document.getElementById('product-price');
-        const quantityElement = document.getElementById('product-quantity');
-        
-        // Function to update price and quantity based on variant data
-        function updateProductDetails(variantData) {
-            //  price
-            if (variantData.salePrice && variantData.salePrice !== variantData.price) {
-                priceElement.innerHTML = `₹.${variantData.salePrice} <span>₹.${variantData.price}</span>`;
-            } else {
-                priceElement.innerHTML = `₹.${variantData.price}`;
-            }
-            //quantity
-            quantityElement.innerHTML = `Stock: ${variantData.quantity}`;
-        }
 
-        // Function to save selected size to localStorage
-        function saveSelectedSize(size) {
-            localStorage.setItem(`selectedSize_${productId}`, size);
-        }
+        sizeOptions.forEach(option => {
+            option.addEventListener('change', function () {
+                // Enable add to cart button
+                addToCartBtn.disabled = false;
 
-        // Function to get selected size from localStorage
-        function getSelectedSize() {
-            return localStorage.getItem(`selectedSize_${productId}`);
-        }
-
-        // Add click event listeners to size labels
-        sizeLabels.forEach(label => {
-            label.addEventListener('click', function() {
-                // Remove active class from all labels
-                sizeLabels.forEach(l => l.classList.remove('active'));
-                
-                // Add active class to clicked label
-                this.classList.add('active');
-                
-                // Get variant data and update details
-                const variantData = JSON.parse(this.dataset.variant);
-                updateProductDetails(variantData);
-                
-                // Save selected size
-                saveSelectedSize(variantData.size);
+                // Update price display
+                const salePrice = this.dataset.price;
+                const regularPrice = this.dataset.regularPrice;
+                priceElement.innerHTML = `₹.${salePrice} <span>₹.${regularPrice}</span>`;
             });
         });
 
-        // Check for previously selected size on page load
-        const savedSize = getSelectedSize();
-        if (savedSize) {
-            const savedSizeLabel = document.querySelector(`label[for="size-${savedSize}"]`);
-            if (savedSizeLabel && !savedSizeLabel.classList.contains('unavailable')) {
-                // Simulate click on the saved size label
-                savedSizeLabel.click();
-                // Check the radio input
-                const radioInput = document.getElementById(`size-${savedSize}`);
-                if (radioInput) {
-                    radioInput.checked = true;
+
+
+                                                         // Add to cart function
+        async function addToCart(productId) {
+            try {
+                const selectedSize = document.querySelector('input[name="size"]:checked');
+                if (!selectedSize) {
+                    showToast('Please select a size', 'error');
+                    return;
                 }
+
+                const quantity = document.getElementById('quantity').value;
+                if (quantity < 1) {
+                    showToast('Please select a valid quantity', 'error');
+                    return;
+                }
+
+                const response = await fetch('/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        productId: productId,
+                        size: parseInt(selectedSize.value),
+                        quantity: parseInt(quantity)
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update cart count in header if it exists
+                    const cartCountElement = document.querySelector('.cart-count');
+                    if (cartCountElement) {
+                        cartCountElement.textContent = data.cartCount;
+                    }
+
+                    showToast(data.message, 'success');
+                } else {
+                    // Check for max quantity reached
+                    if (data.maxQuantityReached) {
+                        showToast(`Maximum 5 items allowed per product and size`, 'error');
+                    } else {
+                        showToast(data.message || 'Error adding product to cart', 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error adding product to cart', 'error');
             }
         }
-    });
 
 
-    //zoom
-    const zoomContainers = document.querySelectorAll('.product-image-zoom');
-        
-    zoomContainers.forEach(container => {
-        const img = container.querySelector('.zoomable-image');
-            
-        container.addEventListener('mousemove', function(e) {
-            const rect = container.getBoundingClientRect();
-            const x = (e.clientX - rect.left) / rect.width;
-            const y = (e.clientY - rect.top) / rect.height;
-                
-            img.style.transformOrigin = `${x * 100}% ${y * 100}%`;
-        });
-    });
-
-    // Initialize Fancybox for click-to-zoom
-    Fancybox.bind("[data-fancybox]", {
-        // Custom options if needed
-    });
 
 
-    
-    // Handle size selection
-    const sizeOptions = document.querySelectorAll('input[name="size"]');
-    const addToCartBtn = document.getElementById('addToCartBtn');
-    const priceElement = document.getElementById('product-price');
 
-    sizeOptions.forEach(option => {
-        option.addEventListener('change', function() {
-            // Enable add to cart button
-            addToCartBtn.disabled = false;
-            
-            // Update price display
-            const salePrice = this.dataset.price;
-            const regularPrice = this.dataset.regularPrice;
-            priceElement.innerHTML = `₹.${salePrice} <span>₹.${regularPrice}</span>`;
-        });
-    });
 
-    
+    </script>
 
-    // Add to cart function
-    async function addToCart(productId) {
-        try {
-            const selectedSize = document.querySelector('input[name="size"]:checked');
-            if (!selectedSize) {
-                alert('Please select a size');
-                return;
-            }
+    <!-- Toast container -->
+    <div id="toast-container" style="
+        position: fixed; 
+        top: 20px; 
+        right: 550px; 
+        z-index: 1000; 
+        max-width: 400px;
+    "></div>
 
-            const quantity = document.getElementById('quantity').value;
-            if (quantity < 1) {
-                alert('Please select a valid quantity');
-                return;
-            }
-
-            const response = await fetch('/cart/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    productId: productId,
-                    size: parseInt(selectedSize.value),
-                    quantity: parseInt(quantity)
-                })
-            });
-
-            const data = await response.json();
-            
-            if (data.success) {
-                // Update cart count in header if it exists
-                const cartCountElement = document.querySelector('.cart-count');
-                if (cartCountElement) {
-                    cartCountElement.textContent = data.cartCount;
-                }
-                
-                alert(data.message);
-            } else {
-                alert(data.message || 'Error adding product to cart');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Error adding product to cart');
+    <style>
+        .toast-message {
+            background-color: #333;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 10px 14px; 
+            /* font-size: 14px; */
         }
-    }
-</script>
+        .toast-message.success {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .toast-message.error {
+            background-color: #f44336;
+            color: white;
+            /* margin-left: 100px;  */
+            position: relative;
+            left: 50px;
+        }
+        .toast-message.show {
+            opacity: 1;
+        }
+    </style>
 
-<%- include("../../views/partials/user/footer") %>
+    <%- include("../../views/partials/user/footer") %>

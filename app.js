@@ -56,6 +56,10 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 
 
 
+app.get("/hola",(req,res)=> {
+    res.render("order-details")
+})
+
 
 const PORT= process.env.PORT
 app.listen(PORT, ()=>{

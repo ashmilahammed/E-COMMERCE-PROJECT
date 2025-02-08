@@ -45,6 +45,7 @@ const addToCart = async (req, res) => {
         }
 
         const { productId, size, quantity = 1 } = req.body;
+        const MAX_QUANTITY_PER_SIZE = 5;
 
         // Validate product and size
         const product = await Product.findById(productId);
@@ -83,6 +84,15 @@ const addToCart = async (req, res) => {
             const item = cart.items[existingItemIndex];
             const newQuantity = item.quantity + parseInt(quantity);
             
+            // Check if new quantity exceeds max limit
+            if (newQuantity > MAX_QUANTITY_PER_SIZE) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: `Maximum ${MAX_QUANTITY_PER_SIZE} items allowed per product and size`,
+                    maxQuantityReached: true
+                });
+            }
+            
             // Check if new quantity is available
             if (variant.quantity < newQuantity) {
                 return res.status(400).json({ success: false, message: "Requested quantity exceeds available stock" });
@@ -91,6 +101,19 @@ const addToCart = async (req, res) => {
             item.quantity = newQuantity;
             item.totalPrice = variant.salePrice * newQuantity;
         } else {
+            // Check if adding new item would exceed max limit
+            const sameProductSizeItems = cart.items.filter(
+                item => item.productId.toString() === productId && item.size === parseInt(size)
+            );
+
+            if (sameProductSizeItems.length >= MAX_QUANTITY_PER_SIZE) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: `Maximum ${MAX_QUANTITY_PER_SIZE} items allowed per product and size`,
+                    maxQuantityReached: true
+                });
+            }
+
             // Add new item
             cart.items.push({
                 productId,
@@ -125,61 +148,84 @@ const addToCart = async (req, res) => {
 const updateQuantity = async (req, res) => {
     try {
         const userId = req.session.user;
+        const { productId, size, quantity } = req.body;
+
+        // Validate inputs
         if (!userId) {
             return res.status(401).json({ success: false, message: "Please login to update cart" });
         }
 
-        const { productId, size, quantity } = req.body;
+        // Validate quantity
+        const parsedQuantity = parseInt(quantity);
+        if (parsedQuantity <= 0) {
+            return res.status(400).json({ success: false, message: "Invalid quantity" });
+        }
 
-        // Validate inputs
-        if (!productId || !size || !quantity || quantity < 1) {
-            return res.status(400).json({ success: false, message: "Invalid input" });
+        // Check maximum quantity limit
+        const MAX_QUANTITY = 5;
+        if (parsedQuantity > MAX_QUANTITY) {
+            return res.status(400).json({ 
+                success: false, 
+                message: `Maximum ${MAX_QUANTITY} items allowed per product`,
+                maxQuantityReached: true
+            });
         }
 
         // Find cart
-        const cart = await Cart.findOne({ userId });
+        const cart = await Cart.findOne({ userId }).populate({
+            path: 'items.productId',
+            select: 'variants'
+        });
+
         if (!cart) {
             return res.status(404).json({ success: false, message: "Cart not found" });
         }
 
-        // Find the item in cart
-        const itemIndex = cart.items.findIndex(
-            item => item.productId.toString() === productId && item.size === parseInt(size)
+        // Find the specific cart item
+        const cartItem = cart.items.find(
+            item => item.productId._id.toString() === productId && item.size === parseInt(size)
         );
 
-        if (itemIndex === -1) {
-            return res.status(404).json({ success: false, message: "Item not found in cart" });
+        if (!cartItem) {
+            return res.status(404).json({ success: false, message: "Product not found in cart" });
         }
 
-        // Check product stock
-        const product = await Product.findById(productId);
-        if (!product) {
-            return res.status(404).json({ success: false, message: "Product not found" });
+        // Find the product variant
+        const variant = cartItem.productId.variants.find(v => v.size === parseInt(size));
+        if (!variant) {
+            return res.status(400).json({ success: false, message: "Selected size not available" });
         }
 
-        const variant = product.variants.find(v => v.size === parseInt(size));
-        if (!variant || variant.quantity < quantity) {
-            return res.status(400).json({ success: false, message: "Requested quantity not available" });
+        // Check stock availability
+        if (variant.quantity < parsedQuantity) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Requested quantity exceeds available stock" 
+            });
         }
 
-        // Update quantity and price
-        cart.items[itemIndex].quantity = parseInt(quantity);
-        cart.items[itemIndex].totalPrice = variant.salePrice * parseInt(quantity);
-        
+        // Update quantity
+        cartItem.quantity = parsedQuantity;
+        cartItem.totalPrice = variant.salePrice * parsedQuantity;
+
         // Recalculate cart total
         cart.cartTotal = cart.items.reduce((total, item) => total + item.totalPrice, 0);
 
+        // Save cart
         await cart.save();
 
         res.json({ 
             success: true, 
-            message: "Quantity updated successfully",
+            message: "Cart updated successfully",
             cartTotal: cart.cartTotal
         });
 
     } catch (error) {
-        console.error("Error updating quantity:", error);
-        res.status(500).json({ success: false, message: "Error updating quantity" });
+        console.error("Error updating cart quantity:", error);
+        res.status(500).json({ 
+            success: false, 
+            message: "An error occurred while updating cart quantity" 
+        });
     }
 }
 

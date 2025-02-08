@@ -561,4 +561,4 @@ module.exports = {
     editAddress,
     postEditAddress,
     deleteAddress
-}
+    }

@@ -373,7 +373,7 @@
     <section class="checkout spad">
         <div class="container">
             <div class="checkout__form">
-                <form action="/checkout" method="POST" onsubmit="">
+                <form action="/checkout" method="POST" onsubmit="return false">
                     <div class="row">
                         <div class="col-lg-7 col-md-6">
                             <div class="shipping-address-section p-4 bg-light rounded mb-4" style="min-height: 800px;">
@@ -381,14 +381,14 @@
                                     <i class="fas fa-shipping-fast me-2"></i>Shipping Address
                                 </h6>
                                 <div class="saved-addresses mb-4">
-                                    
+
                                             <div class="saved-address-item mb-4 p-4 border rounded bg-white">
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="radio" name="shipping_address"
-                                                        id="" value=""
-                                                       >
+                                                        id="address" value=""
+                                                    >
                                                     <label class="form-check-label w-100"
-                                                        for="address">
+                                                        for="address_id">
                                                         <div class="d-flex justify-content-between align-items-start">
                                                             <div>
                                                                 <strong class="d-block mb-2">
@@ -397,27 +397,28 @@
                                                                 </strong>
                                                                 <div class="address-details ms-4">
                                                                     <p class="mb-2 text-dark">
-                                                                       
+                                                                      
                                                                     </p>
                                                                     <p class="mb-2 text-muted">
-                                                                        
+                                                                       
                                                                     </p>
-                                                                    
+                                                                    <p class="mb-2 text-dark">
+                                                                        
                                                                     </p>
                                                                     <p class="mb-1">
                                                                         <i class="fas fa-phone-alt me-2"></i>
                                                                         <span class="text-dark">
-                                                                          
+                                                                           
                                                                         </span>
                                                                     </p>
-                                                                  
+                                                                   
                                                                         <p class="mb-0">
                                                                             <i class="fas fa-phone me-2"></i>
                                                                             <span class="text-muted">
-                                                                                
+                                                                               
                                                                             </span>
                                                                         </p>
-                                                       
+                                                                       
                                                                 </div>
                                                             </div>
                                                             <button type="button" class="btn btn-outline-dark"
@@ -428,7 +429,7 @@
                                                     </label>
                                                 </div>
                                             </div>
-                                        
+                                           
                                                     <div class="text-center py-4">
                                                         <p class="mb-3">You haven't added any addresses yet.</p>
                                                         <button type="button" onclick="openAddAddressModal()"
@@ -436,14 +437,14 @@
                                                             <i class="fas fa-plus-circle me-2"></i>Add Another Address
                                                         </button>
                                                     </div>
-                                             
+                                                 
                                 </div>
                              
                                     <button type="button" onclick="openAddAddressModal()"
                                         class="btn btn-dark d-block w-100">
                                         <i class="fas fa-plus-circle me-2"></i>Add Another Address
                                     </button>
-                                    
+                                   
                             </div>
                             <div class="additional-info p-4 border rounded bg-white">
                                 <h6 class="checkout__title mb-4">
@@ -481,23 +482,24 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                               
+                                                
                                                         <tr>
                                                             <td>
-                                                              
+                                                                
                                                             </td>
+                                                            <td class="text-end">₹
                                                             </td>
-                                                            <td class="text-center">
+                                                            <td class="text-center">X
                                                             </td>
                                                             <td class="text-end">₹
                                                             </td>
                                                         </tr>
-                                                      
+                                                     
                                                                 <tr>
                                                                     <td colspan="4" class="text-center">No products in
                                                                         the cart</td>
                                                                 </tr>
-                                                        
+                                                              
                                             </tbody>
                                         </table>
                                     </div>
@@ -678,4 +680,160 @@
 
     <%- include("../../views/partials/user/footer") %>
 
-   
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        const sanitizeQuotes = (string) => {
+            if (typeof string !== 'string') return string;
+            return string.replace(/'/g , '"');
+        }
+        // Function to Open Modal with address data
+        function openEditAddressModal(addressId) {
+            const addresses = '';
+            const address = addresses.find(addr => addr._id === addressId);
+
+            if (address) {
+                document.getElementById("edit_addressType").value = address.addressType || '';
+                document.getElementById("edit_name").value = address.name || '';
+                document.getElementById("edit_city").value = address.city || '';
+                document.getElementById("edit_state").value = address.state || '';
+                document.getElementById("edit_landMark").value = address.landMark || '';
+                document.getElementById("edit_pincode").value = address.pincode || '';
+                document.getElementById("edit_phone").value = address.phone || '';
+                document.getElementById("edit_altPhone").value = address.altPhone || '';
+                document.getElementById("edit_address_id").value = address._id;
+
+                document.getElementById("editAddressModal").style.display = "flex";
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function openAddAddressModal(event) {
+            if (event) {
+                event.preventDefault();
+            }
+            const modal = document.getElementById("addAddressModal");
+            if (modal) {
+                modal.style.display = "flex";
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeModal() {
+            const editModal = document.getElementById("editAddressModal");
+            const addModal = document.getElementById("addAddressModal");
+
+            if (editModal) editModal.style.display = "none";
+            if (addModal) addModal.style.display = "none";
+
+            document.body.style.overflow = '';
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function (event) {
+            const editModal = document.getElementById("editAddressModal");
+            const addModal = document.getElementById("addAddressModal");
+
+            if (event.target === editModal || event.target === addModal) {
+                closeModal();
+            }
+        };
+//
+//
+
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const placeOrderBtn = document.getElementById("placeOrderBtn");
+            if (placeOrderBtn) {
+                placeOrderBtn.addEventListener("click", async function(e) {
+                    e.preventDefault();
+                    // alert("button clicked");
+                    await placeOrder();
+                });
+            }
+        });
+        
+        async function placeOrder() {
+            try {
+                // Get all required order details
+                const shippingAddress = document.querySelector('input[name="shipping_address"]:checked').value;
+                const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+                const totalAmount = document.getElementById('total-amount').textContent.replace('₹', '');
+                const sanitizedOrderItems = sanitizeQuotes( JSON.stringify(cart.items) )
+                const orderedItems = sanitizedOrderItems
+                console.log('Order Details:', {
+                    shippingAddress,
+                    paymentMethod,
+                    totalAmount,
+                    orderedItems
+                });
+                // First SweetAlert - Confirmation
+                const confirmResult = await Swal.fire({
+                    title: 'Confirm Order',
+                    text: 'Are you sure you want to place this order?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, place order!',
+                    cancelButtonText: 'No, cancel'
+                });
+
+                if (confirmResult.isConfirmed) {
+                    // Show loading state
+                    Swal.fire({
+                        title: 'Processing',
+                        text: 'Please wait while we process your order...',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Make the API call with all order details
+                    const response = await fetch("/checkout", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            shippingAddress,
+                            paymentMethod,
+                            totalAmount,
+                            orderedItems
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Success message
+                        await Swal.fire({
+                            title: 'Success!',
+                            text: 'Your order has been placed successfully!',
+                            icon: 'success',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+
+                        // Redirect to orders page after success
+                        window.location.replace(/viewOrder/$);
+                        // window.location.replace(/viewOrder/${data.orderId});
+                    } else {
+                        throw new Error(data.message || 'Order failed');
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error.message);
+                await Swal.fire({
+                    title: 'Error!',
+                    text: 'Something went wrong while placing your order. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
+    </script>
