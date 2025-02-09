@@ -1,0 +1,130 @@
+<!-- Edit Address Modal -->
+<div id="editAddressModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h2 class="modal-title">Edit Address</h2>
+        <form action="/editCheckoutAddress" method="POST">
+            <div class="form-group">
+                <label for="addressType">Address Type</label>
+                <input type="text" id="edit_addressType" name="addressType"
+                    placeholder="Address Type (e.g., Home, Office)" required>
+
+                <label for="name">Place Name</label>
+                <input type="text" id="edit_name" name="name" placeholder="Full Name" required>
+
+                <label for="city">City</label>
+                <input type="text" id="edit_city" name="city" placeholder="City" required>
+
+                <label for="state">State</label>
+                <input type="text" id="edit_state" name="state" placeholder="State" required>
+
+                <label for="landMark">Landmark</label>
+                <input type="text" id="edit_landMark" name="landMark" placeholder="Landmark" required>
+
+                <label for="pincode">Pincode</label>
+                <input type="text" id="edit_pincode" name="pincode" placeholder="Pincode" required>
+
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="edit_phone" name="phone" placeholder="Phone Number" required>
+
+                <label for="altPhone">Alternative Phone Number (Optional)</label>
+                <input type="tel" id="edit_altPhone" name="altPhone"
+                    placeholder="Alternative Phone Number (Optional)">
+            </div>
+
+            <input type="hidden" id="edit_address_id" name="address_id">
+
+            <button type="submit" class="save-btn">Save Changes</button>
+        </form>
+    </div>
+</div>
+
+<!-- Add Address Modal -->
+<div id="addAddressModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h2 class="modal-title">Add New Address</h2>
+        <form action="/addCheckoutAddress" method="POST">
+            <div class="form-group">
+                <label for="addressType">Address Type</label>
+                <input type="text" name="addressType" placeholder="Address Type (e.g., Home, Office)" required>
+
+                <label for="name">Full Name</label>
+                <input type="text" name="name" placeholder="Full Name" required>
+
+                <label for="city">City</label>
+                <input type="text" name="city" placeholder="City" required>
+
+                <label for="state">State</label>
+                <input type="text" name="state" placeholder="State" required>
+
+                <label for="landMark">Landmark</label>
+                <input type="text" name="landMark" placeholder="Landmark" required>
+
+                <label for="pincode">Pincode</label>
+                <input type="text" name="pincode" placeholder="Pincode" required>
+
+                <label for="phone">Phone Number</label>
+                <input type="tel" name="phone" placeholder="Phone Number" required>
+
+                <label for="altPhone">Alternative Phone Number (Optional)</label>
+                <input type="tel" name="altPhone" placeholder="Alternative Phone Number (Optional)">
+            </div>
+
+            <button type="submit" class="save-btn">Add Address</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openEditAddressModal(addressId) {
+        const addresses = <%= JSON.stringify(addresses || []) %>;
+        const address = addresses.find(addr => addr._id === addressId);
+
+        if (address) {
+            document.getElementById("edit_addressType").value = address.addressType || '';
+            document.getElementById("edit_name").value = address.name || '';
+            document.getElementById("edit_city").value = address.city || '';
+            document.getElementById("edit_state").value = address.state || '';
+            document.getElementById("edit_landMark").value = address.landMark || '';
+            document.getElementById("edit_pincode").value = address.pincode || '';
+            document.getElementById("edit_phone").value = address.phone || '';
+            document.getElementById("edit_altPhone").value = address.altPhone || '';
+            document.getElementById("edit_address_id").value = address._id;
+
+            document.getElementById("editAddressModal").style.display = "flex";
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function openAddAddressModal(event) {
+        if (event) {
+            event.preventDefault();
+        }
+        const modal = document.getElementById("addAddressModal");
+        if (modal) {
+            modal.style.display = "flex";
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeModal() {
+        const editModal = document.getElementById("editAddressModal");
+        const addModal = document.getElementById("addAddressModal");
+
+        if (editModal) editModal.style.display = "none";
+        if (addModal) addModal.style.display = "none";
+
+        document.body.style.overflow = '';
+    }
+
+    // Close modals when clicking outside
+    window.onclick = function (event) {
+        const editModal = document.getElementById("editAddressModal");
+        const addModal = document.getElementById("addAddressModal");
+
+        if (event.target === editModal || event.target === addModal) {
+            closeModal();
+        }
+    };
+</script>

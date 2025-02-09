@@ -6,8 +6,9 @@ const passport = require("passport");
 const {userAuth,adminAuth, isBlocked} = require("../middlewares/auth");
 const productController = require("../controllers/user/productController");
 const cartController = require("../controllers/user/cartController");
-const checkoutController = require("../controllers/user/checkoutController");
 const wishlistController = require("../controllers/user/wishlistController");
+const checkoutController = require('../controllers/user/checkoutController');
+
 
 
 
@@ -59,6 +60,10 @@ router.get("/editAddress",userAuth,profileController.editAddress);
 router.post("/editAddress",userAuth,profileController.postEditAddress);
 router.get("/deleteAddress",userAuth,profileController.deleteAddress);
 
+
+//Product management
+router.get("/productDetails",userAuth,productController.productDetails);
+
 //cart management
 router.get("/cart",userAuth,cartController.cartPage);
 router.post("/cart/add",userAuth,cartController.addToCart);
@@ -66,11 +71,25 @@ router.post("/cart/update-quantity",userAuth,cartController.updateQuantity);
 router.post("/cart/remove-item",userAuth,cartController.removeItem);
 
 //checkout management
-router.get("/checkOut",userAuth,checkoutController.getcheckOutPage);
+router.get('/checkout',userAuth,checkoutController.checkoutPage);
+router.post('/checkout',userAuth,checkoutController.placeOrder);
 
 
-//Product management
-router.get("/productDetails",userAuth,productController.productDetails);
+
+// Order Management
+// router.get("/checkout", userAuth,orderController.getCheckoutPage);
+// router.get("/deleteItem", userAuth, orderController.deleteProduct);
+// router.post("/applyCoupon",userAuth,userController.applyCoupon);
+// router.post("/orderPlaced", userAuth,orderController.orderPlaced);
+// router.get("/orderDetails", userAuth,orderController.getOrderDetailsPage);
+// router.post("/cancelOrder",userAuth,orderController.cancelOrder);
+// router.post("/returnrequestOrder",userAuth,orderController.returnorder);
+// router.post("/verifyPayment", userAuth, orderController.verify);
+// router.post("/singleProductId",userAuth,orderController.changeSingleProductStatus);
+// router.post('/paymentConfirm',userAuth,orderController.paymentConfirm);
+// router.get("/downloadInvoice/:orderId",userAuth,orderController.downloadInvoice);
+
+
 
 
 //wishlist management

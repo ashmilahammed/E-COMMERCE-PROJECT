@@ -3,6 +3,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+      <!-- Include Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
 
     <style>
         /* Modal Background */
@@ -381,70 +385,82 @@
                                     <i class="fas fa-shipping-fast me-2"></i>Shipping Address
                                 </h6>
                                 <div class="saved-addresses mb-4">
-
-                                            <div class="saved-address-item mb-4 p-4 border rounded bg-white">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="shipping_address"
-                                                        id="address" value=""
-                                                    >
-                                                    <label class="form-check-label w-100"
-                                                        for="address_id">
-                                                        <div class="d-flex justify-content-between align-items-start">
-                                                            <div>
-                                                                <strong class="d-block mb-2">
-                                                                    <i class="fas fa-map-marker-alt me-2"></i>
-                                                                   
-                                                                </strong>
-                                                                <div class="address-details ms-4">
-                                                                    <p class="mb-2 text-dark">
-                                                                      
-                                                                    </p>
-                                                                    <p class="mb-2 text-muted">
-                                                                       
-                                                                    </p>
-                                                                    <p class="mb-2 text-dark">
-                                                                        
-                                                                    </p>
-                                                                    <p class="mb-1">
-                                                                        <i class="fas fa-phone-alt me-2"></i>
-                                                                        <span class="text-dark">
-                                                                           
-                                                                        </span>
-                                                                    </p>
-                                                                   
-                                                                        <p class="mb-0">
-                                                                            <i class="fas fa-phone me-2"></i>
-                                                                            <span class="text-muted">
-                                                                               
-                                                                            </span>
-                                                                        </p>
-                                                                       
+                                    <% if (addresses && addresses.length > 0) { %>
+                                        <div class="row">
+                                            <% addresses.forEach((addressDoc, index) => { 
+                                                addressDoc.address.forEach((address, addressIndex) => { %>
+                                                <div class="col-md-6 mb-3">
+                                                    <div class="saved-address-item mb-4 p-4 border rounded bg-white">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" 
+                                                                   name="shipping_address" 
+                                                                   id="address_<%= addressDoc._id %>_<%= addressIndex %>" 
+                                                                   value="<%= address._id %>"
+                                                                   <%= (index === 0 && addressIndex === 0) ? 'checked' : '' %>
+                                                            >
+                                                            <label class="form-check-label w-100" 
+                                                                   for="address_<%= addressDoc._id %>_<%= addressIndex %>">
+                                                                <div class="d-flex justify-content-between align-items-start">
+                                                                    <div>
+                                                                        <strong class="d-block mb-2">
+                                                                            <i class="fas fa-map-marker-alt me-2"></i>
+                                                                            <%= address.addressType %>
+                                                                        </strong>
+                                                                        <div class="address-details ms-4">
+                                                                            <p class="mb-2 text-dark">
+                                                                                <%= address.name %>
+                                                                            </p>
+                                                                            <p class="mb-2 text-muted">
+                                                                                <%= address.landMark %>, 
+                                                                                <%= address.city %>, 
+                                                                                <%= address.state %> - 
+                                                                                <%= address.pincode %>
+                                                                            </p>
+                                                                            <p class="mb-1">
+                                                                                <i class="fas fa-phone-alt me-2"></i>
+                                                                                <span class="text-dark">
+                                                                                    <%= address.phone %>
+                                                                                </span>
+                                                                            </p>
+                                                                            <% if (address.altPhone) { %>
+                                                                                <p class="mb-0">
+                                                                                    <i class="fas fa-phone me-2"></i>
+                                                                                    <span class="text-muted">
+                                                                                        <%= address.altPhone %>
+                                                                                    </span>
+                                                                                </p>
+                                                                            <% } %>
+                                                                        </div>
+                                                                    </div>
+                                                                    <button type="button" class="btn btn-outline-dark"
+                                                                            onclick="openEditAddressModal('<%= addressDoc._id %>')">
+                                                                        <i class="fas fa-edit me-2"></i>Edit
+                                                                    </button>
                                                                 </div>
-                                                            </div>
-                                                            <button type="button" class="btn btn-outline-dark"
-                                                                onclick="openEditAddressModal('')">
-                                                                <i class="fas fa-edit me-2"></i>Edit
-                                                            </button>
+                                                            </label>
                                                         </div>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                           
-                                                    <div class="text-center py-4">
-                                                        <p class="mb-3">You haven't added any addresses yet.</p>
-                                                        <button type="button" onclick="openAddAddressModal()"
-                                                            class="btn btn-dark d-block w-100">
-                                                            <i class="fas fa-plus-circle me-2"></i>Add Another Address
-                                                        </button>
                                                     </div>
-                                                 
+                                                </div>
+                                            <% }); %>
+                                            <% }); %>
+                                        </div>
+                                    <% } else { %>
+                                        <div class="text-center py-4">
+                                            <p class="mb-3">You haven't added any addresses yet.</p>
+                                            <button type="button" onclick="openAddAddressModal()"
+                                                class="btn btn-dark d-block w-100">
+                                                <i class="fas fa-plus-circle me-2"></i>Add Your First Address
+                                            </button>
+                                        </div>
+                                    <% } %>
                                 </div>
                              
-                                    <button type="button" onclick="openAddAddressModal()"
-                                        class="btn btn-dark d-block w-100">
-                                        <i class="fas fa-plus-circle me-2"></i>Add Another Address
-                                    </button>
-                                   
+                                <% if (addresses && addresses.length> 0) { %>
+                                <button type="button" onclick="openAddAddressModal()"
+                                    class="btn btn-dark d-block w-100">
+                                    <i class="fas fa-plus-circle me-2"></i>Add Another Address
+                                </button>
+                                <% } %>
                             </div>
                             <div class="additional-info p-4 border rounded bg-white">
                                 <h6 class="checkout__title mb-4">
@@ -466,44 +482,35 @@
                                 </h4>
 
 
-                                <!-- ////////////////////////////////////////////////////////////////////////////////////////       -->
+                              <!-- ////////////////////////////////////////////////////////////////////////////////////////       -->
 
 
-                                <!-- Product List -->
-                                <div class="checkout_order_products mb-4">
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Product</th>
-                                                    <th class="text-end">Price</th>
-                                                    <th class="text-center">Qty</th>
-                                                    <th class="text-end">Total</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                
-                                                        <tr>
-                                                            <td>
-                                                                
-                                                            </td>
-                                                            <td class="text-end">₹
-                                                            </td>
-                                                            <td class="text-center">X
-                                                            </td>
-                                                            <td class="text-end">₹
-                                                            </td>
-                                                        </tr>
-                                                     
-                                                                <tr>
-                                                                    <td colspan="4" class="text-center">No products in
-                                                                        the cart</td>
-                                                                </tr>
-                                                              
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                <!-- Product Details Section -->
+                                <div class="checkout__order__products p-4 border rounded bg-white mb-4">
+                                    <h6 class="mb-4">
+                                        <i class="fas fa-box me-2"></i>Products in Checkout
+                                    </h6>
+                                    <% if (cart && cart.items && cart.items.length > 0) { %>
+                                        <% cart.items.forEach(function(item) { %>
+                                            <div class="product-item d-flex align-items-center mb-3 pb-3 border-bottom">
+                                                <div class="product-image me-3">
+                                                    <img src="<%= item.productId.productImage %>" alt="<%= item.productId.productName %>" class="img-fluid" style="max-width: 100px; max-height: 100px;">
+                                                </div>
+                                                <div class="product-details flex-grow-1">
+                                                    <h6 class="mb-1"><%= item.productId.productName %></h6>
+                                                    <p class="text-muted mb-1">Size: <%= item.size %> | Quantity: <%= item.quantity %></p>
+                                                    <p class="fw-bold">
+                                                        Item Total: ₹<%= (item.productId.variants.find(v => v.size === item.size).salePrice * item.quantity).toFixed(2) %>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <p class="text-center text-muted">No products in checkout</p>
+                                    <% } %>
                                 </div>
+
+                               
 
                                 <!-- Coupon Code Section -->
                                 <div class="checkout__coupon mb-4 p-3 border rounded bg-white">
@@ -516,29 +523,38 @@
                                     </div>
                                 </div>
 
-                                <!-- Order Summary -->
-                                <div class="order-summary p-3 bg-white rounded border mb-4">
-                                    <h6 class="mb-3">
-                                        <i class="fas fa-calculator me-2"></i>Order Summary
+                                 <!-- Order Summary with Taxes and Discounts -->
+                                 <div class="checkout__order__summary p-4 border rounded bg-white">
+                                    <h6 class="mb-4">
+                                        <i class="fas fa-receipt me-2"></i>Order Summary
                                     </h6>
-                                    <ul class="checkout_total_all">
-                                        <li class="d-flex justify-content-between mb-2">
-                                            Subtotal <span>₹</span>
-                                        </li>
-                                        <li class="d-flex justify-content-between mb-2">
-                                            Shipping Charge <span>₹0</span>
-                                        </li>
-                                        <li class="d-flex justify-content-between mb-2">
-                                            Tax (0%) <span>₹0</span>
-                                        </li>
+                                    <div class="summary-details">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>Subtotal</span>
+                                            <span>₹<%= cart.subtotal.toFixed(2) %></span>
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>Taxes</span>
+                                            <span>₹<%= cart.tax.toFixed(2) %></span>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>Shipping</span>
+                                            <span>₹<%= cart.shipping.toFixed(2) %></span>
+                                        </div>
                                         <li class="d-flex justify-content-between mb-2 text-success">
                                             Discount <span>-₹0</span>
                                         </li>
-                                        <li class="d-flex justify-content-between total-amount" id="total-amount">
-                                            <strong>Total</strong> <strong>₹</strong>
-                                        </li>
-                                    </ul>
+                                        <hr>
+                                        <div class="d-flex justify-content-between fw-bold">
+                                            <span>Total</span>
+                                            <span>₹<%= cart.total.toFixed(2) %></span>
+                                        </div>
+                                    </div>
                                 </div>
+
+
 
                                 <!-- Payment Methods -->
                                 <div class="checkout_payment_methods p-4 border rounded bg-white">
@@ -615,11 +631,11 @@
                     <label for="city">City</label>
                     <input type="text" id="edit_city" name="city" placeholder="City" required>
 
-                    <label for="state">State</label>
-                    <input type="text" id="edit_state" name="state" placeholder="State" required>
-
                     <label for="landMark">Landmark</label>
                     <input type="text" id="edit_landMark" name="landMark" placeholder="Landmark" required>
+
+                    <label for="state">State</label>
+                    <input type="text" id="edit_state" name="state" placeholder="State" required>
 
                     <label for="pincode">Pincode</label>
                     <input type="text" id="edit_pincode" name="pincode" placeholder="Pincode" required>
@@ -639,8 +655,9 @@
         </div>
     </div>
 
-    <!-- //////////////// -->
+  
 
+     <!-- add address Modal -->
     <div id="addAddressModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal()">&times;</span>
@@ -656,11 +673,11 @@
                     <label for="city">City</label>
                     <input type="text" name="city" placeholder="City" required>
 
-                    <label for="state">State</label>
-                    <input type="text" name="state" placeholder="State" required>
-
                     <label for="landMark">Landmark</label>
                     <input type="text" name="landMark" placeholder="Landmark" required>
+
+                    <label for="state">State</label>
+                    <input type="text" name="state" placeholder="State" required>
 
                     <label for="pincode">Pincode</label>
                     <input type="text" name="pincode" placeholder="Pincode" required>
@@ -681,7 +698,7 @@
     <%- include("../../views/partials/user/footer") %>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+  
     <script>
         const sanitizeQuotes = (string) => {
             if (typeof string !== 'string') return string;
@@ -689,15 +706,15 @@
         }
         // Function to Open Modal with address data
         function openEditAddressModal(addressId) {
-            const addresses = '';
+            const addresses = '<%-JSON.stringify(addresses)%>';
             const address = addresses.find(addr => addr._id === addressId);
 
             if (address) {
                 document.getElementById("edit_addressType").value = address.addressType || '';
                 document.getElementById("edit_name").value = address.name || '';
                 document.getElementById("edit_city").value = address.city || '';
-                document.getElementById("edit_state").value = address.state || '';
                 document.getElementById("edit_landMark").value = address.landMark || '';
+                document.getElementById("edit_state").value = address.state || '';
                 document.getElementById("edit_pincode").value = address.pincode || '';
                 document.getElementById("edit_phone").value = address.phone || '';
                 document.getElementById("edit_altPhone").value = address.altPhone || '';
@@ -739,7 +756,6 @@
             }
         };
 //
-//
 
 
 
@@ -753,6 +769,8 @@
                 });
             }
         });
+
+
         
         async function placeOrder() {
             try {

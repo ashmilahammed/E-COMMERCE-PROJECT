@@ -2,10 +2,6 @@ const User = require("../../models/userSchema");
 const Cart = require("../../models/cartSchema");
 const Product = require("../../models/productSchema");
 
-
-
-
-
 const cartPage = async (req,res) => {
     try {
         const userId = req.session.user;
@@ -21,9 +17,18 @@ const cartPage = async (req,res) => {
         // Get cart items with product details
         const cart = await Cart.findOne({ userId }).populate({
             path: 'items.productId',
-            select: 'productName productImage variants brand'
+            select: 'productName productImage variants brand price'
         });
         
+        if (cart) {
+            // Calculate detailed cart summary
+            cart.subtotal = cart.items.reduce((total, item) => total + (item.productId.price * item.quantity), 0);
+            cart.tax = cart.subtotal * 0.1; // 10% tax rate
+            cart.discount = 0; // You can implement discount logic later
+            cart.shipping = cart.subtotal > 1000 ? 0 : 50; // Free shipping over 1000
+            cart.total = cart.subtotal + cart.tax + cart.shipping - cart.discount;
+        }
+
         res.render("cart", {
             user: userData,
             cart: cart
@@ -33,9 +38,6 @@ const cartPage = async (req,res) => {
         res.redirect("/pageNotFound")
     }
 }
-
-
-
 
 const addToCart = async (req, res) => {
     try {
@@ -142,9 +144,6 @@ const addToCart = async (req, res) => {
     }
 }
 
-
-
-
 const updateQuantity = async (req, res) => {
     try {
         const userId = req.session.user;
@@ -229,9 +228,6 @@ const updateQuantity = async (req, res) => {
     }
 }
 
-
-
-
 const removeItem = async (req, res) => {
     try {
         const userId = req.session.user;
@@ -275,10 +271,6 @@ const removeItem = async (req, res) => {
         res.status(500).json({ success: false, message: "Error removing item" });
     }
 }
-
-
-
-
 
 module.exports = {
     cartPage,
