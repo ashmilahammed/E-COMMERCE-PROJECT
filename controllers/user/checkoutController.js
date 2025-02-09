@@ -138,7 +138,86 @@ const placeOrder = async (req, res) => {
     }
 };
 
+const addAddress = async (req, res) => {
+    try {
+        const userId = req.session.user;
+        if (!userId) {
+            return res.status(401).json({ success: false, message: "Please login to add address" });
+        }
+
+        const addressData = {
+            userId,
+            address: [{
+                fullName: req.body.fullName,
+                mobileNumber: req.body.mobileNumber,
+                pincode: req.body.pincode,
+                locality: req.body.locality,
+                address: req.body.address,
+                city: req.body.city,
+                state: req.body.state,
+                addressType: req.body.addressType
+            }]
+        };
+
+        // Check if user already has addresses
+        const existingAddresses = await Address.findOne({ userId });
+        
+        if (existingAddresses) {
+            // Add new address to existing addresses
+            existingAddresses.address.push(addressData.address[0]);
+            await existingAddresses.save();
+            return res.status(200).json({ success: true, message: "Address added successfully" });
+        } else {
+            // Create new address document
+            await Address.create(addressData);
+            return res.status(200).json({ success: true, message: "Address added successfully" });
+        }
+    } catch (error) {
+        console.error("Error adding address:", error);
+        return res.status(500).json({ success: false, message: "Failed to add address" });
+    }
+};
+
+const updateAddress = async (req, res) => {
+    try {
+        const userId = req.session.user;
+        const addressId = req.body.addressId;
+
+        if (!userId) {
+            return res.status(401).json({ success: false, message: "Please login to update address" });
+        }
+
+        const updatedData = {
+            fullName: req.body.fullName,
+            mobileNumber: req.body.mobileNumber,
+            pincode: req.body.pincode,
+            locality: req.body.locality,
+            address: req.body.address,
+            city: req.body.city,
+            state: req.body.state,
+            addressType: req.body.addressType
+        };
+
+        const result = await Address.findOneAndUpdate(
+            { userId, "address._id": addressId },
+            { $set: { "address.$": updatedData } },
+            { new: true }
+        );
+
+        if (!result) {
+            return res.status(404).json({ success: false, message: "Address not found" });
+        }
+
+        return res.status(200).json({ success: true, message: "Address updated successfully" });
+    } catch (error) {
+        console.error("Error updating address:", error);
+        return res.status(500).json({ success: false, message: "Failed to update address" });
+    }
+};
+
 module.exports = {
     checkoutPage,
-    placeOrder
+    placeOrder,
+    addAddress,
+    updateAddress
 };
