@@ -7,7 +7,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 
-
     <!-- <style>
         /* Modal Background */
         .modal {
@@ -390,55 +389,41 @@
                                             <% addresses.forEach((addressDoc, index)=> {
                                                 addressDoc.address.forEach((address, addressIndex) => { %>
                                                 <div class="col-md-6 mb-3">
-                                                    <div class="saved-address-item mb-4 p-4 border rounded bg-white">
+                                                    <div
+                                                        class="saved-address-item mb-4 p-4 border rounded bg-white position-relative">
                                                         <div class="form-check">
                                                             <input class="form-check-input" type="radio"
                                                                 name="shipping_address"
                                                                 id="address_<%= addressDoc._id %>_<%= addressIndex %>"
-                                                                value="<%= address._id %>" <%=(index===0 &&
-                                                                addressIndex===0) ? 'checked' : '' %>
-                                                            >
-                                                            <label class="form-check-label w-100"
+                                                                value="<%= JSON.stringify(address) %>" <%=index===0 &&
+                                                                addressIndex===0 ? 'checked' : '' %>>
+                                                            <label class="form-check-label"
                                                                 for="address_<%= addressDoc._id %>_<%= addressIndex %>">
-                                                                <div
-                                                                    class="d-flex justify-content-between align-items-start">
-                                                                    <div>
-                                                                        <strong class="d-block mb-2">
-                                                                            <i class="fas fa-map-marker-alt me-2"></i>
-                                                                            <%= address.addressType %>
-                                                                        </strong>
-                                                                        <div class="address-details ms-4">
-                                                                            <p class="mb-2 text-dark">
-                                                                                <%= address.name %>
-                                                                            </p>
-                                                                            <p class="mb-2 text-muted">
-                                                                                <%= address.landMark %>,
-                                                                                    <%= address.city %>,
-                                                                                        <%= address.state %> -
-                                                                                            <%= address.pincode %>
-                                                                            </p>
-                                                                            <p class="mb-1">
-                                                                                <i class="fas fa-phone-alt me-2"></i>
-                                                                                <span class="text-dark">
-                                                                                    <%= address.phone %>
-                                                                                </span>
-                                                                            </p>
-                                                                            <% if (address.altPhone) { %>
-                                                                                <p class="mb-0">
-                                                                                    <i class="fas fa-phone me-2"></i>
-                                                                                    <span class="text-muted">
-                                                                                        <%= address.altPhone %>
-                                                                                    </span>
-                                                                                </p>
-                                                                                <% } %>
-                                                                        </div>
-                                                                    </div>
-                                                                    <button type="button" class="btn btn-outline-dark"
-                                                                        onclick="openEditAddressModal('<%= JSON.stringify(address) %>')">
-                                                                        <i class="fas fa-edit me-2"></i>Edit
-                                                                    </button>
-                                                                </div>
+                                                                <strong>
+                                                                    <%= address.addressType %>
+                                                                </strong><br>
+                                                                <%= address.name %><br>
+                                                                <%= address.landMark %><br>
+                                                                <%= address.city %>, <%= address.state %><br>
+                                                                <%= address.pincode %><br>
+                                                                   Phone: <%= address.phone %><br>
+                                                                   Alt Phone: <%= address.altPhone
+                                                                       %>
                                                             </label>
+                                                        </div>
+                                                        <div class="address-actions position-absolute"
+                                                            style="top: 10px; right: 10px;">
+
+                                                            <button type="button"
+                                                                class="btn btn-sm btn-outline-primary me-2"
+                                                                onclick='openAddressEditModal(<%= JSON.stringify(address) %>)'>
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+
+                                                            <!-- <button type="button" class="btn btn-sm btn-outline-danger"
+                                                                onclick='deleteAddress("<%= addressDoc._id %>", <%= addressIndex %>)'>
+                                                                <i class="fas fa-trash"></i>
+                                                            </button> -->
                                                         </div>
                                                     </div>
                                                 </div>
@@ -554,7 +539,7 @@
                                             Discount <span>-₹0</span>
                                         </li>
                                         <hr>
-                                        <div class="d-flex justify-content-between fw-bold">
+                                        <div class="d-flex justify-content-between fw-bold" id="total-amount">
                                             <span>Total</span>
                                             <span>₹<%= cart.total.toFixed(2) %></span>
                                         </div>
@@ -627,50 +612,58 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="addAddressModalLabel">Add New Address</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        onclick="closeModal()"></button>
                 </div>
                 <div class="modal-body">
                     <form id="addAddressForm">
-                        <div class="mb-3">
-                            <label for="fullName" class="form-label">Full Name</label>
-                            <input type="text" class="form-control" id="fullName" name="fullName" required>
+                        <div class="row mb-3">
+                            <div class="form-group col-md-4">
+                                <label for="addressType">Address Type:</label>
+                                <input type="text" class="form-control border-3" id="addressType" name="addressType"
+                                    required>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="name">Name:</label>
+                                <input type="text" class="form-control border-3" id="name" name="name" required>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="city">City:</label>
+                                <input type="text" class="form-control border-3" id="city" name="city" required>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="mobileNumber" class="form-label">Mobile Number</label>
-                            <input type="tel" class="form-control" id="mobileNumber" name="mobileNumber" required>
+                        <div class="row mb-3">
+                            <div class="form-group col-md-4">
+                                <label for="landMark">Landmark:</label>
+                                <input type="text" class="form-control border-3" id="landMark" name="landMark" required>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="state">State:</label>
+                                <input type="text" class="form-control border-3" id="state" name="state" required>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="pincode">Pincode:</label>
+                                <input type="number" class="form-control border-3" id="pincode" name="pincode" required>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="pincode" class="form-label">Pincode</label>
-                            <input type="text" class="form-control" id="pincode" name="pincode" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="locality" class="form-label">Locality</label>
-                            <input type="text" class="form-control" id="locality" name="locality" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="address" class="form-label">Address</label>
-                            <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="city" class="form-label">City/District/Town</label>
-                            <input type="text" class="form-control" id="city" name="city" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="state" class="form-label">State</label>
-                            <input type="text" class="form-control" id="state" name="state" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="addressType" class="form-label">Address Type</label>
-                            <select class="form-select" id="addressType" name="addressType" required>
-                                <option value="home">Home</option>
-                                <option value="work">Work</option>
-                            </select>
+                        <div class="row mb-3">
+                            <div class="form-group col-md-6">
+                                <label for="phone">Phone:</label>
+                                <input type="number" class="form-control border-3" id="phone" name="phone" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="altPhone">Alternate Phone:</label>
+                                <input type="number" class="form-control border-3" id="altPhone" name="altPhone"
+                                    required>
+                            </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="saveAddress()">Save Address</button>
+                    <!-- <button type="button" class="btn btn-primary" onclick="addNewAddress(event)">Save Address</button> -->
+                    <button type="button" class="btn btn-primary"
+                        onclick="if(validateAddressForm()) addNewAddress(event)">Save Address</button>
                 </div>
             </div>
         </div>
@@ -683,150 +676,273 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="editAddressModalLabel">Edit Address</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        onclick="closeModal()"></button>
                 </div>
                 <div class="modal-body">
                     <form id="editAddressForm">
                         <input type="hidden" id="editAddressId" name="addressId">
-                        <div class="mb-3">
-                            <label for="editFullName" class="form-label">Full Name</label>
-                            <input type="text" class="form-control" id="editFullName" name="fullName" required>
+                        <div class="form-group">
+                            <label>Address Type</label>
+                            <input type="text" id="editAddressType" name="addressType" class="form-control" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="editMobileNumber" class="form-label">Mobile Number</label>
-                            <input type="tel" class="form-control" id="editMobileNumber" name="mobileNumber" required>
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" id="editName" name="name" class="form-control" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="editPincode" class="form-label">Pincode</label>
-                            <input type="text" class="form-control" id="editPincode" name="pincode" required>
+                        <div class="form-group">
+                            <label>Landmark</label>
+                            <input type="text" id="editLandMark" name="landMark" class="form-control" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="editLocality" class="form-label">Locality</label>
-                            <input type="text" class="form-control" id="editLocality" name="locality" required>
+                        <div class="form-group">
+                            <label>City</label>
+                            <input type="text" id="editCity" name="city" class="form-control" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="editAddress" class="form-label">Address</label>
-                            <textarea class="form-control" id="editAddress" name="address" rows="3" required></textarea>
+                        <div class="form-group">
+                            <label>State</label>
+                            <input type="text" id="editState" name="state" class="form-control" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="editCity" class="form-label">City/District/Town</label>
-                            <input type="text" class="form-control" id="editCity" name="city" required>
+                        <div class="form-group">
+                            <label>Pincode</label>
+                            <input type="text" id="editPincode" name="pincode" class="form-control" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="editState" class="form-label">State</label>
-                            <input type="text" class="form-control" id="editState" name="state" required>
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="text" id="editPhone" name="phone" class="form-control" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="editAddressType" class="form-label">Address Type</label>
-                            <select class="form-select" id="editAddressType" name="addressType" required>
-                                <option value="home">Home</option>
-                                <option value="work">Work</option>
-                            </select>
+                        <div class="form-group">
+                            <label>Alternative Phone</label>
+                            <input type="text" id="editAltPhone" name="altPhone" class="form-control">
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="updateAddress()">Update Address</button>
+                    <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
+                    <button type="button" class="btn btn-primary" onclick="editAddress(event)">Save changes</button>
                 </div>
             </div>
         </div>
     </div>
 
+
+
     <%- include("../../views/partials/user/footer") %>
 
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <!-- Bootstrap 5 JS (Include before your script) -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
 
         <script>
-            function openAddAddressModal(addressData) {
-                if (typeof addressData === 'string') {
-                    addressData = JSON.parse(addressData);
+
+            function closeModal(modalId) {
+                const modalElement = document.getElementById(modalId);
+                if (modalElement) {
+                    const modalInstance = new bootstrap.Modal(modalElement);
+                    modalInstance.hide();
                 }
+            }
+
+            function validateAddressForm() {
+                const form = document.getElementById('addAddressForm');
+                const phone = form.querySelector('#phone').value;
+                const pincode = form.querySelector('#pincode').value;
+
+                if (phone.length !== 10) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Phone Number',
+                        text: 'Phone number must be 10 digits'
+                    });
+                    return false;
+                }
+
+                if (pincode.length !== 6) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Pincode',
+                        text: 'Pincode must be 6 digits'
+                    });
+                    return false;
+                }
+
+                return true;
+            }
+
+            document.getElementById('addAddressModal').addEventListener('hidden.bs.modal', function () {
+                document.getElementById('addAddressForm').reset();
+            });
+
+
+            //open add modal
+            function openAddAddressModal() {
                 const modal = new bootstrap.Modal(document.getElementById('addAddressModal'));
                 modal.show();
             }
-
-            function openEditAddressModal(addressData) {
-                const modal = new bootstrap.Modal(document.getElementById('editAddressModal'));
-                // Fill the form with existing address data
-                document.getElementById('editAddressId').value = addressData._id;
-                document.getElementById('editFullName').value = addressData.fullName;
-                document.getElementById('editMobileNumber').value = addressData.mobileNumber;
-                document.getElementById('editPincode').value = addressData.pincode;
-                document.getElementById('editLocality').value = addressData.locality;
-                document.getElementById('editAddress').value = addressData.address;
-                document.getElementById('editCity').value = addressData.city;
-                document.getElementById('editState').value = addressData.state;
-                document.getElementById('editAddressType').value = addressData.addressType;
-                modal.show();
-            }
-
-            async function saveAddress() {
-                const formData = new FormData(document.getElementById('addAddressForm'));
-                const addressData = Object.fromEntries(formData.entries());
+            //add address
+            async function addNewAddress(event) {
+                event.preventDefault();
+                const form = document.getElementById('addAddressForm');
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
 
                 try {
-                    const response = await fetch('/add-address', {
+                    const response = await fetch('/add-address', {  
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify(addressData)
+                        body: JSON.stringify(data)
                     });
 
-                    if (response.ok) {
-                        const modal = bootstrap.Modal.getInstance(document.getElementById('addAddressModal'));
-                        modal.hide();
-                        // Reload the page to show the new address
-                        window.location.reload();
+                    const result = await response.json();
+                    if (result.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: 'Address added successfully'
+                        }).then(() => {
+                            location.reload();
+                        });
                     } else {
-                        throw new Error('Failed to add address');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: result.message || 'Failed to add address'
+                        });
                     }
                 } catch (error) {
                     console.error('Error:', error);
                     Swal.fire({
                         icon: 'error',
-                        title: 'Oops...',
-                        text: 'Failed to add address. Please try again.'
+                        title: 'Error',
+                        text: 'Something went wrong!'
                     });
                 }
             }
 
-            async function updateAddress() {
+
+            function openAddressEditModal(address) {
+                const modal = new bootstrap.Modal(document.getElementById('editAddressModal'));
+
+                // Fill the form fields
+                document.getElementById('editAddressId').value = address._id;
+                document.getElementById('editAddressType').value = address.addressType;
+                document.getElementById('editName').value = address.name;
+                document.getElementById('editLandMark').value = address.landMark;
+                document.getElementById('editCity').value = address.city;
+                document.getElementById('editState').value = address.state;
+                document.getElementById('editPincode').value = address.pincode;
+                document.getElementById('editPhone').value = address.phone;
+                document.getElementById('editAltPhone').value = address.altPhone || '';
+
+                modal.show();
+            }
+
+            // Frontend JavaScript - editAddress 
+            async function editAddress(event) {
+                event.preventDefault();
                 const formData = new FormData(document.getElementById('editAddressForm'));
-                const addressData = Object.fromEntries(formData.entries());
+                const data = Object.fromEntries(formData.entries());
 
                 try {
-                    const response = await fetch('/update-address', {
-                        method: 'PUT',
+                    const response = await fetch('/checkout/editAddress', {
+                        method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify(addressData)
+                        body: JSON.stringify({
+                            addressId: document.getElementById('editAddressId').value,
+                            ...data
+                        })
                     });
 
-                    if (response.ok) {
-                        const modal = bootstrap.Modal.getInstance(document.getElementById('editAddressModal'));
-                        modal.hide();
-                        // Reload the page to show the updated address
-                        window.location.reload();
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    if (result.success) {
+                        // closeEditAddressModal();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: 'Address updated successfully'
+                        }).then(() => {
+                            location.reload();
+                        });
                     } else {
-                        throw new Error('Failed to update address');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: result.message || 'Failed to update address'
+                        });
                     }
                 } catch (error) {
                     console.error('Error:', error);
                     Swal.fire({
                         icon: 'error',
-                        title: 'Oops...',
-                        text: 'Failed to update address. Please try again.'
+                        title: 'Error',
+                        text: error.message || 'Something went wrong!'
                     });
                 }
             }
+
+
+
+
+            // async function deleteAddress(addressId, addressIndex) {
+            //     const result = await Swal.fire({
+            //         title: 'Are you sure?',
+            //         text: "You won't be able to revert this!",
+            //         icon: 'warning',
+            //         showCancelButton: true,
+            //         confirmButtonColor: '#3085d6',
+            //         cancelButtonColor: '#d33',
+            //         confirmButtonText: 'Yes, delete it!'
+            //     });
+
+            //     if (result.isConfirmed) {
+            //         try {
+            //             const response = await fetch(`/deleteAddress?addressId=${addressId}`, {
+            //                 method: 'GET'
+            //             });
+            //             const data = await response.json();
+            //             if (data.success) {
+            //                 Swal.fire({
+            //                     icon: 'success',
+            //                     title: 'Deleted!',
+            //                     text: 'Address has been deleted.'
+            //                 }).then(() => {
+            //                     location.reload();
+            //                 });
+            //             } else {
+            //                 Swal.fire({
+            //                     icon: 'error',
+            //                     title: 'Error',
+            //                     text: data.message || 'Failed to delete address'
+            //                 });
+            //             }
+            //         } catch (error) {
+            //             console.error('Error:', error);
+            //             Swal.fire({
+            //                 icon: 'error',
+            //                 title: 'Error',
+            //                 text: 'Something went wrong!'
+            //             });
+            //         }
+            //     }
+            // }
+
 
             function sanitizeQuotes(str) {
                 return str.replace(/'/g, "\\'").replace(/"/g, '\\"');
             }
 
+
+            
             document.addEventListener("DOMContentLoaded", function () {
                 const placeOrderBtn = document.getElementById("placeOrderBtn");
                 if (placeOrderBtn) {
@@ -840,20 +956,140 @@
 
 
 
+//             let cart = null;
+
+// async function fetchCart() {
+//     try {
+//         const response = await fetch('/api/cart'); // Ensure this endpoint returns the cart data
+//         const data = await response.json();
+
+//         if (data.cart) {
+//             cart = data.cart;
+//             console.log("Cart Loaded:", cart);
+//         } else {
+//             console.error("Cart is empty or not available.");
+//             cart = { items: [] }; // Prevent errors by setting an empty cart
+//         }
+//     } catch (error) {
+//         console.error("Error fetching cart:", error);
+//         cart = { items: [] }; // Fallback to empty cart to prevent crashes
+//     }
+// }
+
+// // Load cart when the page loads
+// window.onload = async function () {
+//     await fetchCart();
+// };
+
+
+
+// async function placeOrder() {
+//     try {
+//         // Get all required order details
+//         const shippingAddressId = document.querySelector('input[name="shipping_address"]:checked').value;
+//         const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+//         const totalAmount = document.getElementById('total-amount').textContent.replace('₹', '');
+//         const orderedItems = JSON.stringify(cart.items); // Assuming cart is available and populated
+
+//         // Corrected console log
+//         console.log('Order Details:', {
+//             shippingAddressId,  // Corrected variable name
+//             paymentMethod,
+//             totalAmount,
+//             orderedItems
+//         });
+
+//         // First SweetAlert - Confirmation
+//         const confirmResult = await Swal.fire({
+//             title: 'Confirm Order',
+//             text: 'Are you sure you want to place this order?',
+//             icon: 'question',
+//             showCancelButton: true,
+//             confirmButtonColor: '#3085d6',
+//             cancelButtonColor: '#d33',
+//             confirmButtonText: 'Yes, place order!',
+//             cancelButtonText: 'No, cancel'
+//         });
+
+//         if (confirmResult.isConfirmed) {
+//             // Show loading state
+//             Swal.fire({
+//                 title: 'Processing',
+//                 text: 'Please wait while we process your order...',
+//                 allowOutsideClick: false,
+//                 allowEscapeKey: false,
+//                 showConfirmButton: false,
+//                 didOpen: () => {
+//                     Swal.showLoading();
+//                 }
+//             });
+
+//             const addressId = JSON.parse(shippingAddressId)._id;
+//             // Make the API call with all order details
+//             const response = await fetch("/checkout", {
+//                 method: "POST",
+//                 headers: {
+//                     "Content-Type": "application/json"
+//                 },
+//                 body: JSON.stringify({
+//                     addressId: shippingAddressId,
+//                     paymentMethod,
+//                     totalAmount,
+//                     orderedItems
+//                 })
+//             });
+
+//             const data = await response.json();
+
+//             console.log("Server Response:", data);
+
+//             if (data.success) {
+//                 // Success message
+//                 await Swal.fire({
+//                     title: 'Success!',
+//                     text: 'Your order has been placed successfully!',
+//                     icon: 'success',
+//                     timer: 1500,
+//                     showConfirmButton: false
+//                 });
+
+//                 // Redirect to orders page after success
+//                 window.location.href = "/viewOrder";
+//                 // window.location.replace("/viewOrder/${data.orderId}");
+//             } else {
+//                 throw new Error(data.message || 'Order failed');
+//             }
+//         }
+//     } catch (error) {
+//         console.error('Error:', error.message);
+//         await Swal.fire({
+//             title: 'Error!',
+//             text: 'Something went wrong while placing your order. Please try again.',
+//             icon: 'error',
+//             confirmButtonText: 'OK'
+//         });
+//     }
+// }
+
+
+
             async function placeOrder() {
                 try {
                     // Get all required order details
-                    const shippingAddress = document.querySelector('input[name="shipping_address"]:checked').value;
+                    const shippingAddressId = document.querySelector('input[name="shipping_address"]:checked').value;
                     const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
                     const totalAmount = document.getElementById('total-amount').textContent.replace('₹', '');
-                    const sanitizedOrderItems = sanitizeQuotes(JSON.stringify(cart.items))
-                    const orderedItems = sanitizedOrderItems
+                    // const sanitizedOrderItems = sanitizeQuotes(JSON.stringify(cart.items))
+                    // const orderedItems = sanitizedOrderItems
+                    const orderedItems = JSON.stringify(cart.items);
                     console.log('Order Details:', {
                         shippingAddress,
                         paymentMethod,
                         totalAmount,
                         orderedItems
                     });
+
+
                     // First SweetAlert - Confirmation
                     const confirmResult = await Swal.fire({
                         title: 'Confirm Order',
@@ -886,7 +1122,7 @@
                                 "Content-Type": "application/json"
                             },
                             body: JSON.stringify({
-                                shippingAddress,
+                                addressId: shippingAddressId,
                                 paymentMethod,
                                 totalAmount,
                                 orderedItems

@@ -2,6 +2,10 @@ const User = require("../../models/userSchema");
 const Cart = require("../../models/cartSchema");
 const Product = require("../../models/productSchema");
 
+
+
+
+
 const cartPage = async (req,res) => {
     try {
         const userId = req.session.user;
@@ -38,6 +42,9 @@ const cartPage = async (req,res) => {
         res.redirect("/pageNotFound")
     }
 }
+
+
+
 
 const addToCart = async (req, res) => {
     try {
@@ -144,6 +151,9 @@ const addToCart = async (req, res) => {
     }
 }
 
+
+
+
 const updateQuantity = async (req, res) => {
     try {
         const userId = req.session.user;
@@ -227,6 +237,8 @@ const updateQuantity = async (req, res) => {
         });
     }
 }
+
+
 
 const removeItem = async (req, res) => {
     try {

@@ -74,7 +74,8 @@ router.post("/cart/remove-item",userAuth,cartController.removeItem);
 router.get('/checkout',userAuth,checkoutController.checkoutPage);
 router.post('/checkout',userAuth,checkoutController.placeOrder);
 router.post('/add-address',userAuth,checkoutController.addAddress);
-router.put('/update-address',userAuth,checkoutController.updateAddress);
+router.post('/checkout/editAddress',userAuth,checkoutController.editAddress);
+
 
 // Order Management
 // router.get("/checkout", userAuth,orderController.getCheckoutPage);

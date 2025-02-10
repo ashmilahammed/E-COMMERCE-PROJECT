@@ -4,6 +4,7 @@ const Order = require("../../models/orderSchema");
 const Product = require("../../models/productSchema");
 const Address = require("../../models/addressSchema");
 
+
 // const User = require("../../models/userSchema");
 // const Product = require("../../models/productSchema");
 // const Address = require("../../models/addressSchema");
@@ -67,6 +68,8 @@ const checkoutPage = async (req, res) => {
     }
 };
 
+
+
 const placeOrder = async (req, res) => {
     try {
         const userId = req.session.user;
@@ -85,6 +88,10 @@ const placeOrder = async (req, res) => {
         if (!cart || cart.items.length === 0) {
             return res.status(400).json({ success: false, message: "Cart is empty" });
         }
+        if (!addressId || !paymentMethod) {
+            return res.status(400).json({ success: false, message: "Missing required fields" });
+        }
+        
 
         // Calculate order details
         const subtotal = cart.items.reduce((total, item) => {
@@ -126,10 +133,10 @@ const placeOrder = async (req, res) => {
         // Clear cart after order placement
         await Cart.findOneAndDelete({ userId });
 
-        res.json({ 
-            success: true, 
-            message: "Order placed successfully", 
-            orderId: newOrder._id 
+        res.json({
+            success: true,
+            message: "Order placed successfully",
+            orderId: newOrder._id
         });
 
     } catch (error) {
@@ -137,6 +144,10 @@ const placeOrder = async (req, res) => {
         res.status(500).json({ success: false, message: "Error placing order" });
     }
 };
+
+
+
+
 
 const addAddress = async (req, res) => {
     try {
@@ -148,20 +159,20 @@ const addAddress = async (req, res) => {
         const addressData = {
             userId,
             address: [{
-                fullName: req.body.fullName,
-                mobileNumber: req.body.mobileNumber,
-                pincode: req.body.pincode,
-                locality: req.body.locality,
-                address: req.body.address,
+                addressType: req.body.addressType,
+                name: req.body.name,
                 city: req.body.city,
+                landMark: req.body.landMark,
                 state: req.body.state,
-                addressType: req.body.addressType
+                pincode: req.body.pincode,
+                phone: req.body.phone,
+                altPhone: req.body.altPhone,
             }]
         };
 
         // Check if user already has addresses
         const existingAddresses = await Address.findOne({ userId });
-        
+
         if (existingAddresses) {
             // Add new address to existing addresses
             existingAddresses.address.push(addressData.address[0]);
@@ -178,30 +189,88 @@ const addAddress = async (req, res) => {
     }
 };
 
-const updateAddress = async (req, res) => {
+
+
+// const updateAddress = async (req, res) => {
+//     try {
+//         const userId = req.session.user;
+//         const { addressType, name, city, landMark, state, pincode, phone, altPhone } = req.body;
+
+//         if (!userId) {
+//             return res.status(401).json({ success: false, message: "Please login to update address" });
+//         }
+
+//         const updatedData = {
+//             addressType,
+//             name,
+//             city,
+//             landMark,
+//             state,
+//             pincode,
+//             phone,
+//             altPhone,
+//         };
+
+//         const result = await Address.findOneAndUpdate(
+//             { userId, "address._id": addressId },
+//             { $set: { "address.$": updatedData } },
+//             { new: true }
+//         );
+
+//         console.log('User ID:', userId);
+// console.log('Address ID:', addressId);
+
+//         if (!result) {
+//             return res.status(404).json({ success: false, message: "Address not found" });
+//         }
+
+//         return res.status(200).json({ success: true, message: "Address updated successfully" });
+//     } catch (error) {
+//         console.error("Error updating address:", error);
+//         return res.status(500).json({ success: false, message: "Failed to update address" });
+//     }
+// };
+
+
+
+const editAddress = async (req, res) => {
     try {
         const userId = req.session.user;
-        const addressId = req.body.addressId;
+        const { addressId, addressType, name, city, landMark, state, pincode, phone, altPhone } = req.body;
 
+        // Validation
         if (!userId) {
             return res.status(401).json({ success: false, message: "Please login to update address" });
         }
 
+        if (!addressId) {
+            return res.status(400).json({ success: false, message: "Address ID is required" });
+        }
+
         const updatedData = {
-            fullName: req.body.fullName,
-            mobileNumber: req.body.mobileNumber,
-            pincode: req.body.pincode,
-            locality: req.body.locality,
-            address: req.body.address,
-            city: req.body.city,
-            state: req.body.state,
-            addressType: req.body.addressType
+            _id: addressId, // Make sure to include the _id in the update
+            addressType,
+            name,
+            city,
+            landMark,
+            state,
+            pincode,
+            phone,
+            altPhone,
         };
 
         const result = await Address.findOneAndUpdate(
-            { userId, "address._id": addressId },
-            { $set: { "address.$": updatedData } },
-            { new: true }
+            { 
+                userId, 
+                "address._id": addressId 
+            },
+            { 
+                $set: { "address.$": updatedData } 
+            },
+            { 
+                new: true,
+                runValidators: true
+            }
         );
 
         if (!result) {
@@ -211,13 +280,50 @@ const updateAddress = async (req, res) => {
         return res.status(200).json({ success: true, message: "Address updated successfully" });
     } catch (error) {
         console.error("Error updating address:", error);
-        return res.status(500).json({ success: false, message: "Failed to update address" });
+        return res.status(500).json({ 
+            success: false, 
+            message: error.message || "Failed to update address" 
+        });
     }
 };
+
+
+const deleteAddress = async (req, res) => {
+    try {
+        const userId = req.session.user;
+        const { addressId } = req.body;
+
+        if (!userId) {
+            return res.status(401).json({ success: false, message: "Please login to delete address" });
+        }
+
+        const result = await Address.findOneAndUpdate(
+            { userId },
+            { $pull: { address: { _id: addressId } } },
+            { new: true }
+        );
+
+        if (!result) {
+            return res.status(404).json({ success: false, message: "Address not found" });
+        }
+
+        return res.status(200).json({ success: true, message: "Address deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting address:", error);
+        return res.status(500).json({ success: false, message: "Failed to delete address" });
+    }
+};
+
+
+
 
 module.exports = {
     checkoutPage,
     placeOrder,
     addAddress,
-    updateAddress
+    editAddress,
+    deleteAddress
 };
+
+
+

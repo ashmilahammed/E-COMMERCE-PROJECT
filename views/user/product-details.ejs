@@ -246,16 +246,16 @@
                                                     </label>
                                                     <% } %>
                                                         <% }); %>
-                                                        
+
                                                             <% } else { %>
                                                                 <p>No sizes available</p>
-                                                             <% } %>
+                                                                <% } %>
                                 </div>
                             </div>
                             <div class="product__details__cart__option">
                                 <div class="quantity">
                                     <div class="pro-qty">
-                                        <input type="number" value="1" min="1" id="quantity">
+                                        <input type="number" value="1" min="1" max="5" id="quantity" class="arrow">
                                     </div>
                                 </div>
                                 <button class="primary-btn" onclick="addToCart('<%= product._id %>')" id="addToCartBtn"
@@ -274,9 +274,9 @@
                                         <span>In Stock:</span>
                                         <% if(product.totalQuantity> 0) { %>
                                             <%= product.totalQuantity %> left
-                                         <% }else { %>
+                                                <% }else { %>
                                                     No Stock Left
-                                         <% } %>
+                                                    <% } %>
                                     </li>
 
                                     <li><span>Category:</span>
@@ -466,7 +466,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <% } %>
             </div>
 
@@ -477,7 +477,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css">
     <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
 
-    
+
     <script>
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -543,24 +543,24 @@
         });
 
 
-                                                           // Toast Notification Function
+        // Toast Notification Function
         function showToast(message, type = 'success') {
             const toastContainer = document.getElementById('toast-container');
-            
+
             // Create toast element
             const toast = document.createElement('div');
             toast.classList.add('toast-message', type);
             toast.textContent = message;
-            
+
             // Add to container
             toastContainer.appendChild(toast);
-            
+
             // Trigger show animation
             setTimeout(() => {
                 toast.classList.add('show');
             }, 10);
-            
-          
+
+
             setTimeout(() => {
                 toast.classList.remove('show');
                 setTimeout(() => {
@@ -570,7 +570,7 @@
         }
 
 
-                                                                   //zoom
+        //zoom
         const zoomContainers = document.querySelectorAll('.product-image-zoom');
 
         zoomContainers.forEach(container => {
@@ -590,7 +590,7 @@
             // Custom options if needed
         });
 
-                                                      // Handle size selection
+        // Handle size selection
         const sizeOptions = document.querySelectorAll('input[name="size"]');
         const addToCartBtn = document.getElementById('addToCartBtn');
         const priceElement = document.getElementById('product-price');
@@ -609,7 +609,7 @@
 
 
 
-                                                         // Add to cart function
+        // Add to cart function
         async function addToCart(productId) {
             try {
                 const selectedSize = document.querySelector('input[name="size"]:checked');
@@ -663,9 +663,45 @@
 
 
 
+        //input field of addtocart
+        document.addEventListener("DOMContentLoaded", function () {
+            const quantityInput = document.getElementById("quantity"); // Get the input element by its ID
+            const addToCartBtn = document.getElementById("addToCartBtn"); // Get the 'Add to Cart' button
+
+            if (quantityInput) {
+                quantityInput.addEventListener("input", function () {
+                    let value = parseInt(this.value);
+
+                    // If the quantity is more than 5, reset it to 5 and show a toast message
+                    if (value > 5) {
+                        this.value = 5;
+
+                        // Show the toast message
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'warning',
+                            title: 'Maximum 5 items allowed per product',
+                            showConfirmButton: false,
+                            timer: 2000
+                        });
+                    }
+
+                    // Enable the Add to Cart button if the quantity is between 1 and 5
+                    if (value >= 1 && value <= 5) {
+                        addToCartBtn.disabled = false; // Enable the button
+                    } else {
+                        addToCartBtn.disabled = true; // Disable the button
+                    }
+                });
+            }
+        });
+
 
 
     </script>
+
+
 
     <!-- Toast container -->
     <div id="toast-container" style="
@@ -681,18 +717,20 @@
             background-color: #333;
             color: white;
             padding: 15px;
-            border-radius: 5px;
+            border-radius: 3px;
             margin-bottom: 10px;
             opacity: 0;
             transition: opacity 0.3s ease-in-out;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            padding: 10px 14px; 
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 10px 14px;
             /* font-size: 14px; */
         }
+
         .toast-message.success {
             background-color: #4CAF50;
             color: white;
         }
+
         .toast-message.error {
             background-color: #f44336;
             color: white;
@@ -700,6 +738,7 @@
             position: relative;
             left: 50px;
         }
+
         .toast-message.show {
             opacity: 1;
         }
