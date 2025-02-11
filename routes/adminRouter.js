@@ -50,6 +50,7 @@ router.post("/deleteImage",adminAuth,productController.deleteSingleImage);
 
 //order  management
 router.get("/order-list",adminAuth,orderController.orderListPage);
+router.get("/orderList-details/:orderId",adminAuth,orderController.getOrderDetails)
 
 
 

@@ -75,11 +75,14 @@ router.post("/cart/remove-item",userAuth,cartController.removeItem);
 
 //checkout management
 router.get('/checkout',userAuth,checkoutController.checkoutPage);
-router.post('/checkout',upload.none(),userAuth,checkoutController.placeOrder);
+router.post('/checkout',userAuth,checkoutController.placeOrder);
+// router.post('/checkout',upload.none(),userAuth,checkoutController.placeOrder);
 router.post('/add-address',userAuth,checkoutController.addAddress);
 router.post('/checkout/editAddress',userAuth,checkoutController.editAddress);
 
-
+//Order management
+router.get("/orderDetails/:orderId",userAuth,checkoutController.getOrderDetails);
+router.post("/cancelOrder",userAuth,checkoutController.cancelOrder)
 
 
 
@@ -108,4 +111,7 @@ router.get("/wishlist",userAuth,wishlistController.getwishList);
 
 
 router.get("/contacts",userAuth,userController.contactPage)    
+
+
+
 module.exports = router

@@ -1,5 +1,6 @@
 const User = require("../../models/userSchema");
 const Address = require("../../models/addressSchema");
+const Order = require("../../models/orderSchema");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
 const env = require("dotenv").config();
@@ -179,20 +180,76 @@ const postNewPassword = async (req,res) => {
 
 
 
+// const userProfile = async (req,res) => {
+//     try {
+
+//         const userId = req.session.user;
+//         const userData = await User.findById(userId);
+//         const addressData = await Address.findOne({userId : userId});
+//         res.render("profile",{
+//              user: userData ,
+//              userAddress: addressData
+//         })
+        
+//     } catch (error) {
+//         console.error("Error for rendering profile",error);
+//         res.redirect("/pageNotFound")
+//     }
+// }
+// const userProfile = async (req,res) => {
+//     try {
+//         const userId = req.session.user;
+        
+//         // Fetch user details
+//         const userData = await User.findById(userId);
+        
+//         // Fetch user's addresses
+//         const addressData = await Address.findOne({userId : userId});
+        
+//         // Fetch user's orders with basic details
+//         const orders = await Order.find({ userId: userId })
+//             .sort({ createdAt: -1 }) // Sort by most recent first
+//             .select('orderId status totalAmount createdAt') // Select only required fields
+//             .populate({
+//                 path: 'orderItems.product',
+//                 select: 'productName' // Optionally populate product name
+//             });
+        
+//         res.render("profile", {
+//             user: userData,
+//             userAddress: addressData,
+//             orders: orders
+//         });
+        
+//     } catch (error) {
+//         console.error("Error for rendering profile", error);
+//         res.redirect("/pageNotFound");
+//     }
+// }
 const userProfile = async (req,res) => {
     try {
-
         const userId = req.session.user;
         const userData = await User.findById(userId);
         const addressData = await Address.findOne({userId : userId});
-        res.render("profile",{
-             user: userData ,
-             userAddress: addressData
-        })
+        
+        // Fetch orders for the user, sorted by most recent first
+        const orders = await Order.find({ userId: userId })
+            .populate({
+                path: 'orderItems.product',
+                model: 'Product',
+                select: 'name'
+            })
+            .sort({ createdAt: -1 }); 
+
+        res.render("profile", {
+            user: userData,
+            userAddress: addressData,
+            orders: orders 
+        });         
         
     } catch (error) {
-        console.error("Error for rendering profile",error);
-        res.redirect("/pageNotFound")
+        console.error("Error for rendering profile", error);
+        res.redirect("/pageNotFound");
     }
 }
 

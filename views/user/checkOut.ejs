@@ -955,81 +955,6 @@
 
 
 
-            // async function confirmOrder() {
-            //     try {
-            //         // Get selected address
-            //         const selectedAddressRadio = document.querySelector('input[name="selectedAddress"]:checked');
-            //         if (!selectedAddressRadio) {
-            //             Swal.fire({
-            //                 icon: 'warning',
-            //                 title: 'Address Required',
-            //                 text: 'Please select a shipping address to continue'
-            //             });
-            //             return;
-            //         }
-
-            //         // Get payment method
-            //         const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
-            //         if (!paymentMethod) {
-            //             Swal.fire({
-            //                 icon: 'warning',
-            //                 title: 'Payment Method Required',
-            //                 text: 'Please select a payment method to continue'
-            //             });
-            //             return;
-            //         }
-
-            //         // Show loading state
-            //         Swal.fire({
-            //             title: 'Processing Order',
-            //             text: 'Please wait while we process your order...',
-            //             allowOutsideClick: false,
-            //             showConfirmButton: false,
-            //             willOpen: () => {
-            //                 Swal.showLoading();
-            //             }
-            //         });
-
-            //         // Make API call to place order
-            //         const response = await fetch('/checkout', {
-            //             method: 'POST',
-            //             headers: {
-            //                 'Content-Type': 'application/json',
-            //             },
-            //             body: JSON.stringify({
-            //                 selectedAddress: selectedAddressRadio.value,
-            //                 paymentMethod: paymentMethod.value
-            //             })
-            //         });
-
-            //         const data = await response.json();
-
-            //         if (data.success) {
-            //             Swal.fire({
-            //                 icon: 'success',
-            //                 title: 'Order Placed Successfully!',
-            //                 text: 'Thank you for your purchase.',
-            //                 confirmButtonText: 'View Orders'
-            //             }).then((result) => {
-            //                 if (result.isConfirmed) {
-            //                     window.location.href = '/orders';
-            //                 }
-            //             });
-            //         } else {
-            //             throw new Error(data.message);
-            //         }
-            //     } catch (error) {
-            //         console.error('Error placing order:', error);
-            //         Swal.fire({
-            //             icon: 'error',
-            //             title: 'Order Failed',
-            //             text: error.message || 'Something went wrong while placing your order'
-            //         });
-            //     }
-            // }
-
-
-
             async function confirmOrder() {
                 try {
                     // Get selected address
@@ -1114,7 +1039,7 @@
                             }
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                window.location.href = '/orders';
+                                window.location.href = '/userProfile';
                             } else {
                                 window.location.href = '/shop';
                             }

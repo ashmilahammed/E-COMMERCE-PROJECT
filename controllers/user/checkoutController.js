@@ -134,7 +134,7 @@ const placeOrder = async (req, res) => {
             return total + (variant ? variant.salePrice * item.quantity : 0);
         }, 0);
 
-        const tax = subtotal * 0.0; // 0% tax rate
+        const tax = subtotal * 0.0; 
         const shipping = subtotal > 1000 ? 0 : 50; // Free shipping over 1000
         const finalAmount = subtotal + tax + shipping;
 
@@ -156,7 +156,7 @@ const placeOrder = async (req, res) => {
         // Create new order
         const order = new Order({
             userId,
-            orderId, // Make sure this line is present
+            orderId, 
             orderNumber,
             orderItems,
             shippingAddress: {
@@ -185,10 +185,8 @@ const placeOrder = async (req, res) => {
             expectedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
         });
 
-        // Save the order
         await order.save();
 
-        // Clear cart after successful order
         await Cart.findOneAndUpdate(
             { userId },
             { $set: { items: [] } }
@@ -220,8 +218,6 @@ const placeOrder = async (req, res) => {
         });
     }
 };
-
-
 
 
 
@@ -352,10 +348,151 @@ const deleteAddress = async (req, res) => {
 
 
 
+const getOrderDetails = async (req, res) => {
+    try {
+        const userId = req.session.user;
+        const userData = await User.findById(userId);
+        const orderId = req.params.orderId;
+
+        if (!userId) {
+            return res.redirect("/login");
+        }
+
+        if (!orderId) {
+            req.flash('error', 'Order ID is required');
+            return res.redirect("/userProfile");
+        }
+
+        // Fetch the order with full population of product details
+        const order = await Order.findOne({ 
+            _id: orderId, 
+            userId: userId 
+        })
+        .populate({
+            path: 'orderItems.product',
+            model: 'Product',
+            populate: { 
+                path: 'category', 
+                model: 'Category', 
+                select: 'name' 
+            }
+        });
+
+        if (!order) {
+            req.flash('error', 'Order not found');
+            return res.redirect("/userProfile");
+        }
+
+        // Enrich order items with additional details
+        const enrichedOrderItems = order.orderItems.map(item => {
+            // Ensure product exists
+            if (!item.product) {
+                return null;
+            }
+
+            return {
+                ...item.toObject(),
+                productDetails: {
+                    name: item.product.productName,
+                    description: item.product.description,
+                    category: item.product.category ? item.product.category.name : 'Uncategorized',
+                    brand: item.product.brand || 'Unknown Brand',
+                    images: item.product.productImage
+                }
+            };
+        }).filter(item => item !== null); // Remove any null items
+
+        // Prepare the order object for rendering
+        const orderData = {
+            ...order.toObject(),
+            orderItems: enrichedOrderItems
+        };
+
+        // Render full page
+        res.render("order-details", { 
+            order: orderData, 
+            user: userData
+        });
+        
+    } catch (error) {
+        console.error("Error fetching order details:", error);
+        req.flash('error', 'An error occurred while fetching order details');
+        res.redirect("/userProfile");
+    }
+};
+
+
+
+
+
+const cancelOrder = async (req, res) => {
+    try {
+        const { orderId, cancelReason } = req.body;
+        const userId = req.session.user;
+
+        const order = await Order.findOne({ 
+            _id: orderId, 
+            userId: userId,
+            orderStatus: { $in: ['Pending', 'Processing'] } 
+        });
+
+        if (!order) {
+            return res.status(400).json({
+                success: false,
+                message: 'Order not found or cannot be cancelled'
+            });
+        }
+
+        // Update order status and reason
+        order.orderStatus = 'Cancelled';
+        order.cancelReason = cancelReason;
+
+        // Update individual item statuses
+        order.orderItems.forEach(item => {
+            item.itemStatus = 'Cancelled';
+        });
+
+        await order.save();
+
+        //  Restore product inventory
+        for (const item of order.orderItems) {
+            await Product.findByIdAndUpdate(
+                item.product, 
+                { $inc: { 'variants.$[elem].quantity': item.variant.quantity } },
+                { 
+                    arrayFilters: [{ 'elem.size': item.variant.size }],
+                    new: true 
+                }
+            );
+        }
+
+        // if (order.payment.method !== 'COD') {
+        //     // Implement refund logic here
+        //     await processRefund(order);
+        // }
+
+        res.json({
+            success: true,
+            message: 'Order cancelled successfully'
+        });
+    } catch (error) {
+        console.error('Order Cancellation Error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while cancelling the order'
+        });
+    }
+};
+
+
+
+
 module.exports = {
     checkoutPage,
     placeOrder,
     addAddress,
     editAddress,
-    deleteAddress
+    deleteAddress,
+    getOrderDetails,
+    cancelOrder
 };
