@@ -69,93 +69,6 @@ const checkoutPage = async (req, res) => {
 
 
 
-// const placeOrder = async (req, res) => {
-//     try {
-//         const userId = req.session.user;
-//         if (!userId) {
-//             return res.status(401).json({ success: false, message: 'Please login to continue' });
-//         }
-
-//         const { selectedAddress } = req.body; // Ensure this matches the name attribute in the form
-//         if (!selectedAddress) {
-//             return res.status(400).json({ success: false, message: 'Shipping address is required' });
-//         }
-
-//         // Get cart items
-//         const cart = await Cart.findOne({ userId }).populate('items.productId');
-//         if (!cart || cart.items.length === 0) {
-//             return res.status(400).json({ success: false, message: 'Your cart is empty' });
-//         }
-
-//         // Get shipping address
-//         const address = await Address.findOne({ 
-//             userId, 
-//             'address._id': selectedAddress 
-//         });
-
-//         if (!address) {
-//             return res.status(400).json({ success: false, message: 'Invalid shipping address' });
-//         }
-
-//         const shippingAddress = address.address.find(addr => addr._id.toString() === selectedAddress);
-
-//         // Calculate order items
-//         const orderItems = cart.items.map(item => ({
-//             product: item.productId._id,
-//             quantity: item.quantity,
-//             variant: {
-//                 size: item.size,
-//                 productImage: item.productId.variants.find(v => v.size === item.size)?.productImage[0] || item.productId.productImage[0]
-//             },
-//             price: {
-//                 originalPrice: item.productId.variants.find(v => v.size === item.size)?.price || 0,
-//                 discountedPrice: item.productId.variants.find(v => v.size === item.size)?.salePrice || 0,
-//                 productOffer: item.productId.productOffer || 0,
-//                 offerType: item.productId.productOffer ? 'Product Offer' : 'No Offer'
-//             }
-//         }));
-
-//         // Create new order
-//         const order = new Order({
-//             userId,
-//             orderItems,
-//             shippingAddress: {
-//                 name: shippingAddress.name,
-//                 landMark: shippingAddress.landMark,
-//                 city: shippingAddress.city,
-//                 state: shippingAddress.state,
-//                 pincode: shippingAddress.pincode,
-//                 phone: shippingAddress.phone,
-//                 altPhone: shippingAddress.altPhone
-//             },
-//             totalAmount: orderItems.reduce((total, item) => total + (item.price.discountedPrice * item.quantity), 0),
-//             orderNumber: `ORD${Date.now()}`, // Generate order number
-//             orderStatus: 'Pending'
-//         });
-
-//         await order.save();
-
-//         // Clear cart after successful order
-//         await Cart.findOneAndUpdate(
-//             { userId },
-//             { $set: { items: [] } }
-//         );
-
-//         res.json({
-//             success: true,
-//             message: 'Order placed successfully',
-//             orderId: order._id
-//         });
-
-//     } catch (error) {
-//         console.error('Error placing order:', error);
-//         res.status(500).json({
-//             success: false,
-//             message: 'Something went wrong while placing your order'
-//         });
-//     }
-// };
-
 const placeOrder = async (req, res) => {
     try {
         const userId = req.session.user;
@@ -163,32 +76,25 @@ const placeOrder = async (req, res) => {
             return res.status(401).json({ success: false, message: 'Please login to continue' });
         }
 
-        const { selectedAddress } = req.body; // Ensure this matches the name attribute in the form
+        const { selectedAddress, paymentMethod } = req.body;
 
-        console.log(selectedAddress);  // Debugging line: check if value is passed
-
+        // Validate required fields
         if (!selectedAddress) {
             return res.status(400).json({ success: false, message: 'Shipping address is required' });
         }
-
-
-        // Get cart items
-
-        // const cart = await Cart.findOne({ userId }).populate('items.productId');
-        // if (!cart || cart.items.length === 0) {
-        //     return res.status(400).json({ success: false, message: 'Your cart is empty' });
-        // }
-        const cartItems = req.body.cartItems ? JSON.parse(req.body.cartItems) : [];
-        console.log('Cart Items:', cartItems);
-
-        cartItems.forEach(item => {
-            console.log('Product Name:', item.name);  // Log the product name to verify it's correct
-        });
-        
-        if (!cartItems || cartItems.length === 0) {
-            throw new Error('No items in the cart');
+        if (!paymentMethod) {
+            return res.status(400).json({ success: false, message: 'Payment method is required' });
         }
 
+        // Get user's cart
+        const cart = await Cart.findOne({ userId }).populate({
+            path: 'items.productId',
+            select: 'productName productImage variants brand'
+        });
+
+        if (!cart || cart.items.length === 0) {
+            return res.status(400).json({ success: false, message: 'Cart is empty' });
+        }
 
         // Get shipping address
         const address = await Address.findOne({
@@ -196,106 +102,62 @@ const placeOrder = async (req, res) => {
             'address._id': selectedAddress
         });
 
-        console.log('Address object:', address);
-
         if (!address) {
             return res.status(400).json({ success: false, message: 'Invalid shipping address' });
         }
 
         const shippingAddress = address.address.find(addr => addr._id.toString() === selectedAddress);
 
-        // Calculate order items
-        // const orderItems = cart.items.map(item => ({
-        //     product: item.productId._id,
-        //     quantity: item.quantity,
-        //     variant: {
-        //         size: item.size,
-        //         productImage: item.productId.variants.find(v => v.size === item.size)?.productImage[0] || item.productId.productImage[0]
-        //     },
-        //     price: {
-        //         originalPrice: item.productId.variants.find(v => v.size === item.size)?.price || 0,
-        //         discountedPrice: item.productId.variants.find(v => v.size === item.size)?.salePrice || 0,
-        //         productOffer: item.productId.productOffer || 0,
-        //         offerType: item.productId.productOffer ? 'Product Offer' : 'No Offer'
-        //     }
-        // }));
-        console.log("abc");
-
-        // const orderItems = cart.items.map(item => {
-        //     const variant = item.productId.variants.find(v => v.size === item.size);
-
-        //     if (!variant) {
-        //         console.error(`Variant not found for product: ${item.productId._id}, size: ${item.size}`);
-        //         return null; // Variant not found, skip this item or handle it as needed
-        //     }
-
-        //     // Check if productImage is defined and has at least one item
-        //     const productImage = Array.isArray(variant.productImage) && variant.productImage.length > 0
-        //         ? variant.productImage[0] 
-        //         : 'default_image_url'; // Fallback to default image if not found
-
-        //     return {
-        //         product: item.productId._id,
-        //         quantity: item.quantity,
-        //         variant: {
-        //             size: item.size,
-        //             productImage: productImage, // Use the checked product image
-        //         },
-        //         price: {
-        //             originalPrice: variant.price || 0,
-        //             discountedPrice: variant.salePrice || 0,
-        //             productOffer: item.productId.productOffer || 0,
-        //             offerType: item.productId.productOffer ? 'Product Offer' : 'No Offer',
-        //         },
-        //     };
-        // }).filter(item => item !== null); // Filter out null values in case variant was not found
-        // Create new order
-
-
+        // Create order items from cart
         const orderItems = cart.items.map(item => {
             const variant = item.productId.variants.find(v => v.size === item.size);
-
-            if (!variant) {
-                console.error(`Variant not found for product: ${item.productId._id}, size: ${item.size}`);
-                return null;
-            }
-
-            const product = item.productId;
-            const productName = product && product.name ? product.name : 'Unknown Product'; // Fallback if product name is undefined
-
-            // Now safely access product.name
-            console.log('Product Name:', productName);
-
-            // Check if productImage is valid
-            const productImage = Array.isArray(variant.productImage) && variant.productImage.length > 0
-                ? variant.productImage[0]
-                : 'default_image_url'; // Fallback if productImage is not found
-
             return {
-                product: product._id,
-                name: productName,  // Use the safely accessed product name
-                quantity: item.quantity,
+                product: item.productId._id,
                 variant: {
                     size: item.size,
-                    productImage: productImage,
+                    quantity: item.quantity
                 },
+                productImage: Array.isArray(item.productId.productImage) ? item.productId.productImage[0] : item.productId.productImage,
                 price: {
-                    originalPrice: variant.price || 0,
-                    discountedPrice: variant.salePrice || 0,
-                    productOffer: item.productId.productOffer || 0,
-                    offerType: item.productId.productOffer ? 'Product Offer' : 'No Offer',
+                    regularPrice: variant.regularPrice,
+                    salePrice: variant.salePrice,
+                    productOffer: variant.productOffer || 0,
+                    offerType: variant.offerType || "No Offer"
                 },
+                itemStatus: "Processing"
             };
-        }).filter(item => item !== null);
+        });
 
-        // console.log('Cart Items:', req.body.cartItems); 
-        console.log('Request Body:', req.body);
+        // Calculate total amount
+        const subtotal = cart.items.reduce((total, item) => {
+            const variant = item.productId.variants.find(v => v.size === item.size);
+            return total + (variant ? variant.salePrice * item.quantity : 0);
+        }, 0);
 
+        const tax = subtotal * 0.0; // 0% tax rate
+        const shipping = subtotal > 1000 ? 0 : 50; // Free shipping over 1000
+        const finalAmount = subtotal + tax + shipping;
 
+        // Generate unique orderId and orderNumber
+        let orderId, orderNumber;
+        let isUnique = false;
+        while (!isUnique) {
+            orderId = 'ID' + Date.now() + Math.floor(Math.random() * 1000);
+            orderNumber = 'ORD' + Date.now() + Math.floor(Math.random() * 1000);
+            const existingOrder = await Order.findOne({ $or: [{ orderId }, { orderNumber }] });
+            if (!existingOrder) {
+                isUnique = true;
+            }
+        }
 
+        // Convert payment method to uppercase to match enum
+        const normalizedPaymentMethod = paymentMethod.toUpperCase();
 
+        // Create new order
         const order = new Order({
             userId,
+            orderId, // Make sure this line is present
+            orderNumber,
             orderItems,
             shippingAddress: {
                 name: shippingAddress.name,
@@ -304,13 +166,26 @@ const placeOrder = async (req, res) => {
                 state: shippingAddress.state,
                 pincode: shippingAddress.pincode,
                 phone: shippingAddress.phone,
-                altPhone: shippingAddress.altPhone
+                altPhone: shippingAddress.altPhone 
             },
-            totalAmount: orderItems.reduce((total, item) => total + (item.price.discountedPrice * item.quantity), 0),
-            orderNumber: `ORD${Date.now()}`, // Generate order number
-            orderStatus: 'Pending'
+            pricing: {
+                subtotal,
+                finalAmount,
+                productOffersTotal: 0,
+                coupon: {
+                    discount: 0
+                }
+            },
+            payment: {
+                method: normalizedPaymentMethod,
+                status: normalizedPaymentMethod === 'COD' ? 'Pending' : 'Completed',
+                paidAt: normalizedPaymentMethod === 'COD' ? null : new Date()
+            },
+            orderStatus: "Pending",
+            expectedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
         });
 
+        // Save the order
         await order.save();
 
         // Clear cart after successful order
@@ -322,17 +197,32 @@ const placeOrder = async (req, res) => {
         res.json({
             success: true,
             message: 'Order placed successfully',
-            orderId: order._id
+            orderId: order.orderId
         });
 
     } catch (error) {
         console.error('Error placing order:', error);
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({
+                success: false,
+                message: 'Validation error: ' + error.message
+            });
+        }
+        if (error.code === 11000) {
+            return res.status(400).json({
+                success: false,
+                message: 'An order with this number already exists. Please try again.'
+            });
+        }
         res.status(500).json({
             success: false,
             message: 'Something went wrong while placing your order'
         });
     }
 };
+
+
+
 
 
 
@@ -375,48 +265,6 @@ const addAddress = async (req, res) => {
         return res.status(500).json({ success: false, message: "Failed to add address" });
     }
 };
-
-
-
-// const updateAddress = async (req, res) => {
-//     try {
-//         const userId = req.session.user;
-//         const { addressType, name, city, landMark, state, pincode, phone, altPhone } = req.body;
-
-//         if (!userId) {
-//             return res.status(401).json({ success: false, message: "Please login to update address" });
-//         }
-
-//         const updatedData = {
-//             addressType,
-//             name,
-//             city,
-//             landMark,
-//             state,
-//             pincode,
-//             phone,
-//             altPhone,
-//         };
-
-//         const result = await Address.findOneAndUpdate(
-//             { userId, "address._id": addressId },
-//             { $set: { "address.$": updatedData } },
-//             { new: true }
-//         );
-
-//         console.log('User ID:', userId);
-// console.log('Address ID:', addressId);
-
-//         if (!result) {
-//             return res.status(404).json({ success: false, message: "Address not found" });
-//         }
-
-//         return res.status(200).json({ success: true, message: "Address updated successfully" });
-//     } catch (error) {
-//         console.error("Error updating address:", error);
-//         return res.status(500).json({ success: false, message: "Failed to update address" });
-//     }
-// };
 
 
 

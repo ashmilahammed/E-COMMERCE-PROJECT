@@ -1,184 +1,171 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
+
 const orderSchema = new Schema({
+    orderId: {
+        type: String,
+        unique: true,
+        required: true,
+    },
     userId: {
         type: Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+        ref: "User",
+        required: true,
     },
-    orderItems: [{
-        product: {
-            type: Schema.Types.ObjectId,
-            ref: 'Product',
-            required: true
-        },
-        quantity: {
-            type: Number,
-            required: true,
-            min: 1
-        },
-        variant: {
-            size: {
-                type: Number,
-                required: true
+    orderItems: [
+        {
+            product: {
+                type: Schema.Types.ObjectId,
+                ref: "Product",
+                required: true,
+            },
+            variant: {
+                size: {
+                    type: Number,
+                    required: true,
+                },
+                quantity: {
+                    type: Number,
+                    required: true,
+                    min: 1,
+                },
             },
             productImage: {
                 type: String,
-                required: true
-            }
-        },
-        price: {
-            originalPrice: {
-                type: Number,
-                required: true
+                required: true,
             },
-            discountedPrice: {
-                type: Number,
-                required: true
+            price: {
+                regularPrice: {
+                    type: Number,
+                    required: true,
+                },
+                salePrice: {
+                    type: Number,
+                    required: true,
+                },
+                productOffer: {
+                    type: Number,
+                    default: 0,
+                },
+                offerType: {
+                    type: String,
+                    enum: ["Product Offer", "Category Offer", "No Offer"],
+                    default: "No Offer",
+                },
             },
-            productOffer: {
-                type: Number,
-                default: 0
-            },
-            offerType: {
-                type: String,
-                enum: ['Product Offer', 'Category Offer', 'No Offer'],
-                default: 'No Offer'
-            }
-        },
-        status: {   
             itemStatus: {
                 type: String,
-                enum: ['Processing', 'Shipped', 'Delivered', 'Cancelled'],
-                default: 'Processing'
+                enum: ["Processing", "Shipped", "Delivered", "Cancelled"],
+                default: "Processing",
             },
-            return: {
+            returnRequest: {
                 requested: {
                     type: Boolean,
-                    default: false
+                    default: false,
                 },
                 status: {
                     type: String,
-                    enum: ['Pending', 'Approved', 'Rejected'],
-                    default: 'Pending'
+                    enum: ["Pending", "Approved", "Rejected"],
+                    default: "Pending",
                 },
                 reason: {
-                    type: String
+                    type: String,
                 },
                 comments: {
-                    type: String
+                    type: String,
                 },
                 requestDate: {
-                    type: Date
-                }
-            }
-        }
-    }],
+                    type: Date,
+                },
+            },
+        },
+    ],
     shippingAddress: {
         name: {
             type: String,
-            required: true
+            required: true,
         },
         landMark: {
             type: String,
-            required: true
+            required: true,
         },
         city: {
             type: String,
-            required: true
+            required: true,
         },
         state: {
             type: String,
-            required: true
+            required: true,
         },
         pincode: {
             type: String,
-            required: true
+            required: true,
         },
         phone: {
             type: String,
-            required: true
+            required: true,
         },
         altPhone: {
-            type :String,
-            required: true
-        }
+            type: String,
+            required: true,
+        },
     },
-    payment: {  
+    payment: {
         method: {
             type: String,
-            enum: ['COD', 'Wallet', 'Razorpay'],
-            required: true
+            enum: ["COD", "Wallet", "Razorpay"],
+            required: true,
         },
         status: {
             type: String,
-            enum: ['Pending', 'Completed', 'Failed'],
-            default: null
+            enum: ["Pending", "Completed", "Failed"],
+            default: "Pending",
         },
         razorpay: {
-            orderId: {
-                type: String
-            },
-            paymentId: {
-                type: String
-            },
-            signature: {
-                type: String
-            }
+            orderId: String,
+            paymentId: String,
+            signature: String,
         },
-        transactionId: {
-            type: String
-        },
-        paidAt: {
-            type: Date
-        }
+        transactionId: String,
+        paidAt: Date,
     },
     pricing: {
         subtotal: {
             type: Number,
-            required: true
+            required: true,
         },
         coupon: {
-            code: {
-                type: String
-            },
+            code: String,
             discount: {
                 type: Number,
-                default: 0
-            }
+                default: 0,
+            },
         },
         productOffersTotal: {
             type: Number,
-            default: 0
+            default: 0,
         },
         finalAmount: {
             type: Number,
-            required: true
-        }
+            required: true,
+        },
     },
     orderStatus: {
         type: String,
-        enum: ['Processing', 'Delivered', 'Cancelled', 'Failed', 'Returned'],
-        default: 'Processing'
+        enum: ["Pending", "Delivered", "Cancelled", "Failed", "Returned"],
+        default: "Pending",
     },
-    cancelReason: {
-        type: String
-    },
+    cancelReason: String,
     orderNumber: {
         type: String,
         unique: true,
-        required: true
+        required: true,
     },
-    expectedDeliveryDate: {
-        type: Date
-    },
-    deliveryDate: {
-        type: Date
-    }
-}, { 
-    timestamps: true 
-});
+    expectedDeliveryDate: Date,
+    deliveryDate: Date,
+}, 
+{ timestamps: true });
 
 const Order = mongoose.model("Order", orderSchema);
 module.exports = Order;
