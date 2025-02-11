@@ -20,6 +20,26 @@ const userAuth = (req,res,next) => {
         res.redirect("/login")
     }
 }
+// const userAuth = async (req, res, next) => {
+//     try {
+//         if (!req.session.user) {
+//             return res.redirect("/login");
+//         }
+
+//         const user = await User.findById(req.session.user);
+
+//         // if (!user || user.isBlocked) {
+//         //     req.session.delete // Destroy session if user is blocked
+//         //     return res.redirect("/login");
+//         // }
+
+//         next(); // Proceed if user is authenticated and not blocked
+//     } catch (error) {
+//         console.error("Error in userAuth Middleware:", error);
+//         res.status(500).send("Internal Server Error");
+//     }
+// };
+
 
 
 // const adminAuth = (req,res,next) => {

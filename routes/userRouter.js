@@ -8,6 +8,9 @@ const productController = require("../controllers/user/productController");
 const cartController = require("../controllers/user/cartController");
 const wishlistController = require("../controllers/user/wishlistController");
 const checkoutController = require('../controllers/user/checkoutController');
+const multer = require('multer');
+const upload = multer();
+
 
 
 
@@ -72,9 +75,13 @@ router.post("/cart/remove-item",userAuth,cartController.removeItem);
 
 //checkout management
 router.get('/checkout',userAuth,checkoutController.checkoutPage);
-router.post('/checkout',userAuth,checkoutController.placeOrder);
+router.post('/checkout',upload.none(),userAuth,checkoutController.placeOrder);
 router.post('/add-address',userAuth,checkoutController.addAddress);
 router.post('/checkout/editAddress',userAuth,checkoutController.editAddress);
+
+
+
+
 
 
 // Order Management

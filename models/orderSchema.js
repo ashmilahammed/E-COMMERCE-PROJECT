@@ -92,16 +92,16 @@ const orderSchema = new Schema({
             type: String,
             required: true
         },
-        country: {
-            type: String,
-            required: true
-        },
         pincode: {
             type: String,
             required: true
         },
         phone: {
             type: String,
+            required: true
+        },
+        altPhone: {
+            type :String,
             required: true
         }
     },
