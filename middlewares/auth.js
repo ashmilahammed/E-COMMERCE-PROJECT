@@ -2,21 +2,21 @@ const User = require("../models/userSchema");
 
 
 
-const userAuth = (req,res,next) => {
-    if(req.session.user){
-         User.findById(req.session.user)
-         .then(data => {
-            if(data && !data.isBlocked){
-                next();
-            }else{
-                res.redirect("/login")
-            }
-         })
-         .catch(error => {
-            console.log("Error in user auth Middleware",error);
-            res.status(500).send("Internal Server error")
-         })
-    }else {
+const userAuth = (req, res, next) => {
+    if (req.session.user) {
+        User.findById(req.session.user)
+            .then(data => {
+                if (data && !data.isBlocked) {
+                    next();
+                } else {
+                    res.redirect("/login")
+                }
+            })
+            .catch(error => {
+                console.log("Error in user auth Middleware", error);
+                res.status(500).send("Internal Server error")
+            })
+    } else {
         res.redirect("/login")
     }
 }
@@ -58,11 +58,19 @@ const userAuth = (req,res,next) => {
 // }
 
 const adminAuth = (req, res, next) => {
+    try {
 
-    if (!req.session.admin) {
-        return res.redirect("/admin/login"); 
+        if (!req.session.admin) {
+            return res.redirect("/admin/login");
+        }
+        next();
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Authentication error'
+        });
     }
-    next(); 
 };
 
 

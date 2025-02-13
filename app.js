@@ -57,11 +57,18 @@ app.use((req, res, next) => {
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
 
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+    });
+});
 
 
-app.get("/hola",(req,res)=>{
- res.render("order-test")
-})
+
+
+
 
 
 const PORT= process.env.PORT

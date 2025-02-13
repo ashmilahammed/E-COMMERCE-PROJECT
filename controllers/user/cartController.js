@@ -27,9 +27,9 @@ const cartPage = async (req,res) => {
         if (cart) {
             // Calculate detailed cart summary
             cart.subtotal = cart.items.reduce((total, item) => total + (item.productId.price * item.quantity), 0);
-            cart.tax = cart.subtotal * 0.1; // 10% tax rate
-            cart.discount = 0; // You can implement discount logic later
-            cart.shipping = cart.subtotal > 1000 ? 0 : 50; // Free shipping over 1000
+            cart.tax = cart.subtotal * 0.0; 
+            cart.discount = 0; 
+            cart.shipping = cart.subtotal > 1000 ? 0 : 50; 
             cart.total = cart.subtotal + cart.tax + cart.shipping - cart.discount;
         }
 

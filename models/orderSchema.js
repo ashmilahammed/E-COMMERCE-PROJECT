@@ -153,10 +153,13 @@ const orderSchema = new Schema({
     },
     orderStatus: {
         type: String,
-        enum: ["Pending","shipped", "Delivered", "Cancelled", "Returned"],
+        enum: ["Pending","Shipped", "Delivered", "Cancelled"],
         default: "Pending",
     },
+
     cancelReason: String,
+    cancelledBy: { type: String, enum: ['Admin', 'User'], default: null },
+    
     orderNumber: {
         type: String,
         unique: true,

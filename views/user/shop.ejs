@@ -88,58 +88,58 @@
         .price-button:active {
             transform: scale(0.95);
         }
+
         /* pagination */
         .product__pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 2rem 0;
-    flex-wrap: wrap;
-}
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
 
-.product__pagination .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 40px;
-    height: 40px;
-    padding: 0 10px;
-    margin: 5px;
-    font-size: 16px;
-    color: #333;
-    background-color: #f0f0f0;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
+        .product__pagination .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+            height: 40px;
+            padding: 0 10px;
+            margin: 5px;
+            font-size: 16px;
+            color: #333;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
 
-.product__pagination .btn:hover {
-    background-color: #e0e0e0;
-    border-color: #ccc;
-}
+        .product__pagination .btn:hover {
+            background-color: #e0e0e0;
+            border-color: #ccc;
+        }
 
-.product__pagination .btn.active {
-    color: #fff;
-    background-color: #fc9329;
-    border-color: #000000;
-}
+        .product__pagination .btn.active {
+            color: #fff;
+            background-color: #fc9329;
+            border-color: #000000;
+        }
 
-.product__pagination .btn.active:hover {
-    background-color: #ff4242;
-    border-color: #000d1b;
-}
+        .product__pagination .btn.active:hover {
+            background-color: #ff4242;
+            border-color: #000d1b;
+        }
 
-/* Responsive adjustments */
-@media (max-width: 576px) {
-    .product__pagination .btn {
-        min-width: 35px;
-        height: 35px;
-        font-size: 14px;
-        margin: 3px;
-    }
-}
-            
+        /* Responsive adjustments */
+        @media (max-width: 576px) {
+            .product__pagination .btn {
+                min-width: 35px;
+                height: 35px;
+                font-size: 14px;
+                margin: 3px;
+            }
+        }
     </style>
 
     <body>
@@ -177,6 +177,8 @@
                             <div class="shop__sidebar__accordion">
                                 <div class="accordion" id="accordionExample">
 
+
+
                                     <!-- category -->
                                     <div class="card">
                                         <div class="card-heading">
@@ -186,22 +188,24 @@
                                             <div class="card-body">
                                                 <div class="shop__sidebar__categories">
                                                     <ul class="nice-scroll">
-                                                        
+
                                                         <% for(let i=0;i<category.length;i++) { %>
 
-                                                        <li>
-                                                            <a href=""><%= category[i].name %></a>
-                                                        </li>
-                                                        
-                                                        <% } %>
-                                                   
+                                                            <li>
+                                                                <a href="/shop?category=<%= category[i]._id %>">
+                                                                    <%= category[i].name %>
+                                                                </a>
+                                                            </li>
+
+                                                            <% } %>
                                                     </ul>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+
                                     <!-- brands  -->
-                                    <div class="card">
+                                    <!-- <div class="card">
                                         <div class="card-heading">
                                             <a data-toggle="collapse" data-target="#collapseTwo">Branding</a>
                                         </div>
@@ -213,7 +217,7 @@
                                                         <% for(let i=0;i<brand.length;i++) { %>
 
                                                         <li>
-                                                            <a href="#"><%= brand[i].brandName %></a>
+                                                            <a href="/shop?brand=<%= brand[i]._id %>"><%= brand[i].brandName %></a>
                                                         </li>
 
                                                         <% } %>
@@ -222,10 +226,34 @@
                                                 </div>
                                             </div>
                                         </div>
+                                    </div> -->
+
+                                    <!-- Brands Filter -->
+                                    <div class="card">
+                                        <div class="card-heading">
+                                            <a data-toggle="collapse" data-target="#collapseTwo">Branding</a>
+                                        </div>
+                                        <div id="collapseTwo" class="collapse show" data-parent="#accordionExample">
+                                            <div class="card-body">
+                                                <div class="shop__sidebar__brand">
+                                                    <ul>
+                                                        <% for(let i=0; i < brand.length; i++) { %>
+                                                            <li>
+                                                                <a href="/shop?brand=<%= brand[i] %>"
+                                                                    class="<%= selectedBrand === brand[i] ? 'active' : '' %>">
+                                                                    <%= brand[i] %>
+                                                                </a>
+                                                            </li>
+                                                            <% } %>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
+
                                     <!-- filter price  -->
-                                    <div class="card">
+                                    <!-- <div class="card">
                                         <div class="card-heading">
                                             <a data-toggle="collapse" data-target="#collapseThree">Filter Price</a>
                                         </div>
@@ -233,19 +261,27 @@
                                             <div class="card-body">
                                                 <div class="shop__sidebar__price">
                                                     <ul>
-
                                                         <li>
-                                                            <a href="#">$0.00 - $50.00</a>
+                                                            <a href="?minPrice=1000&maxPrice=3000">₹.1000 - ₹.3000</a>
                                                         </li>
-                                                        
+                                                        <li>
+                                                            <a href="?minPrice=3000&maxPrice=6000">₹.3000 - ₹.6000</a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="?minPrice=6000&maxPrice=9000">₹.6000 - ₹.9000</a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="?minPrice=9000&maxPrice=15000">₹.9000 - ₹.15000</a>
+                                                        </li>
+                                                     
                                                     </ul>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> -->
 
                                     <!-- size  -->
-                                    <div class="card">
+                                    <!-- <div class="card">
                                         <div class="card-heading">
                                             <a data-toggle="collapse" data-target="#collapseFour">Size</a>
                                         </div>
@@ -280,7 +316,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> -->
 
                                     <!-- color  -->
                                     <!-- <div class="card">
@@ -322,27 +358,6 @@
                                         </div>
                                     </div> -->
 
-                                     <!-- tags  -->
-
-                                    <!-- <div class="card">
-                                        <div class="card-heading">
-                                            <a data-toggle="collapse" data-target="#collapseSix">Tags</a>
-                                        </div>
-                                        <div id="collapseSix" class="collapse show" data-parent="#accordionExample">
-                                            <div class="card-body">
-                                                <div class="shop__sidebar__tags">
-                                                    <a href="#">Product</a>
-                                                    <a href="#">Bags</a>
-                                                    <a href="#">Shoes</a>
-                                                    <a href="#">Fashio</a>
-                                                    <a href="#">Clothing</a>
-                                                    <a href="#">Hats</a>
-                                                    <a href="#">Accessories</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div> -->
-
 
                                 </div>
                             </div>
@@ -350,60 +365,79 @@
                     </div>
 
                     <div class="col-lg-9">
+
+                        <!-- sort  -->
                         <div class="shop__product__option">
                             <div class="row">
+
                                 <div class="col-lg-6 col-md-6 col-sm-6">
                                     <div class="shop__product__option__left">
-                                        <p>Showing 1–12 of 126 results</p>
+                                        <p>Total Products:<strong>
+                                                <%= totalProducts %>
+                                            </strong></p>
                                     </div>
                                 </div>
+
                                 <div class="col-lg-6 col-md-6 col-sm-6">
                                     <div class="shop__product__option__right">
-                                        <p>Sort by Price:</p>
-                                        <select>
-                                            <option value="">Low To High</option>
-                                            <option value="">$0 - $55</option>
-                                            <option value="">$55 - $100</option>
-                                        </select>
+                                        <form id="sortForm" action="/shop" method="GET">
+                                            <p>Sort by:</p>
+                                            <select name="sort" onchange="document.getElementById('sortForm').submit()">
+                                                <option value="newArrivals" <%=(sortOption==='newArrivals' ) ? 'selected' : '' %>>New Arrivals</option>
+                                                <option value="priceAsc" <%=(sortOption==='priceAsc' ) ? 'selected' : '' %>>Price: Low To High</option>
+                                                <option value="priceDesc" <%=(sortOption==='priceDesc' ) ? 'selected' : '' %>>Price: High To Low</option>
+                                                <option value="nameAsc" <%=(sortOption==='nameAsc' ) ? 'selected' : ''  %>>aA-zZ</option>
+                                                <option value="nameDesc" <%=(sortOption==='nameDesc' ) ? 'selected' : '' %>>zZ-aA</option>
+                                            </select>
+                                        </form>
+
                                     </div>
                                 </div>
+
                             </div>
                         </div>
 
 
-                     <!-- product session start -->
+                        <!-- product session start -->
 
                         <div class="row">
 
                             <% for(let i=0;i<products.length;i++) { %>
-                            <div class="col-lg-4 col-md-6 col-sm-6">  
-                                <div class="product__item">
-                                    <div class="product__item__pic set-bg" data-setbg="">
+                                <div class="col-lg-4 col-md-6 col-sm-6">
+                                    <div class="product__item">
+                                        <div class="product__item__pic set-bg" data-setbg="">
 
-                            <a href="/productDetails?id=<%= products[i]._id %>">
-                                        
-                                        <img src="/uploads/re-image/<%= products[i].productImage[0] %>" alt="<%= products[i].productName %>" >
-                                        <ul class="product__hover">
-                                            <li><a href="#"><img src="img/icon/heart.png" alt=""></a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="product__item__text">
-                                        <h6><%= products[i].productName %></h6>
-                                        <h6>Brand: <%= products[i].brand %></h6>
-                                       
-                                        <!-- <p>brands</p> -->
-                                        <div class="rating">
-                                            <i class="fa fa-star-o"></i>
-                                            <i class="fa fa-star-o"></i>
-                                            <i class="fa fa-star-o"></i>
-                                            <i class="fa fa-star-o"></i>
-                                            <i class="fa fa-star-o"></i>
+                                            <a href="/productDetails?id=<%= products[i]._id %>">
+
+                                                <img src="/uploads/re-image/<%= products[i].productImage[0] %>"
+                                                    alt="<%= products[i].productName %>">
+                                                <ul class="product__hover">
+                                                    <li><a href="#"><img src="img/icon/heart.png" alt=""></a></li>
+                                                </ul>
                                         </div>
-            
-                                        <p>price:₹<%= products[i].salePrice.toLocaleString('en-IN') %> <span class="text-muted"><strike>₹<%= products[i].regularPrice.toLocaleString('en-IN') %></strike></span></p>
-                             </a>
-                                        <a href="#" class="add-cart">+ Add To Cart</a>
-                                        <!-- <div class="product__color__select">
+                                        <div class="product__item__text">
+                                            <h6>
+                                                <%= products[i].productName %>
+                                            </h6>
+                                            <h6>Brand: <%= products[i].brand %>
+                                            </h6>
+
+                                            <!-- <p>brands</p> -->
+                                            <div class="rating">
+                                                <i class="fa fa-star-o"></i>
+                                                <i class="fa fa-star-o"></i>
+                                                <i class="fa fa-star-o"></i>
+                                                <i class="fa fa-star-o"></i>
+                                                <i class="fa fa-star-o"></i>
+                                            </div>
+
+                                            <p>price:₹<%= products[i].salePrice.toLocaleString('en-IN') %> <span
+                                                        class="text-muted"><strike>₹<%=
+                                                                products[i].regularPrice.toLocaleString('en-IN') %>
+                                                        </strike></span></p>
+                                            </a>
+                                            <a href="#" class="add-cart">+ Add To Cart</a>
+                                            <!-- <div class="product__color__select">
                                             <label for="pc-4">
                                                 <input type="radio" id="pc-4">
                                             </label>
@@ -414,15 +448,15 @@
                                                 <input type="radio" id="pc-6">
                                             </label>
                                         </div> -->
+                                        </div>
                                     </div>
+
+
                                 </div>
 
-                           
-                            </div>
 
 
-
-                            <!-- <main class="product-grid">
+                                <!-- <main class="product-grid">
                                 <div class="product-card">
                                   <span class="wishlist-btn" onclick="">❤️</span>
                                   <a href="">
@@ -434,10 +468,10 @@
                                   <button class="add-to-cart-btn" onclick="">Add to Cart</button>
                                 </div>
                             </main> -->
-                          
-                          
 
-                            <!-- <div class="col-lg-4 col-md-6 col-sm-6">
+
+
+                                <!-- <div class="col-lg-4 col-md-6 col-sm-6">
                                 <div class="product__item sale">
                                     <div class="product__item__pic set-bg" data-setbg="img/product/product-3.jpg">
                                         <span class="label">Sale</span>
@@ -474,37 +508,40 @@
                                     </div>
                                 </div>
                             </div> -->
-                            
-                            
 
-                            <% } %>
-                            <!-- product session end -->
+
+
+                                <% } %>
+                                    <!-- product session end -->
                         </div>
 
                         <!-- pagination -->
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="product__pagination">
-                                    
+
                                     <!-- <a class="active" href="#">1</a> -->
-                                    <% if (currentPage > 1) { %>
+                                    <% if (currentPage> 1) { %>
                                         <a class="btn" href="/shop?page=<%= currentPage - 1 %>">Prev</a>
-                                      <% } %>
-                                 
-                                 
-                                      <% for (let i = 1; i <= totalPages; i++) { %>
-                                        <a class="btn <%= currentPage === i ? 'active' : '' %>" href="/shop?page=<%= i %>"><%= i %></a>
-                                      <% } %>
-                                 
-                                 
-                                      <% if (currentPage < totalPages) { %>
-                                        <a class="btn" href="/shop?page=<%= currentPage + 1 %>">Next</a>
-                                      <% } %>
-        
+                                        <% } %>
+
+
+                                            <% for (let i=1; i <=totalPages; i++) { %>
+                                                <a class="btn <%= currentPage === i ? 'active' : '' %>"
+                                                    href="/shop?page=<%= i %>">
+                                                    <%= i %>
+                                                </a>
+                                                <% } %>
+
+
+                                                    <% if (currentPage < totalPages) { %>
+                                                        <a class="btn" href="/shop?page=<%= currentPage + 1 %>">Next</a>
+                                                        <% } %>
+
                                 </div>
                             </div>
-                           
-                         
+
+
                         </div>
 
                     </div>

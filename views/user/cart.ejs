@@ -285,7 +285,9 @@
                     <div class="cart__total">
                         <h6>Cart total</h6>
                         <ul>
+
                             <li>Total <span>₹.<%= cart ? cart.cartTotal : 0 %></span></li>
+
                         </ul>
                         <% if (cart && cart.items && cart.items.length > 0) { %>
                             <a href="/checkout" class="primary-btn">Proceed to checkout</a>

@@ -269,15 +269,19 @@
                                 <img src="img/shop-details/details-payment.png" alt="">
                                 <ul>
 
-                                    <!-- stock  -->
+
+                                    <!-- stock display -->
                                     <li id="product-quantity">
-                                        <span>In Stock:</span>
-                                        <% if(product.totalQuantity> 0) { %>
-                                            <%= product.totalQuantity %> left
-                                                <% }else { %>
-                                                    No Stock Left
-                                                    <% } %>
+                                        <span>In Stock: </span>
+                                        <strong id="variant-quantity">
+                                            <% if (product.currentVariantQuantity > 0) { %>
+                                                <%= product.currentVariantQuantity %> left
+                                            <% } else { %>
+                                                Select a size to check stock
+                                            <% } %>
+                                        </strong>
                                     </li>
+
 
                                     <li><span>Category:</span>
                                         <%= product.category.name %>
@@ -481,12 +485,14 @@
     <script>
 
         document.addEventListener('DOMContentLoaded', function () {
-            const productId = '<%= product._id %>'; // Get the current product ID
+            const productId = '<%= product._id %>'; 
             const sizeLabels = document.querySelectorAll('.product__details__option__size label:not(.unavailable)');
             const priceElement = document.getElementById('product-price');
             const quantityElement = document.getElementById('product-quantity');
+            const addToCartBtn = document.getElementById('addToCartBtn');
 
-            // Function to update price and quantity based on variant data
+
+            // update price and quantity based on variant data
             function updateProductDetails(variantData) {
                 //  price
                 if (variantData.salePrice && variantData.salePrice !== variantData.price) {
@@ -498,17 +504,16 @@
                 quantityElement.innerHTML = `Stock: ${variantData.quantity}`;
             }
 
-            // Function to save selected size to localStorage
+            // save selected size to localStorage
             function saveSelectedSize(size) {
                 localStorage.setItem(`selectedSize_${productId}`, size);
             }
 
-            // Function to get selected size from localStorage
+            // get selected size from localStorage
             function getSelectedSize() {
                 return localStorage.getItem(`selectedSize_${productId}`);
             }
 
-            // Add click event listeners to size labels
             sizeLabels.forEach(label => {
                 label.addEventListener('click', function () {
                     // Remove active class from all labels
@@ -543,53 +548,7 @@
         });
 
 
-        // Toast Notification Function
-        function showToast(message, type = 'success') {
-            const toastContainer = document.getElementById('toast-container');
-
-            // Create toast element
-            const toast = document.createElement('div');
-            toast.classList.add('toast-message', type);
-            toast.textContent = message;
-
-            // Add to container
-            toastContainer.appendChild(toast);
-
-            // Trigger show animation
-            setTimeout(() => {
-                toast.classList.add('show');
-            }, 10);
-
-
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => {
-                    toastContainer.removeChild(toast);
-                }, 300);
-            }, 1500);
-        }
-
-
-        //zoom
-        const zoomContainers = document.querySelectorAll('.product-image-zoom');
-
-        zoomContainers.forEach(container => {
-            const img = container.querySelector('.zoomable-image');
-
-            container.addEventListener('mousemove', function (e) {
-                const rect = container.getBoundingClientRect();
-                const x = (e.clientX - rect.left) / rect.width;
-                const y = (e.clientY - rect.top) / rect.height;
-
-                img.style.transformOrigin = `${x * 100}% ${y * 100}%`;
-            });
-        });
-
-        // Initialize Fancybox for click-to-zoom
-        Fancybox.bind("[data-fancybox]", {
-            // Custom options if needed
-        });
-
+       
         // Handle size selection
         const sizeOptions = document.querySelectorAll('input[name="size"]');
         const addToCartBtn = document.getElementById('addToCartBtn');
@@ -606,6 +565,10 @@
                 priceElement.innerHTML = `₹.${salePrice} <span>₹.${regularPrice}</span>`;
             });
         });
+
+
+
+
 
 
 
@@ -663,6 +626,7 @@
 
 
 
+
         //input field of addtocart
         document.addEventListener("DOMContentLoaded", function () {
             const quantityInput = document.getElementById("quantity"); // Get the input element by its ID
@@ -672,11 +636,10 @@
                 quantityInput.addEventListener("input", function () {
                     let value = parseInt(this.value);
 
-                    // If the quantity is more than 5, reset it to 5 and show a toast message
+                  
                     if (value > 5) {
                         this.value = 5;
 
-                        // Show the toast message
                         Swal.fire({
                             toast: true,
                             position: 'top-end',
@@ -689,9 +652,9 @@
 
                     // Enable the Add to Cart button if the quantity is between 1 and 5
                     if (value >= 1 && value <= 5) {
-                        addToCartBtn.disabled = false; // Enable the button
+                        addToCartBtn.disabled = false; 
                     } else {
-                        addToCartBtn.disabled = true; // Disable the button
+                        addToCartBtn.disabled = true; 
                     }
                 });
             }
@@ -699,7 +662,107 @@
 
 
 
+         
+
+        //zoom
+        const zoomContainers = document.querySelectorAll('.product-image-zoom');
+
+        zoomContainers.forEach(container => {
+            const img = container.querySelector('.zoomable-image');
+
+            container.addEventListener('mousemove', function (e) {
+                const rect = container.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width;
+                const y = (e.clientY - rect.top) / rect.height;
+
+                img.style.transformOrigin = `${x * 100}% ${y * 100}%`;
+            });
+        });
+
+        // Initialize Fancybox for click-to-zoom
+        Fancybox.bind("[data-fancybox]", {
+            // Custom options if needed
+        });
+
+
+
+        // Toast Notification Function
+        function showToast(message, type = 'success') {
+            const toastContainer = document.getElementById('toast-container');
+  
+            const toast = document.createElement('div');
+            toast.classList.add('toast-message', type);
+            toast.textContent = message;
+
+            toastContainer.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toastContainer.removeChild(toast);
+                }, 300);
+            }, 1500);
+        }
+
+
     </script>
+
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sizeInputs = document.querySelectorAll('input[name="size"]');
+        const quantityDisplay = document.getElementById('variant-quantity');
+        // const variantQuantities = <%- JSON.stringify(product.variantQuantities || {}) %>;
+        const variantQuantities =  JSON.parse('<%- variantQuantities %>'); 
+    
+        sizeInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                const selectedSize = this.value;
+                const quantity = variantQuantities[selectedSize] || 0;
+                
+                if (quantity > 0) {
+                    quantityDisplay.textContent = `${quantity} left`;
+                } else {
+                    quantityDisplay.textContent = 'Out of Stock';
+                }
+            });
+        });
+    });
+    </script>
+    <!-- <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sizeInputs = document.querySelectorAll('input[name="size"]');
+    const quantityDisplay = document.getElementById('variant-quantity');
+    const variantQuantities = JSON.parse('<%- variantQuantities %>'); // Parse the pre-stringified data
+    
+    // Initial display for default selected size
+    const initialSelectedSize = document.querySelector('input[name="size"]:checked');
+    if (initialSelectedSize) {
+        updateQuantityDisplay(initialSelectedSize.value);
+    }
+
+    sizeInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            updateQuantityDisplay(this.value);
+        });
+    });
+
+    function updateQuantityDisplay(selectedSize) {
+        const quantity = variantQuantities[selectedSize] || 0;
+        if (quantity > 0) {
+            quantityDisplay.textContent = `${quantity} left`;
+        } else {
+            quantityDisplay.textContent = 'Out of Stock';
+        }
+    }
+});
+</script> -->
+
 
 
 
@@ -740,8 +803,15 @@
         }
 
         .toast-message.show {
-            opacity: 1;
+            opacity: 1;  
+            transition: opacity 0.3s ease-in-out; 
         }
+      
     </style>
 
     <%- include("../../views/partials/user/footer") %>
+
+
+
+
+

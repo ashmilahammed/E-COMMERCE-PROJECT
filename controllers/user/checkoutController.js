@@ -69,6 +69,155 @@ const checkoutPage = async (req, res) => {
 
 
 
+// const placeOrder = async (req, res) => {
+//     try {
+//         const userId = req.session.user;
+//         if (!userId) {
+//             return res.status(401).json({ success: false, message: 'Please login to continue' });
+//         }
+
+//         const { selectedAddress, paymentMethod } = req.body;
+
+//         // Validate required fields
+//         if (!selectedAddress) {
+//             return res.status(400).json({ success: false, message: 'Shipping address is required' });
+//         }
+//         if (!paymentMethod) {
+//             return res.status(400).json({ success: false, message: 'Payment method is required' });
+//         }
+
+//         // Get user's cart
+//         const cart = await Cart.findOne({ userId }).populate({
+//             path: 'items.productId',
+//             select: 'productName productImage variants brand'
+//         });
+
+//         if (!cart || cart.items.length === 0) {
+//             return res.status(400).json({ success: false, message: 'Cart is empty' });
+//         }
+
+//         // Get shipping address
+//         const address = await Address.findOne({
+//             userId,
+//             'address._id': selectedAddress
+//         });
+
+//         if (!address) {
+//             return res.status(400).json({ success: false, message: 'Invalid shipping address' });
+//         }
+
+//         const shippingAddress = address.address.find(addr => addr._id.toString() === selectedAddress);
+
+//         // Create order items from cart
+//         const orderItems = cart.items.map(item => {
+//             const variant = item.productId.variants.find(v => v.size === item.size);
+//             return {
+//                 product: item.productId._id,
+//                 variant: {
+//                     size: item.size,
+//                     quantity: item.quantity
+//                 },
+//                 productImage: Array.isArray(item.productId.productImage) ? item.productId.productImage[0] : item.productId.productImage,
+//                 price: {
+//                     regularPrice: variant.regularPrice,
+//                     salePrice: variant.salePrice,
+//                     productOffer: variant.productOffer || 0,
+//                     offerType: variant.offerType || "No Offer"
+//                 },
+//                 itemStatus: "Processing"
+//             };
+//         });
+
+//         // Calculate total amount
+//         const subtotal = cart.items.reduce((total, item) => {
+//             const variant = item.productId.variants.find(v => v.size === item.size);
+//             return total + (variant ? variant.salePrice * item.quantity : 0);
+//         }, 0);
+
+//         const tax = subtotal * 0.0; 
+//         const shipping = subtotal > 1000 ? 0 : 50; // Free shipping over 1000
+//         const finalAmount = subtotal + tax + shipping;
+
+//         // Generate unique orderId and orderNumber
+//         let orderId, orderNumber;
+//         let isUnique = false;
+//         while (!isUnique) {
+//             orderId = 'ID' + Date.now() + Math.floor(Math.random() * 1000);
+//             orderNumber = 'ORD' + Date.now() + Math.floor(Math.random() * 1000);
+//             const existingOrder = await Order.findOne({ $or: [{ orderId }, { orderNumber }] });
+//             if (!existingOrder) {
+//                 isUnique = true;
+//             }
+//         }
+
+//         // Convert payment method to uppercase to match enum
+//         const normalizedPaymentMethod = paymentMethod.toUpperCase();
+
+//         // Create new order
+//         const order = new Order({
+//             userId,
+//             orderId, 
+//             orderNumber,
+//             orderItems,
+//             shippingAddress: {
+//                 name: shippingAddress.name,
+//                 landMark: shippingAddress.landMark,
+//                 city: shippingAddress.city,
+//                 state: shippingAddress.state,
+//                 pincode: shippingAddress.pincode,
+//                 phone: shippingAddress.phone,
+//                 altPhone: shippingAddress.altPhone 
+//             },
+//             pricing: {
+//                 subtotal,
+//                 finalAmount,
+//                 productOffersTotal: 0,
+//                 coupon: {
+//                     discount: 0
+//                 }
+//             },
+//             payment: {
+//                 method: normalizedPaymentMethod,
+//                 status: normalizedPaymentMethod === 'COD' ? 'Pending' : 'Completed',
+//                 paidAt: normalizedPaymentMethod === 'COD' ? null : new Date()
+//             },
+//             orderStatus: "Pending",
+//             expectedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
+//         });
+
+//         await order.save();
+
+//         await Cart.findOneAndUpdate(
+//             { userId },
+//             { $set: { items: [] } }
+//         );
+
+//         res.json({
+//             success: true,
+//             message: 'Order placed successfully',
+//             orderId: order.orderId
+//         });
+
+//     } catch (error) {
+//         console.error('Error placing order:', error);
+//         if (error.name === 'ValidationError') {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: 'Validation error: ' + error.message
+//             });
+//         }
+//         if (error.code === 11000) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: 'An order with this number already exists. Please try again.'
+//             });
+//         }
+//         res.status(500).json({
+//             success: false,
+//             message: 'Something went wrong while placing your order'
+//         });
+//     }
+// };
 const placeOrder = async (req, res) => {
     try {
         const userId = req.session.user;
@@ -185,6 +334,16 @@ const placeOrder = async (req, res) => {
             expectedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
         });
 
+        // Reduce stock for each item in the order
+        for (const item of orderItems) {
+            const product = await Product.findById(item.product);
+            const variant = product.variants.find(v => v.size === item.variant.size);
+            if (variant && variant.quantity >= item.variant.quantity) {
+                variant.quantity -= item.variant.quantity; // Reduce stock
+                await product.save(); // Save the updated product
+            }
+        }
+
         await order.save();
 
         await Cart.findOneAndUpdate(
@@ -217,8 +376,7 @@ const placeOrder = async (req, res) => {
             message: 'Something went wrong while placing your order'
         });
     }
-};
-
+}
 
 
 
@@ -352,7 +510,7 @@ const getOrderDetails = async (req, res) => {
     try {
         const userId = req.session.user;
         const userData = await User.findById(userId);
-        const orderId = req.params.orderId;
+        const orderId = req.query.id;
 
         if (!userId) {
             return res.redirect("/login");
@@ -425,6 +583,64 @@ const getOrderDetails = async (req, res) => {
 
 
 
+// const cancelOrder = async (req, res) => {
+//     try {
+//         const { orderId, cancelReason } = req.body;
+//         const userId = req.session.user;
+
+//         const order = await Order.findOne({ 
+//             _id: orderId, 
+//             userId: userId,
+//             orderStatus: { $in: ['Pending', 'Processing'] } 
+//         });
+
+//         if (!order) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: 'Order not found or cannot be cancelled'
+//             });
+//         }
+
+//         // Update order status and reason
+//         order.orderStatus = 'Cancelled';
+//         order.cancelReason = cancelReason;
+
+//         // Update individual item statuses
+//         order.orderItems.forEach(item => {
+//             item.itemStatus = 'Cancelled';
+//         });
+
+//         await order.save();
+
+//         //  Restore product inventory
+//         for (const item of order.orderItems) {
+//             await Product.findByIdAndUpdate(
+//                 item.product, 
+//                 { $inc: { 'variants.$[elem].quantity': item.variant.quantity } },
+//                 { 
+//                     arrayFilters: [{ 'elem.size': item.variant.size }],
+//                     new: true 
+//                 }
+//             );
+//         }
+
+//         // if (order.payment.method !== 'COD') {
+//         //     // Implement refund logic here
+//         //     await processRefund(order);
+//         // }
+
+//         res.json({
+//             success: true,
+//             message: 'Order cancelled successfully'
+//         });
+//     } catch (error) {
+//         console.error('Order Cancellation Error:', error);
+//         res.status(500).json({
+//             success: false,
+//             message: 'An error occurred while cancelling the order'
+//         });
+//     }
+// };
 const cancelOrder = async (req, res) => {
     try {
         const { orderId, cancelReason } = req.body;
@@ -447,6 +663,11 @@ const cancelOrder = async (req, res) => {
         order.orderStatus = 'Cancelled';
         order.cancelReason = cancelReason;
 
+
+        if("Cancelled"){
+            order.cancelledBy = "User"
+        }
+
         // Update individual item statuses
         order.orderItems.forEach(item => {
             item.itemStatus = 'Cancelled';
@@ -454,9 +675,9 @@ const cancelOrder = async (req, res) => {
 
         await order.save();
 
-        //  Restore product inventory
+        // Restore product inventory
         for (const item of order.orderItems) {
-            await Product.findByIdAndUpdate(
+            const productUpdate = await Product.findByIdAndUpdate(
                 item.product, 
                 { $inc: { 'variants.$[elem].quantity': item.variant.quantity } },
                 { 
@@ -464,10 +685,14 @@ const cancelOrder = async (req, res) => {
                     new: true 
                 }
             );
+
+            if (!productUpdate) {
+                console.error(`Failed to update stock for product ID: ${item.product}`);
+            }
         }
 
+        // Uncomment if refund logic is needed
         // if (order.payment.method !== 'COD') {
-        //     // Implement refund logic here
         //     await processRefund(order);
         // }
 
@@ -483,7 +708,6 @@ const cancelOrder = async (req, res) => {
         });
     }
 };
-
 
 
 

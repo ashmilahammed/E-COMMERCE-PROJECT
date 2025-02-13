@@ -23,8 +23,6 @@
             font-size: 0.8rem;
         }
 
-
-
         .status-badge {
             padding: 5px 15px;
             border-radius: 20px;
@@ -47,6 +45,81 @@
             border-radius: 2px;
         }
     </style>
+     <style>
+        /* Status Change Modal Dropdown Styles */
+        .status-change-container {
+            position: relative;
+        }
+
+        .status-change-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            min-width: 250px;
+            background-color: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            z-index: 1050;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-20px);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .status-change-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .status-change-dropdown .dropdown-header {
+            background-color: #f8f9fa;
+            padding: 0.75rem 1.25rem;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+
+        .status-change-dropdown .dropdown-header h6 {
+            margin: 0;
+            font-size: 0.95rem;
+            color: #495057;
+        }
+
+        .status-change-dropdown .status-option {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.25rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .status-change-dropdown .status-option:hover {
+            background-color: #f1f3f5;
+        }
+
+        .status-change-dropdown .status-option-icon {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            margin-right: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .status-processing-submenu { background-color: #9333ea; }
+        .status-shipped-submenu { background-color: #2563eb; }
+        .status-delivered-submenu { background-color: #10b981; }
+        .status-cancelled-submenu { background-color: #ef4444; }
+
+        /* Prevent dropdown from closing when clicking inside */
+        .status-change-dropdown.show {
+            pointer-events: auto;
+        }
+    </style>
 
 
 
@@ -63,9 +136,9 @@
                     <select id="statusFilter" class="form-select">
                         <option value="">All Statuses</option>
                         <option value="Pending">Pending</option>
-                        <option value="Processing">Processing</option>
+                        <!-- <option value="Processing">Processing</option> -->
                         <option value="Shipped">Shipped</option>
-                        <option value="Out for Delivery">Out for Delivery</option>
+                        <!-- <option value="Out for Delivery">Out for Delivery</option> -->
                         <option value="Delivered">Delivered</option>
                         <option value="Cancelled">Cancelled</option>
                     </select>
@@ -135,53 +208,46 @@
                                     <ul class="dropdown-menu">
                                         <li>
                                             <a class="dropdown-item" href="/admin/orderList-details/<%= order._id %>">
-                                                View Details
+                                                <i class="bi bi-eye"></i> View Details
                                             </a>
                                         </li>
                                         <% if (order.returnRequest) { %>
                                             <li>
-                                                <a class="dropdown-item verify-return" data-order-id="<%= order._id %>"
-                                                    href="#">
-                                                    Verify Return
+                                                <a class="dropdown-item verify-return" data-order-id="<%= order._id %>" href="#">
+                                                    <i class="bi bi-arrow-clockwise"></i> Verify Return
                                                 </a>
                                             </li>
-                                            <% } %>
-                                                <li>
-                                                    <hr class="dropdown-divider">
-                                                </li>
-                                                <li class="dropdown-submenu">
-                                                    <a class="dropdown-item dropdown-toggle" href="#">Change Status</a>
-                                                    <ul class="dropdown-menu">
-                                                        <li>
-                                                            <a class="dropdown-item status-update"
-                                                                data-order-id="<%= order._id %>"
-                                                                data-status="Processing" href="#">
-                                                                Pending
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a class="dropdown-item status-update"
-                                                                data-order-id="<%= order._id %>" data-status="Shipped"
-                                                                href="#">
-                                                                Shipped
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a class="dropdown-item status-update"
-                                                                data-order-id="<%= order._id %>" data-status="Delivered"
-                                                                href="#">
-                                                                Delivered
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a class="dropdown-item status-update"
-                                                                data-order-id="<%= order._id %>" data-status="Cancelled"
-                                                                href="#">
-                                                                Cancelled
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </li>
+                                        <% } %>
+                                        <li><hr class="dropdown-divider"></li>
+                            
+                                        <% if (order.orderStatus !== 'Cancelled') { %>
+                                            <li class="status-change-container">
+                                                <a class="dropdown-item change-status-trigger" href="#" data-order-id="<%= order._id %>">
+                                                    <i class="bi bi-arrow-repeat me-2"></i> Change Status
+                                                </a>
+                                                <div class="status-change-dropdown" data-order-id="<%= order._id %>">
+                                                    <div class="dropdown-header">
+                                                        <h6>Change Order Status</h6>
+                                                        <button type="button" class="btn-close" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="status-option status-update" data-status="Pending">
+                                                        <span class="status-option-icon status-processing-submenu"></span> Pending
+                                                    </div>
+                                                    <div class="status-option status-update" data-status="Shipped">
+                                                        <span class="status-option-icon status-shipped-submenu"></span> Shipped
+                                                    </div>
+                                                    <div class="status-option status-update" data-status="Delivered">
+                                                        <span class="status-option-icon status-delivered-submenu"></span> Delivered
+                                                    </div>
+                                                    <div class="status-option status-update" data-status="Cancelled">
+                                                        <span class="status-option-icon status-cancelled-submenu"></span> Cancelled
+                                                    </div>
+                                                </div>
+                                            </li>
+                                                       
+                                            <% } else { %>
+                                            <li class="dropdown-item disabled">Status cannot be changed (Cancelled)</li>
+                                        <% } %>
                                     </ul>
                                 </div>
                             </td>
@@ -288,49 +354,7 @@
                 filterOrders();
             });
 
-            // Status Update Handler
-            document.querySelectorAll(".status-update").forEach(link => {
-                link.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    const orderId = e.target.dataset.orderId;
-                    const status = e.target.dataset.status;
 
-                    try {
-                        const response = await fetch(`/admin/update-order-status`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ orderId, status })
-                        });
-
-                        const result = await response.json();
-                        if (result.success) {
-                            Swal.fire({
-                                title: 'Status Updated',
-                                text: `Order status changed to ${status}`,
-                                icon: 'success',
-                                confirmButtonText: 'OK'
-                            }).then(() => window.location.reload());
-                        } else {
-                            Swal.fire({
-                                title: 'Update Failed',
-                                text: result.message || 'Failed to update order status',
-                                icon: 'error',
-                                confirmButtonText: 'OK'
-                            });
-                        }
-                    } catch (error) {
-                        console.error("Error updating status:", error);
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'An unexpected error occurred',
-                            icon: 'error',
-                            confirmButtonText: 'OK'
-                        });
-                    }
-                });
-            });
 
             // Return Request Verification
             document.querySelectorAll(".verify-return").forEach(link => {
@@ -418,4 +442,100 @@
     </script>
 
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Status Change Dropdown Functionality
+            const changeStatusTriggers = document.querySelectorAll('.change-status-trigger');
+            const statusChangeDropdowns = document.querySelectorAll('.status-change-dropdown');
+
+            // Close all dropdowns
+            function closeAllStatusDropdowns() {
+                statusChangeDropdowns.forEach(dropdown => {
+                    dropdown.classList.remove('show');
+                });
+            }
+
+            // Toggle dropdown
+            changeStatusTriggers.forEach(trigger => {
+                trigger.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // Close all other dropdowns
+                    closeAllStatusDropdowns();
+
+                    // Find the corresponding dropdown
+                    const orderId = this.getAttribute('data-order-id');
+                    const dropdown = document.querySelector(`.status-change-dropdown[data-order-id="${orderId}"]`);
+
+                    // Toggle current dropdown
+                    dropdown.classList.toggle('show');
+                });
+            });
+
+            // Close button functionality
+            statusChangeDropdowns.forEach(dropdown => {
+                const closeBtn = dropdown.querySelector('.btn-close');
+                closeBtn.addEventListener('click', function () {
+                    dropdown.classList.remove('show');
+                });
+            });
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function (e) {
+                if (!e.target.closest('.status-change-container')) {
+                    closeAllStatusDropdowns();
+                }
+            });
+
+            // Status Update Handler
+            const statusUpdateOptions = document.querySelectorAll('.status-update');
+            statusUpdateOptions.forEach(option => {
+                option.addEventListener('click', async function (e) {
+                    const orderId = this.closest('.status-change-dropdown').getAttribute('data-order-id');
+                    const status = this.getAttribute('data-status');
+
+                    try {
+                        const response = await fetch('/admin/update-order-status', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ orderId, status })
+                        });
+
+                        const result = await response.json();
+                        if (result.success) {
+                            Swal.fire({
+                                title: 'Status Updated',
+                                text: `Order status changed to ${status}`,
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            }).then(() => window.location.reload());
+                        } else {
+                            Swal.fire({
+                                title: 'Update Failed',
+                                text: result.message || 'Failed to update order status',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    } catch (error) {
+                        console.error("Error updating status:", error);
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'An unexpected error occurred',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
+
+
     <%- include("../../views/partials/admin/footer") %>
+
+    

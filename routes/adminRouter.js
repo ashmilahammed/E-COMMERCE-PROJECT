@@ -10,7 +10,7 @@ const {userAuth,adminAuth} = require("../middlewares/auth");
 const multer = require("multer");
 const storage = require("../helpers/multer");
 const uploads = multer({storage:storage});
-// const { route } = require("./userRouter");
+
 
 
 router.get("/pageError",adminController.pageError)
@@ -50,7 +50,8 @@ router.post("/deleteImage",adminAuth,productController.deleteSingleImage);
 
 //order  management
 router.get("/order-list",adminAuth,orderController.orderListPage);
-router.get("/orderList-details/:orderId",adminAuth,orderController.getOrderDetails)
+router.get("/orderList-details/:orderId",adminAuth,orderController.getOrderDetails);
+router.post("/update-order-status",adminAuth,orderController.updateOrderStatus)
 
 
 
