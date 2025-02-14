@@ -5,8 +5,8 @@ const User = require("../../models/userSchema")
 const fs = require("fs");
 const path = require("path");
 const sharp = require("sharp");
-const { error } = require("console");
-const { response } = require("express");
+// const { error } = require("console");
+// const { response } = require("express");
 
 
 
@@ -90,7 +90,7 @@ const GetAllProducts = async (req, res) => {
     try {
         const search = req.query.search || "";
         const page = parseInt(req.query.page) || 1;
-        const limit = 10;
+        const limit = 8;
         const sortField = req.query.sort || "createdAt";
         const sortOrder = req.query.order || "desc";
         const filterCategory = req.query.category || "";

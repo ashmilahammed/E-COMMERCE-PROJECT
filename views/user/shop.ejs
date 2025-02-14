@@ -140,7 +140,47 @@
                 margin: 3px;
             }
         }
+
+        #active-filter-brand {
+            background-color: #ffffff;
+            font-weight: bold;
+            color: #ff2a2a;
+        }
+
+        #active-filter-category {
+            background-color: #ffffff;
+            font-weight: bold;
+            color: #e83232;
+        }
+
+        #search-input-active {
+            background-color: #ffffff;
+            border: solid 1px rgb(196, 196, 196);
+            color: rgb(69, 69, 69);
+        }
+
+        #active-price-filter1 {
+            background-color: #ffffff;
+            font-weight: bold;
+            color: #e83232;
+        }
+        #active-price-filter2 {
+            background-color: #ffffff;
+            font-weight: bold;
+            color: #e83232;
+        }
+        #active-price-filter3 {
+            background-color: #ffffff;
+            font-weight: bold;
+            color: #e83232;
+        }
+        #active-price-filter4 {
+            background-color: #ffffff;
+            font-weight: bold;
+            color: #e83232;
+        }
     </style>
+
 
     <body>
 
@@ -162,22 +202,35 @@
         </section>
         <!-- Breadcrumb Section End -->
 
+
         <!-- Shop Section Begin -->
         <section class="shop spad">
             <div class="container">
                 <div class="row">
                     <div class="col-lg-3">
                         <div class="shop__sidebar">
+
                             <div class="shop__sidebar__search">
-                                <form action="#">
-                                    <input type="text" placeholder="Search...">
-                                    <button type="submit"><span class="icon_search"></span></button>
+                                <form action="/shop" method="GET">
+                                    <input type="text" name="search" placeholder="Search by product name..."
+                                        value="<%= searchQuery %>" id="search-input-active">
+
+                                    <input type="hidden" name="brand" value="<%= selectedBrand %>">
+                                    <input type="hidden" name="category" value="<%= selectedCategory %>">
+                                    <input type="hidden" name="sort" value="<%= sortOption %>">
+
+                                    <button type="submit"><span class="icon_search"
+                                            style="color: black;"></span></button>
                                 </form>
                             </div>
+
                             <div class="shop__sidebar__accordion">
                                 <div class="accordion" id="accordionExample">
 
 
+                                    <a href="/shop">
+                                        <p style="color: red;;">All Products</p>
+                                    </a>
 
                                     <!-- category -->
                                     <div class="card">
@@ -192,9 +245,11 @@
                                                         <% for(let i=0;i<category.length;i++) { %>
 
                                                             <li>
-                                                                <a href="/shop?category=<%= category[i]._id %>">
+                                                                <a href="/shop?category=<%= category[i]._id %>&brand=<%= selectedBrand %>&sort=<%= sortOption %>&search=<%= searchQuery %>"
+                                                                    id="<%= selectedCategory === category[i]._id.toString() ? 'active-filter-category' : '' %>">
                                                                     <%= category[i].name %>
                                                                 </a>
+
                                                             </li>
 
                                                             <% } %>
@@ -239,10 +294,11 @@
                                                     <ul>
                                                         <% for(let i=0; i < brand.length; i++) { %>
                                                             <li>
-                                                                <a href="/shop?brand=<%= brand[i] %>"
-                                                                    class="<%= selectedBrand === brand[i] ? 'active' : '' %>">
+                                                                <a href="/shop?brand=<%= brand[i] %>&category=<%= selectedCategory %>&sort=<%= sortOption %>&search=<%= searchQuery %>"
+                                                                    id="<%= selectedBrand === brand[i] ? 'active-filter-brand' : '' %>">
                                                                     <%= brand[i] %>
                                                                 </a>
+
                                                             </li>
                                                             <% } %>
                                                     </ul>
@@ -252,8 +308,9 @@
                                     </div>
 
 
-                                    <!-- filter price  -->
-                                    <!-- <div class="card">
+
+                                    <!-- Filter Price -->
+                                    <div class="card">
                                         <div class="card-heading">
                                             <a data-toggle="collapse" data-target="#collapseThree">Filter Price</a>
                                         </div>
@@ -262,23 +319,35 @@
                                                 <div class="shop__sidebar__price">
                                                     <ul>
                                                         <li>
-                                                            <a href="?minPrice=1000&maxPrice=3000">₹.1000 - ₹.3000</a>
+                                                            <a
+                                                                href="?minPrice=1000&maxPrice=3000&category=<%= selectedCategory %>&brand=<%= selectedBrand %>&sort=<%= sortOption %>&search=<%= searchQuery %>"
+                                                                id="<%= (selectedMinPrice === '1000' && selectedMaxPrice === '3000') ? 'active-price-filter1' : '' %>">
+                                                                ₹.1000 - ₹.3000</a>
                                                         </li>
                                                         <li>
-                                                            <a href="?minPrice=3000&maxPrice=6000">₹.3000 - ₹.6000</a>
+                                                            <a
+                                                                href="?minPrice=3000&maxPrice=6000&category=<%= selectedCategory %>&brand=<%= selectedBrand %>&sort=<%= sortOption %>&search=<%= searchQuery %>"
+                                                                id="<%= (selectedMinPrice === '3000' && selectedMaxPrice === '6000') ? 'active-price-filter2' : '' %>">
+                                                                ₹.3000 - ₹.6000</a>
                                                         </li>
                                                         <li>
-                                                            <a href="?minPrice=6000&maxPrice=9000">₹.6000 - ₹.9000</a>
+                                                            <a
+                                                                href="?minPrice=6000&maxPrice=9000&category=<%= selectedCategory %>&brand=<%= selectedBrand %>&sort=<%= sortOption %>&search=<%= searchQuery %>"
+                                                                id="<%= (selectedMinPrice === '6000' && selectedMaxPrice === '9000') ? 'active-price-filter3' : '' %>">
+                                                                ₹.6000 - ₹.9000</a>
                                                         </li>
                                                         <li>
-                                                            <a href="?minPrice=9000&maxPrice=15000">₹.9000 - ₹.15000</a>
+                                                            <a
+                                                                href="?minPrice=9000&maxPrice=15000&category=<%= selectedCategory %>&brand=<%= selectedBrand %>&sort=<%= sortOption %>&search=<%= searchQuery %>"
+                                                                id="<%= (selectedMinPrice === '9000' && selectedMaxPrice === '15000') ? 'active-price-filter4' : '' %>">
+                                                                ₹.9000 - ₹.15000</a>
                                                         </li>
-                                                     
                                                     </ul>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div> -->
+                                    </div>
+
 
                                     <!-- size  -->
                                     <!-- <div class="card">
@@ -382,12 +451,21 @@
                                     <div class="shop__product__option__right">
                                         <form id="sortForm" action="/shop" method="GET">
                                             <p>Sort by:</p>
+                                            <input type="hidden" name="category" value="<%= selectedCategory %>">
+                                            <input type="hidden" name="brand" value="<%= selectedBrand %>">
+                                            <input type="hidden" name="search" value="<%= searchQuery %>">
+
                                             <select name="sort" onchange="document.getElementById('sortForm').submit()">
-                                                <option value="newArrivals" <%=(sortOption==='newArrivals' ) ? 'selected' : '' %>>New Arrivals</option>
-                                                <option value="priceAsc" <%=(sortOption==='priceAsc' ) ? 'selected' : '' %>>Price: Low To High</option>
-                                                <option value="priceDesc" <%=(sortOption==='priceDesc' ) ? 'selected' : '' %>>Price: High To Low</option>
-                                                <option value="nameAsc" <%=(sortOption==='nameAsc' ) ? 'selected' : ''  %>>aA-zZ</option>
-                                                <option value="nameDesc" <%=(sortOption==='nameDesc' ) ? 'selected' : '' %>>zZ-aA</option>
+                                                <option value="newArrivals" <%=(sortOption==='newArrivals' )
+                                                    ? 'selected' : '' %>>New Arrivals</option>
+                                                <option value="priceAsc" <%=(sortOption==='priceAsc' ) ? 'selected' : ''
+                                                    %>>Price: Low To High</option>
+                                                <option value="priceDesc" <%=(sortOption==='priceDesc' ) ? 'selected'
+                                                    : '' %>>Price: High To Low</option>
+                                                <option value="nameAsc" <%=(sortOption==='nameAsc' ) ? 'selected' : ''
+                                                    %>>aA-zZ</option>
+                                                <option value="nameDesc" <%=(sortOption==='nameDesc' ) ? 'selected' : ''
+                                                    %>>zZ-aA</option>
                                             </select>
                                         </form>
 
@@ -431,10 +509,10 @@
                                                 <i class="fa fa-star-o"></i>
                                             </div>
 
-                                            <p>price:₹<%= products[i].salePrice.toLocaleString('en-IN') %> <span
-                                                        class="text-muted"><strike>₹<%=
-                                                                products[i].regularPrice.toLocaleString('en-IN') %>
-                                                        </strike></span></p>
+                                            <p>price:<strong>₹<%= products[i].salePrice.toLocaleString('en-IN') %>
+                                                </strong> <span class="text-muted"><strike>₹<%=
+                                                            products[i].regularPrice.toLocaleString('en-IN') %>
+                                                    </strike></span></p>
                                             </a>
                                             <a href="#" class="add-cart">+ Add To Cart</a>
                                             <!-- <div class="product__color__select">

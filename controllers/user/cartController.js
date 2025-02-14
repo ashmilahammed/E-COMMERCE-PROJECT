@@ -45,7 +45,6 @@ const cartPage = async (req,res) => {
 
 
 
-
 const addToCart = async (req, res) => {
     try {
         const userId = req.session.user;
@@ -56,19 +55,24 @@ const addToCart = async (req, res) => {
         const { productId, size, quantity = 1 } = req.body;
         const MAX_QUANTITY_PER_SIZE = 5;
 
-        // Validate product and size
+
         const product = await Product.findById(productId);
         if (!product) {
             return res.status(404).json({ success: false, message: "Product not found" });
         }
 
-        // Find the variant with the selected size
+        // product is blocked
+        if (product.isBlocked) {
+            return res.status(400).json({ success: false, message: "This product cannot be added to the cart as it is blocked." });
+        }
+
+        // variant with the selected size
         const variant = product.variants.find(v => v.size === parseInt(size));
         if (!variant) {
             return res.status(400).json({ success: false, message: "Selected size not available" });
         }
 
-        // Check if quantity is available
+        // quantity 
         if (variant.quantity < quantity) {
             return res.status(400).json({ success: false, message: "Selected quantity not available" });
         }
@@ -89,11 +93,11 @@ const addToCart = async (req, res) => {
         );
 
         if (existingItemIndex > -1) {
-            // Update existing item
+          
             const item = cart.items[existingItemIndex];
             const newQuantity = item.quantity + parseInt(quantity);
             
-            // Check if new quantity exceeds max limit
+            // max quantity
             if (newQuantity > MAX_QUANTITY_PER_SIZE) {
                 return res.status(400).json({ 
                     success: false, 
@@ -101,8 +105,8 @@ const addToCart = async (req, res) => {
                     maxQuantityReached: true
                 });
             }
-            
-            // Check if new quantity is available
+           
+
             if (variant.quantity < newQuantity) {
                 return res.status(400).json({ success: false, message: "Requested quantity exceeds available stock" });
             }
@@ -110,7 +114,7 @@ const addToCart = async (req, res) => {
             item.quantity = newQuantity;
             item.totalPrice = variant.salePrice * newQuantity;
         } else {
-            // Check if adding new item would exceed max limit
+            // if adding new item would exceed max limit
             const sameProductSizeItems = cart.items.filter(
                 item => item.productId.toString() === productId && item.size === parseInt(size)
             );
@@ -123,7 +127,6 @@ const addToCart = async (req, res) => {
                 });
             }
 
-            // Add new item
             cart.items.push({
                 productId,
                 size: parseInt(size),
@@ -133,7 +136,7 @@ const addToCart = async (req, res) => {
             });
         }
 
-        // Calculate cart total
+    
         cart.cartTotal = cart.items.reduce((total, item) => total + item.totalPrice, 0);
 
         await cart.save();
@@ -170,7 +173,6 @@ const updateQuantity = async (req, res) => {
             return res.status(400).json({ success: false, message: "Invalid quantity" });
         }
 
-        // Check maximum quantity limit
         const MAX_QUANTITY = 5;
         if (parsedQuantity > MAX_QUANTITY) {
             return res.status(400).json({ 
@@ -180,7 +182,7 @@ const updateQuantity = async (req, res) => {
             });
         }
 
-        // Find cart
+
         const cart = await Cart.findOne({ userId }).populate({
             path: 'items.productId',
             select: 'variants'
@@ -217,10 +219,8 @@ const updateQuantity = async (req, res) => {
         cartItem.quantity = parsedQuantity;
         cartItem.totalPrice = variant.salePrice * parsedQuantity;
 
-        // Recalculate cart total
         cart.cartTotal = cart.items.reduce((total, item) => total + item.totalPrice, 0);
 
-        // Save cart
         await cart.save();
 
         res.json({ 
@@ -249,7 +249,6 @@ const removeItem = async (req, res) => {
 
         const { productId, size } = req.body;
 
-        // Find cart
         const cart = await Cart.findOne({ userId });
         if (!cart) {
             return res.status(404).json({ success: false, message: "Cart not found" });
@@ -266,8 +265,7 @@ const removeItem = async (req, res) => {
 
         // Remove the item
         cart.items.splice(itemIndex, 1);
-        
-        // Recalculate cart total
+
         cart.cartTotal = cart.items.reduce((total, item) => total + item.totalPrice, 0);
 
         await cart.save();
