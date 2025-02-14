@@ -146,6 +146,24 @@
       padding-top: 10px;
     }
   </style>
+  <style>
+    .password-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+  
+    .password-container input {
+      width: 100%;
+      padding-right: 30px;
+    }
+  
+    .toggle-password {
+      position: absolute;
+      right: 10px;
+      cursor: pointer;
+    }
+  </style>
 
 </head>
 
@@ -190,21 +208,22 @@
             <!-- Password -->
             <div class="form-group">
               <label for="password">Password</label>
-              <input type="password" id="password" name="password" placeholder="Enter your password">
+              <div class="password-container">
+                <input type="password" id="password" name="password" placeholder="Enter your password">
+                <span class="toggle-password" onclick="togglePassword('password')">👁️</span>
+              </div>
               <div id="errorPassword" class="error-message"></div>
             </div>
 
             <!-- Confirm Password -->
             <div class="form-group">
               <label for="confirm-password">Confirm Password</label>
-              <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password">
+              <div class="password-container">
+                <input type="password" id="confirm-password" name="confirm-password"
+                  placeholder="Confirm your password">
+                <span class="toggle-password" onclick="togglePassword('confirm-password')">👁️</span>
+              </div>
               <div id="errorConfirmPassword" class="error-message"></div>
-            </div>
-
-            <!-- Show Password -->
-            <div class="show-password-container">
-              <input type="checkbox" id="showPassword" />
-              <label for="showPassword">Show Password</label>
             </div>
 
             <!-- Sign Up Button -->
@@ -375,16 +394,13 @@
     })
   })
 
-  const showPasswordCheckbox = document.getElementById("showPassword");
-  const passwordField = document.getElementById("password");
-  const confirmPasswordField = document.getElementById("confirm-password");
 
-  // Toggle password visibility
-  showPasswordCheckbox.addEventListener("change", () => {
-    const type = showPasswordCheckbox.checked ? "text" : "password";
-    passwordField.type = type;
-    confirmPasswordField.type = type;
-  });
+  function togglePassword(fieldId) {
+    const field = document.getElementById(fieldId);
+    field.type = field.type === "password" ? "text" : "password";
+  }
 
 
 </script>
+
+
