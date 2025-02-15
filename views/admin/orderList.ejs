@@ -9,7 +9,7 @@
     <style>
         /* Additional styles for search and filter */
         .filter-container {
-            background-color: rgba(8, 129, 120, 0.2);
+            /* background-color: rgba(8, 129, 120, 0.2); */
             border-radius: 8px;
             padding: 15px;
             margin-bottom: 20px;
@@ -30,52 +30,85 @@
         }
 
         .status-delivered {
-            background-color: #e0f7f2;
-            color: #0d9488;
+            background-color: #00c403;
+            color: #ffffff;
+            /* font-weight: bold; */
+            border-radius: 2px;
         }
 
-        .status-processing {
-            background-color: #f3e8ff;
-            color: #9333ea;
+        .status-shipped {
+            background-color: #04b695b1;
+            color: #ffffff;
+            /* font-weight: bold; */
+            border-radius: 2px;
+        }
+
+        .status-pending {
+            background-color: #ffa012;
+            color: #ffffff;
+            /* font-weight: bold; */
+            border-radius: 2px;
         }
 
         .status-cancelled {
-            background-color: #fee2e2;
-            color: #e10808;
+            background-color: #f13939;
+            color: #ffffff;
+            /* font-weight: bold; */
             border-radius: 2px;
         }
     </style>
-     <style>
+
+    <style>
         /* Status Change Modal Dropdown Styles */
         .status-change-container {
-            position: relative;
+            position: static;
+            /* Changed from relative to static */
         }
 
         .status-change-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            min-width: 250px;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(0.95);
+            min-width: 280px;
             background-color: #ffffff;
             border: 1px solid #e9ecef;
             border-radius: 12px;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-            z-index: 1050;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 1060;
+            /* Increased z-index */
             opacity: 0;
             visibility: hidden;
-            transform: translateY(-20px);
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: all 0.2s ease-in-out;
+            pointer-events: none;
         }
 
         .status-change-dropdown.show {
             opacity: 1;
             visibility: visible;
-            transform: translateY(0);
+            transform: translate(-50%, -50%) scale(1);
+            pointer-events: auto;
+        }
+
+        .status-change-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1050;
+            backdrop-filter: blur(2px);
+        }
+
+        .status-change-overlay.show {
+            display: block;
         }
 
         .status-change-dropdown .dropdown-header {
             background-color: #f8f9fa;
-            padding: 0.75rem 1.25rem;
+            padding: 1rem 1.25rem;
             border-bottom: 1px solid #e9ecef;
             display: flex;
             justify-content: space-between;
@@ -86,41 +119,58 @@
 
         .status-change-dropdown .dropdown-header h6 {
             margin: 0;
-            font-size: 0.95rem;
-            color: #495057;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2937;
         }
 
         .status-change-dropdown .status-option {
             display: flex;
             align-items: center;
-            padding: 0.75rem 1.25rem;
+            padding: 0.875rem 1.25rem;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+        }
+
+        .status-change-dropdown .status-option:last-child {
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
         }
 
         .status-change-dropdown .status-option:hover {
-            background-color: #f1f3f5;
+            background-color: #f3f4f6;
         }
 
         .status-change-dropdown .status-option-icon {
-            width: 14px;
-            height: 14px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
             margin-right: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .status-processing-submenu { background-color: #9333ea; }
-        .status-shipped-submenu { background-color: #2563eb; }
-        .status-delivered-submenu { background-color: #10b981; }
-        .status-cancelled-submenu { background-color: #ef4444; }
+        /* Status colors with improved visibility */
+        .status-processing-submenu {
+            background-color: #ff962e;
+        }
 
-        /* Prevent dropdown from closing when clicking inside */
-        .status-change-dropdown.show {
-            pointer-events: auto;
+        .status-shipped-submenu {
+            background-color: #2563eb;
+        }
+
+        .status-delivered-submenu {
+            background-color: #00e827;
+        }
+
+        .status-cancelled-submenu {
+            background-color: #ff3333;
+        }
+
+        /* Added animation for better feedback */
+        .status-option:active {
+            transform: scale(0.98);
         }
     </style>
-
 
 
     <div class="main-content">
@@ -136,9 +186,7 @@
                     <select id="statusFilter" class="form-select">
                         <option value="">All Statuses</option>
                         <option value="Pending">Pending</option>
-                        <!-- <option value="Processing">Processing</option> -->
                         <option value="Shipped">Shipped</option>
-                        <!-- <option value="Out for Delivery">Out for Delivery</option> -->
                         <option value="Delivered">Delivered</option>
                         <option value="Cancelled">Cancelled</option>
                     </select>
@@ -152,7 +200,8 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <button id="clearSearchBtn" class="btn btn-secondary">Clear Search</button>
+                    <button id="clearSearchBtn" class="btn" style="background-color: rgba(8, 129, 120, 0.2);">Clear
+                        Search</button>
                 </div>
             </div>
         </div>
@@ -162,13 +211,13 @@
             <table class="table table-hover" id="orderTable">
                 <thead>
                     <tr>
-                        <th>Order ID</th>
-                        <th>User Details</th>
-                        <th>Date</th>
-                        <th>Total Amount</th>
-                        <th>Status</th>
-                        <th>Return Request</th>
-                        <th>Actions</th>
+                        <th style="background-color:  rgba(8, 129, 120, 0.2);">Order ID</th>
+                        <th style="background-color:  rgba(8, 129, 120, 0.2);">User Details</th>
+                        <th style="background-color:  rgba(8, 129, 120, 0.2);">Date</th>
+                        <th style="background-color:  rgba(8, 129, 120, 0.2);">Total Amount</th>
+                        <th style="background-color:  rgba(8, 129, 120, 0.2);">Status</th>
+                        <th style="background-color:  rgba(8, 129, 120, 0.2);">Return Request</th>
+                        <th style="background-color:  rgba(8, 129, 120, 0.2);">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -213,41 +262,60 @@
                                         </li>
                                         <% if (order.returnRequest) { %>
                                             <li>
-                                                <a class="dropdown-item verify-return" data-order-id="<%= order._id %>" href="#">
+                                                <a class="dropdown-item verify-return" data-order-id="<%= order._id %>"
+                                                    href="#">
                                                     <i class="bi bi-arrow-clockwise"></i> Verify Return
                                                 </a>
                                             </li>
-                                        <% } %>
-                                        <li><hr class="dropdown-divider"></li>
-                            
-                                        <% if (order.orderStatus !== 'Cancelled') { %>
-                                            <li class="status-change-container">
-                                                <a class="dropdown-item change-status-trigger" href="#" data-order-id="<%= order._id %>">
-                                                    <i class="bi bi-arrow-repeat me-2"></i> Change Status
-                                                </a>
-                                                <div class="status-change-dropdown" data-order-id="<%= order._id %>">
-                                                    <div class="dropdown-header">
-                                                        <h6>Change Order Status</h6>
-                                                        <button type="button" class="btn-close" aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="status-option status-update" data-status="Pending">
-                                                        <span class="status-option-icon status-processing-submenu"></span> Pending
-                                                    </div>
-                                                    <div class="status-option status-update" data-status="Shipped">
-                                                        <span class="status-option-icon status-shipped-submenu"></span> Shipped
-                                                    </div>
-                                                    <div class="status-option status-update" data-status="Delivered">
-                                                        <span class="status-option-icon status-delivered-submenu"></span> Delivered
-                                                    </div>
-                                                    <div class="status-option status-update" data-status="Cancelled">
-                                                        <span class="status-option-icon status-cancelled-submenu"></span> Cancelled
-                                                    </div>
-                                                </div>
-                                            </li>
-                                                       
-                                            <% } else { %>
-                                            <li class="dropdown-item disabled">Status cannot be changed (Cancelled)</li>
-                                        <% } %>
+                                            <% } %>
+                                                <li>
+                                                    <hr class="dropdown-divider">
+                                                </li>
+
+                                                <% if (order.orderStatus !=='Cancelled' ) { %>
+                                                    <li class="status-change-container">
+                                                        <a class="dropdown-item change-status-trigger" href="#"
+                                                            data-order-id="<%= order._id %>">
+                                                            <i class="bi bi-arrow-repeat me-2"></i> Change Status
+                                                        </a>
+                                                        <div class="status-change-dropdown"
+                                                            data-order-id="<%= order._id %>">
+                                                            <div class="dropdown-header">
+                                                                <h6>Change Order Status</h6>
+                                                                <button type="button" class="btn-close"
+                                                                    aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="status-option status-update"
+                                                                data-status="Pending">
+                                                                <span
+                                                                    class="status-option-icon status-processing-submenu"></span>
+                                                                Pending
+                                                            </div>
+                                                            <div class="status-option status-update"
+                                                                data-status="Shipped">
+                                                                <span
+                                                                    class="status-option-icon status-shipped-submenu"></span>
+                                                                Shipped
+                                                            </div>
+                                                            <div class="status-option status-update"
+                                                                data-status="Delivered">
+                                                                <span
+                                                                    class="status-option-icon status-delivered-submenu"></span>
+                                                                Delivered
+                                                            </div>
+                                                            <div class="status-option status-update"
+                                                                data-status="Cancelled">
+                                                                <span
+                                                                    class="status-option-icon status-cancelled-submenu"></span>
+                                                                Cancelled
+                                                            </div>
+                                                        </div>
+                                                    </li>
+
+                                                    <% } else { %>
+                                                        <li class="dropdown-item disabled">Status cannot be changed
+                                                            (Cancelled)</li>
+                                                        <% } %>
                                     </ul>
                                 </div>
                             </td>
@@ -461,7 +529,6 @@
                     e.preventDefault();
                     e.stopPropagation();
 
-                    // Close all other dropdowns
                     closeAllStatusDropdowns();
 
                     // Find the corresponding dropdown
@@ -537,5 +604,3 @@
 
 
     <%- include("../../views/partials/admin/footer") %>
-
-    

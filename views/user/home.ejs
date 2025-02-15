@@ -208,11 +208,16 @@
                     <% products.forEach(product=> { %>
                         <div class="col-lg-3 col-md-6 col-sm-6">
                             <div class="product__item">
-                                <div class="product__item__pic set-bg"
-                                    data-setbg="/uploads/re-image/<%= product.productImage && product.productImage.length > 0 ? product.productImage[0] : 'default.jpg' %>">
+                                <div class="product__item__pic set-bg"  data-setbg="">
+                                    <a href="/productDetails?id=<%= product._id %>">
+                                        <img src="/uploads/re-image/<%= product.productImage[0] %>" alt="">
+                                    </a>
+                                   
+                                   
                                     <% if (product.variants && product.variants.some(v=> v.quantity > 0)) { %>
                                         <span class="label">In Stock</span>
                                         <% } %>
+                                        
                                             <ul class="product__hover">
                                                 <li>
                                                     <a href="javascript:void(0)"
@@ -228,19 +233,17 @@
                                             </ul>
                                 </div>
                                 <div class="product__item__text">
-                                    <!-- Product Name -->
+                                    
                                     <h5>
                                             <%= product.productName ? product.productName : 'No Name Available' %>
                                     </h5>   
 
-                                    <!-- Brand Name -->
                                     <% if (product.brand) { %>
                                         <p class="product-brand"><strong>Brand:</strong>
                                             <%= product.brand %>
                                         </p>
                                         <% } %>
 
-                                            <!-- Available Sizes -->
                                             <% if (product.availableSizes && product.availableSizes.length> 0) { %>
                                                 <div class="size-badges">
                                                     <strong>Size:</strong>
@@ -252,7 +255,6 @@
                                                 </div>
                                                 <% } %>
 
-                                                    <!-- Price Section -->
                                                     <div class="price-section">
                                                         <% if (product.salePrice && product.regularPrice) { %>
                                                             <p>
@@ -276,15 +278,14 @@
                                                         </div>
                                                         <% } %>
 
-                                                            <!-- Add to Cart Button -->
                                                             <button class="add-cart-btn"
                                                                 onclick="addToCart('<%= product._id %>')">
                                                                 Add to Cart 🛒
                                                             </button>
 
-                                                            <!-- View Details Button -->
-                                                            <a href="/productDetails?id=<%= product._id %>" class="add-cart">View
-                                                                Details</a>
+                                                            <!-- View Details -->
+                                                            <!-- <a href="/productDetails?id=<%= product._id %>" class="add-cart">View
+                                                                Details</a> -->
                                 </div>
                             </div>
                         </div> 

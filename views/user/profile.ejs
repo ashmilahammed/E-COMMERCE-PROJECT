@@ -1,4 +1,3 @@
-
 <%- include("../../views/partials/user/header") %>
 
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
@@ -6,7 +5,6 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
-    
     :root {
       --sidebar-bg: hsl(5, 69%, 62%);
       --sidebar-text: #ffffff;
@@ -30,90 +28,117 @@
     .content-area {
       transition: all 0.3s;
     }
- 
   </style>
   <style>
     .orders-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
     }
+
     .order-card {
-        background-color: #f9f9f9;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        margin-bottom: 20px;
-        padding: 20px;
-        transition: transform 0.3s ease;
+      background-color: #f9f9f9;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+      padding: 20px;
+      transition: transform 0.3s ease;
     }
+
     .order-card:hover {
-        transform: scale(1.02);
+      transform: scale(1.02);
     }
+
     .order-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid #e0e0e0;
-        padding-bottom: 10px;
-        margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
     }
+
     .order-products {
-        display: flex;
-        gap: 15px;
-        overflow-x: auto;
-        padding-bottom: 10px;
+      display: flex;
+      gap: 15px;
+      overflow-x: auto;
+      padding-bottom: 10px;
     }
+
     .order-product-thumb {
-        width: 100px;
-        height: 100px;
-        object-fit: cover;
-        border-radius: 8px;
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 8px;
     }
+
     .order-details {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
+
     .order-status {
-        font-weight: bold;
-        text-transform: uppercase;
-        padding: 5px 10px;
-        border-radius: 5px;
+      font-weight: bold;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border-radius: 5px;
     }
-    .status-processing { background-color: #df9c3e; color: white; }
-    .status-shipped { background-color: #55b0cb; color: white; }
-    .status-delivered { background-color: #46c446; color: white; }
-    .status-cancelled { background-color: #dc261f; color: white; }
+
+    .status-pending {
+      background-color: #ffae3c;
+      color: white;
+    }
+
+    .status-shipped {
+      background-color: #55bfdf;
+      color: white;
+    }
+
+    .status-delivered {
+      background-color: #46c446;
+      color: white;
+    }
+
+    .status-cancelled {
+      background-color: #dc261f;
+      color: white;
+    }
 
     /* Modal Styles */
     .modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0,0,0,0.5);
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.5);
     }
+
     .modal-content {
-        background-color: #fefefe;
-        margin: 10% auto;
-        padding: 20px;
-        border-radius: 10px;
-        width: 80%;
-        max-width: 600px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      background-color: #fefefe;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 10px;
+      width: 80%;
+      max-width: 600px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
+
     .modal-close {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-        cursor: pointer;
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
     }
-</style>
+  </style>
+
+
+
 
   <body class="bg-gray-100">
     <div class="flex h-screen">
@@ -150,7 +175,7 @@
             data-target="wallet-history">
             <i class="fas fa-history mr-2"></i>Wallet History
           </a>
-          <a href="#"  onclick="event.preventDefault(); window.location.href='/logout';"
+          <a href="#" onclick="event.preventDefault(); window.location.href='/logout';"
             class="sidebar-item block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white">
             <i class="fas fa-sign-out-alt mr-2"></i>Logout
           </a>
@@ -170,7 +195,7 @@
 
 
         <!-- Dashboard Content -->
-        <div id="dashboard" class="content-section">
+        <!-- <div id="dashboard" class="content-section">
           <div class="bg-white shadow rounded-lg p-6">
             <h2 class="text-2xl font-bold mb-4 text-gray-800">User Profile</h2>
             <div class="text-center">
@@ -185,9 +210,58 @@
               </div>
             </div>
           </div>
+        </div> -->
+
+
+
+
+        <!-- Dashboard Content -->
+        <div id="dashboard" class="content-section">
+          <div class="bg-white shadow rounded-lg p-6">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">User Profile</h2>
+            <div class="text-center">
+              <h3 class="text-xl font-semibold mb-2" id="userName">
+                <%= user.fullName %>
+              </h3>
+              <p class="text-gray-600 mb-1"><strong>Phone:</strong> <span id="userPhone">
+                  <%= user.phone %>
+                </span></p>
+              <p class="text-gray-600 mb-4"><strong>Email:</strong>
+                <%= user.email %>
+              </p>
+              <div class="space-x-2">
+                <button onclick="openModal()"
+                  class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded">Edit</button>
+                <a href="/change-email"
+                  class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Change Email</a>
+                <a href="/change-password"
+                  class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Change Password</a>
+              </div>
+            </div>
+          </div>
         </div>
 
-       
+        <!-- Edit Modal -->
+        <div id="editModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center">
+          <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 class="text-xl font-bold mb-4">Edit Profile</h2>
+            <label class="block text-gray-700">Name:</label>
+            <input type="text" id="editName" class="w-full p-2 border rounded mb-3" />
+            <label class="block text-gray-700">Phone:</label>
+            <input type="text" id="editPhone" class="w-full p-2 border rounded mb-4" />
+            <div class="flex justify-end space-x-2">
+              <button onclick="closeModal()"
+                class="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded">Cancel</button>
+              <button onclick="saveChanges()"
+                class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">Save</button>
+            </div>
+          </div>
+        </div>
+
+
+
+
+
         <!-- <div id="address" class="content-section hidden">
           <div class="bg-white shadow rounded-lg p-6">
             <h2 class="text-2xl font-bold mb-4 text-gray-800">My Address</h2>
@@ -211,9 +285,9 @@
             </div>
           </div>
         </div> -->
-   
-         <!-- Address Content -->
-         <div id="address" class="content-section hidden">
+
+        <!-- Address Content -->
+        <div id="address" class="content-section hidden">
           <div class="bg-white shadow rounded-lg p-6">
             <h2 class="text-2xl font-bold mb-4 text-gray-800">My Address</h2>
 
@@ -231,10 +305,16 @@
                           <%= address.landMark %><br />
                             <%= address.state %><br />
                     </address>
-                    <p> <%= address.pincode %> </p>
-                    <p> <%= address.phone %> </p>
-                    <p> <%= address.altPhone %> </p>
-                    
+                    <p>
+                      <%= address.pincode %>
+                    </p>
+                    <p>
+                      <%= address.phone %>
+                    </p>
+                    <p>
+                      <%= address.altPhone %>
+                    </p>
+
                     <div class="mt-4 space-x-2">
                       <a href="/editAddress?id=<%= address._id %>">
                         <button class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded text-sm">
@@ -242,33 +322,34 @@
                         </button>
                       </a>
 
-                     <a href="/deleteAddress?id=<%= address._id %>">
-                      <!-- <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded text-sm" onclick="return confirm('Are you sure you want to delete this address?')">
+                      <a href="/deleteAddress?id=<%= address._id %>">
+                        <!-- <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded text-sm" onclick="return confirm('Are you sure you want to delete this address?')">
                         Delete
                       </button> -->
-                      <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded text-sm" 
-                      onclick="confirmDelete('<%= address._id %>'); return false;">
-                      Delete
-                  </button>
-                  
-                     </a>
-                     
+                        <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded text-sm"
+                          onclick="confirmDelete('<%= address._id %>'); return false;">
+                          Delete
+                        </button>
+
+                      </a>
+
                     </div>
                   </div>
                   <% }) %>
               </div>
               <% } else { %>
                 <p>You haven't added any addresses yet.</p>
-              <% } %>
-                <div class="border p-4 rounded-lg flex items-center justify-center">
-                  <a href="/addAddress">
-                    <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
-                      <i class="fas fa-plus mr-2"></i>Add New Address
-                    </button>
-                  </a>
-                </div>           
+                <% } %>
+                  <div class="border p-4 rounded-lg flex items-center justify-center">
+                    <a href="/addAddress">
+                      <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+                        <i class="fas fa-plus mr-2"></i>Add New Address
+                      </button>
+                    </a>
+                  </div>
           </div>
         </div>
+
 
 
         <!-- Orders Content -->
@@ -276,27 +357,29 @@
         <div id="orders" class="content-section hidden">
           <div class="bg-white shadow rounded-lg p-6">
             <h2 class="text-2xl font-bold mb-4 text-gray-800">My Orders</h2>
-            
-            <% if (orders && orders.length > 0) { %>
+
+            <% if (orders && orders.length> 0) { %>
               <div class="orders-container">
                 <% orders.forEach(function(order) { %>
                   <div class="order-card">
                     <div class="order-header">
                       <div>
                         <strong>Order #<%= order.orderNumber %></strong>
-                        <small class="text-muted ml-2"><%= new Date(order.createdAt).toLocaleDateString() %></small>
+                        <small class="text-muted ml-2">
+                          <%= new Date(order.createdAt).toLocaleDateString() %>
+                        </small>
                       </div>
                       <div class="order-status <%= 'status-' + order.orderStatus.toLowerCase() %>">
                         <%= order.orderStatus %>
                       </div>
                     </div>
-                    
+
                     <div class="order-products">
                       <% order.orderItems.forEach(function(item) { %>
                         <img src="/uploads/re-image/<%= item.productImage %>" alt="Product" class="order-product-thumb">
-                      <% }); %>
+                        <% }); %>
                     </div>
-                    
+
                     <div class="order-details mt-3">
                       <div>
                         <strong>Total Amount:</strong> ₹<%= order.pricing.finalAmount.toFixed(2) %>
@@ -305,22 +388,22 @@
 
                       <a href="/orderDetails?id=<%= order._id %>">
                         <button class="btn btn-primary view-order-details">
-                            View Details
+                          View Details
                         </button>
-                    </a>
-                      
+                      </a>
+
                     </div>
                   </div>
-                <% }); %>
+                  <% }); %>
               </div>
-            <% } else { %>
-              <div class="alert alert-info text-center">
-                You haven't placed any orders yet.
-              </div>
-            <% } %>
+              <% } else { %>
+                <div class="alert alert-info text-center">
+                  You haven't placed any orders yet.
+                </div>
+                <% } %>
           </div>
         </div>
-        
+
 
 
 
@@ -371,36 +454,35 @@
 
 
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        const sidebarItems = document.querySelectorAll('.sidebar-item');
-        const contentSections = document.querySelectorAll('.content-section');
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const sidebarItems = document.querySelectorAll('.sidebar-item');
+      const contentSections = document.querySelectorAll('.content-section');
 
-        sidebarItems.forEach(item => {
-          item.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = this.getAttribute('data-target');
+      sidebarItems.forEach(item => {
+        item.addEventListener('click', function (e) {
+          e.preventDefault();
+          const target = this.getAttribute('data-target');
 
-            contentSections.forEach(section => {
-              section.classList.add('hidden');
-            });
-
-            document.getElementById(target).classList.remove('hidden');
-
-            sidebarItems.forEach(item => {
-              item.classList.remove('bg-gray-700', 'text-white');
-            });
-            this.classList.add('bg-gray-700', 'text-white');
+          contentSections.forEach(section => {
+            section.classList.add('hidden');
           });
+
+          document.getElementById(target).classList.remove('hidden');
+
+          sidebarItems.forEach(item => {
+            item.classList.remove('bg-gray-700', 'text-white');
+          });
+          this.classList.add('bg-gray-700', 'text-white');
         });
       });
+    });
 
 
 
 
-
-      function confirmDelete(addressId) {
-    Swal.fire({
+    function confirmDelete(addressId) {
+      Swal.fire({
         title: "Are you sure?",
         text: "You won't be able to recover this address!",
         icon: "warning",
@@ -408,20 +490,35 @@
         confirmButtonColor: "#d33",
         cancelButtonColor: "#3085d6",
         confirmButtonText: "Yes, delete it!"
-    }).then((result) => {
+      }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = `/deleteAddress?id=${addressId}`;
+          window.location.href = `/deleteAddress?id=${addressId}`;
         }
-    });
-}
+      });
+    }
 
 
-    </script>
-  
+  </script>
+
+
+
+  <script>
+    function openModal() {
+      document.getElementById('editName').value = document.getElementById('userName').innerText;
+      document.getElementById('editPhone').value = document.getElementById('userPhone').innerText;
+      document.getElementById('editModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('editModal').classList.add('hidden');
+    }
+
+    function saveChanges() {
+      document.getElementById('userName').innerText = document.getElementById('editName').value;
+      document.getElementById('userPhone').innerText = document.getElementById('editPhone').value;
+      closeModal();
+    }
+  </script>
+
 
   <%- include("../../views/partials/user/footer") %>
-
-
-
-
-

@@ -26,18 +26,27 @@
         }
 
         .status-delivered {
-            background-color: #e0f7f2;
-            color: #0d9488;
+            background-color: #0fb500;
+            color: #fafafa;
+            font-weight: bold;
         }
 
-        .status-processing {
-            background-color: #f3e8ff;
-            color: #9333ea;
+        .status-shipped {
+            background-color: #06dec9;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background-color: #ffa109;
+            color: white;
+            font-weight: bold;
         }
 
         .status-cancelled {
-            background-color: #fee2e2;
-            color: #dc2626;
+            background-color: #f51616;
+            color: #f1f1f1;
+            font-weight: bold;
         }
     </style>
 
@@ -192,7 +201,7 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="mt-3">
+                                                        <!-- <div class="mt-3">
                                                             <span class="badge 
                                                             <%= item.itemStatus === 'Delivered' ? 'bg-success' : 
                                                                 item.itemStatus === 'Cancelled' ? 'bg-danger' : 
@@ -200,7 +209,7 @@
                                                                 'bg-info' %>">
                                                                 <%= order.orderStatus || 'N/A' %>
                                                             </span>
-                                                        </div>
+                                                        </div> -->
                                                     </div>
                                                 </div>
                                             </div>
