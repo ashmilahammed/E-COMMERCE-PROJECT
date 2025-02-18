@@ -594,8 +594,78 @@ const deleteAddress = async (req,res) => {
     }
 }
 
-      
 
+  
+
+
+const updateProfile = async (req, res) => {
+    try {
+        const { fullName, phone } = req.body;
+        const userId = req.user.id;
+
+        // Validation
+        if (!fullName || !phone) {
+            return res.status(400).json({
+                success: false,
+                message: "Name and phone number are required."
+            });
+        }
+
+        const phoneRegex = /^\d{10}$/;
+        if (!phoneRegex.test(phone)) {
+            return res.status(400).json({
+                success: false,
+                message: "Please provide a valid 10-digit phone number."
+            });
+        }
+
+        const existingUser = await User.findOne({
+            phone,
+            _id: { $ne: userId }
+        });
+
+        if (existingUser) {
+            return res.status(400).json({
+                success: false,
+                message: "This phone number is already registered with another account."
+            });
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { 
+                fullName, 
+                phone,
+                updatedAt: new Date()
+            },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        res.json({
+            success: true,
+            fullName: updatedUser.fullName,
+            phone: updatedUser.phone,
+            message: "Profile updated successfully"
+        });
+
+    } catch (error) {
+        console.error("Update Profile Error:", error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred while updating your profile."
+        });
+    }
+};
+
+
+  
 
 
 module.exports = {
@@ -617,5 +687,7 @@ module.exports = {
     postAddAddress,
     editAddress,
     postEditAddress,
-    deleteAddress
+    deleteAddress,
+
+    updateProfile
     }

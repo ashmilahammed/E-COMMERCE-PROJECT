@@ -47,6 +47,7 @@ router.post("/resend-forgot-otp",profileController.resendOtp);
 router.post("/reset-password",profileController.postNewPassword);
 
 router.get("/userProfile",userAuth,profileController.userProfile);
+router.patch("/update-profile",userAuth,profileController.updateProfile)
 router.get("/change-email",userAuth,profileController.changeEmail);
 router.post("/change-email",userAuth,profileController.changeEmailValid);
 router.post("/verify-email-otp",userAuth,profileController.verifyEmailOtp);
@@ -84,16 +85,8 @@ router.post('/checkout/editAddress',userAuth,checkoutController.editAddress);
 router.get("/orderDetails",userAuth,checkoutController.getOrderDetails);
 router.post("/cancelOrder",userAuth,checkoutController.cancelOrder)
 
-
-
-
 // Order Management
-// router.get("/checkout", userAuth,orderController.getCheckoutPage);
-// router.get("/deleteItem", userAuth, orderController.deleteProduct);
 // router.post("/applyCoupon",userAuth,userController.applyCoupon);
-// router.post("/orderPlaced", userAuth,orderController.orderPlaced);
-// router.get("/orderDetails", userAuth,orderController.getOrderDetailsPage);
-// router.post("/cancelOrder",userAuth,orderController.cancelOrder);
 // router.post("/returnrequestOrder",userAuth,orderController.returnorder);
 // router.post("/verifyPayment", userAuth, orderController.verify);
 // router.post("/singleProductId",userAuth,orderController.changeSingleProductStatus);
@@ -101,15 +94,16 @@ router.post("/cancelOrder",userAuth,checkoutController.cancelOrder)
 // router.get("/downloadInvoice/:orderId",userAuth,orderController.downloadInvoice);
 
 
-
-
 //wishlist management
-router.get("/wishlist",userAuth,wishlistController.getwishList);
+router.get("/wishlist",userAuth,wishlistController.getWishList);
+router.post("/wishlist/add",userAuth,wishlistController.addToWishlist);
+router.post("/update-wishlist-size",userAuth,wishlistController.changeSize);
+router.post('/wishlist/remove',userAuth,wishlistController.removeFromWishlist);
 
 
 
 
-
+//contacts
 router.get("/contacts",userAuth,userController.contactPage)    
 
 

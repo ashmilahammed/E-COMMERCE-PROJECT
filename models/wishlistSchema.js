@@ -14,13 +14,24 @@ const wishlistSchema = new Schema ({
             ref : "Product",
             required : true
         },
+        size: {
+            type: Number, 
+            required: true
+        },
         addedOn: {
+            type: Date,
             default: Date.now
         }
     }]
-})
+},{ timestamps: true })
 
 
 
 const Wishlist = mongoose.model('Wishlist',wishlistSchema);
 module.exports = Wishlist;
+
+
+
+
+
+

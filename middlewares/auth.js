@@ -2,40 +2,43 @@ const User = require("../models/userSchema");
 
 
 
-const userAuth = (req, res, next) => {
-    if (req.session.user) {
-        User.findById(req.session.user)
-            .then(data => {
-                if (data && !data.isBlocked) {
-                    next();
-                } else {
-                    res.redirect("/login")
-                }
-            })
-            .catch(error => {
-                console.log("Error in user auth Middleware", error);
-                res.status(500).send("Internal Server error")
-            })
-    } else {
-        res.redirect("/login")
-    }
-}
+// const userAuth = (req, res, next) => {
+//     if (req.session.user) {
+//         User.findById(req.session.user)
+//             .then(data => {
+//                 if (data && !data.isBlocked) {
+//                     next();
+//                 } else {
+//                     res.redirect("/login")
+//                 }
+//             })
+//             .catch(error => {
+//                 console.log("Error in user auth Middleware", error);
+//                 res.status(500).send("Internal Server error")
+//             })
+//     } else {
+//         res.redirect("/login")
+//     }
+// }
 // const userAuth = async (req, res, next) => {
 //     try {
 //         if (!req.session.user) {
-//             return res.redirect("/login");
+//             return res.redirect("/login"); // Ensure session exists first
 //         }
 
 //         const user = await User.findById(req.session.user);
+//         if (!user) {
+//             return res.redirect("/login"); // If user not found
+//         }
 
-//         // if (!user || user.isBlocked) {
-//         //     req.session.delete // Destroy session if user is blocked
-//         //     return res.redirect("/login");
-//         // }
+//         if (user.isBlocked) {
+//             return res.status(403).send("Access Denied: User is blocked");
+//         }
 
-//         next(); // Proceed if user is authenticated and not blocked
+//         req.user = user._id.toString();  // Attach only user ID for efficiency
+//         next();
 //     } catch (error) {
-//         console.error("Error in userAuth Middleware:", error);
+//         console.error("Error in userAuth middleware:", error);
 //         res.status(500).send("Internal Server Error");
 //     }
 // };
@@ -56,6 +59,26 @@ const userAuth = (req, res, next) => {
 //         res.status(500).send("Internal server error")
 //     })
 // }
+
+
+const userAuth = async (req, res, next) => {
+    try {
+        if (req.session.user) {
+            const user = await User.findById(req.session.user);
+            if (user && !user.isBlocked) {
+                req.user = user;  
+                return next();
+            }
+        }
+        res.redirect("/login");
+    } catch (error) {
+        console.error("Error in userAuth middleware:", error);
+        res.status(500).send("Internal Server Error");
+    }
+};
+
+
+
 
 const adminAuth = (req, res, next) => {
     try {

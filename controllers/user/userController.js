@@ -323,7 +323,7 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
     try {
-        // Clear user data before destroying session
+
         req.session.user = null;
 
         delete req.session.user;
@@ -351,7 +351,6 @@ const loadShoppingpage = async (req, res) => {
 
 
 
-        // Get the sort option from the query
         const sortOption = req.query.sort || 'newArrivals';
         let sortCriteria;
 
@@ -380,25 +379,23 @@ const loadShoppingpage = async (req, res) => {
             'variants.quantity': { $gt: 0 }
         };
 
-        //  search filter
+    
         if (req.query.search) {
             filters.productName = { $regex: req.query.search, $options: 'i' };
         }
 
 
-         // category filter 
          const selectedCategory = req.query.category || null;
          if (selectedCategory) {
              filters.category = selectedCategory;
          }
 
-        //brand filter 
+
         if (req.query.brand) {
             filters.brand = req.query.brand;
         }
 
 
-        //price filter
         if (req.query.minPrice && req.query.maxPrice) {
             filters['variants'] = {
                 $elemMatch: {
@@ -441,7 +438,7 @@ const loadShoppingpage = async (req, res) => {
             return formattedProduct;
         });
 
-        // Count total products for pagination
+   
         const totalProducts = await Product.countDocuments(filters);
         const totalPages = Math.ceil(totalProducts / limit);
         const brands = await Product.distinct("brand", { isBlocked: false });

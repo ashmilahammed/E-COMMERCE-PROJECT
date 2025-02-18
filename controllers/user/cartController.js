@@ -61,7 +61,6 @@ const addToCart = async (req, res) => {
             return res.status(404).json({ success: false, message: "Product not found" });
         }
 
-        // product is blocked
         if (product.isBlocked) {
             return res.status(400).json({ success: false, message: "This product cannot be added to the cart as it is blocked." });
         }
@@ -72,12 +71,10 @@ const addToCart = async (req, res) => {
             return res.status(400).json({ success: false, message: "Selected size not available" });
         }
 
-        // quantity 
         if (variant.quantity < quantity) {
             return res.status(400).json({ success: false, message: "Selected quantity not available" });
         }
 
-        // Find or create cart
         let cart = await Cart.findOne({ userId });
         if (!cart) {
             cart = new Cart({ 

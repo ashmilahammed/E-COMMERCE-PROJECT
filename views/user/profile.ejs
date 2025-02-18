@@ -232,8 +232,8 @@
               <div class="space-x-2">
                 <button onclick="openModal()"
                   class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded">Edit</button>
-                <a href="/change-email"
-                  class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Change Email</a>
+                <!-- <a href="/change-email"
+                  class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Change Email</a> -->
                 <a href="/change-password"
                   class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Change Password</a>
               </div>
@@ -501,24 +501,87 @@
   </script>
 
 
+<script>
+  async function openModal() {
+    document.getElementById('editName').value = document.getElementById('userName').innerText;
+    document.getElementById('editPhone').value = document.getElementById('userPhone').innerText;
+    document.getElementById('editModal').classList.remove('hidden');
+}
 
-  <script>
-    function openModal() {
-      document.getElementById('editName').value = document.getElementById('userName').innerText;
-      document.getElementById('editPhone').value = document.getElementById('userPhone').innerText;
-      document.getElementById('editModal').classList.remove('hidden');
+function closeModal() {
+    document.getElementById('editModal').classList.add('hidden');
+}
+
+async function saveChanges() {
+    const fullName = document.getElementById('editName').value.trim();
+    const phone = document.getElementById('editPhone').value.trim();
+    
+    // Validation
+    if (!fullName || !phone) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Validation Error',
+            text: 'Name and phone number are required!'
+        });
+        return;
     }
 
-    function closeModal() {
-      document.getElementById('editModal').classList.add('hidden');
+    // Phone number validation 
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(phone)) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Invalid Phone Number',
+            text: 'Please enter a valid 10-digit phone number'
+        });
+        return;
     }
+    
+    try {
 
-    function saveChanges() {
-      document.getElementById('userName').innerText = document.getElementById('editName').value;
-      document.getElementById('userPhone').innerText = document.getElementById('editPhone').value;
-      closeModal();
+        const response = await fetch("/update-profile", {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                fullName,
+                phone
+            })
+        });
+        
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(result.message || 'Failed to update profile');
+        }
+        
+        // Update UI
+        document.getElementById('userName').innerText = result.fullName;
+        document.getElementById('userPhone').innerText = result.phone;
+        
+        // Show success message
+        await Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'Profile updated successfully',
+            timer: 2000,
+            showConfirmButton: false
+        });
+        
+        closeModal();
+        
+    } catch (error) {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Update Failed',
+            text: error.message || 'Something went wrong while updating your profile'
+        });
     }
-  </script>
+}
+</script>
 
 
   <%- include("../../views/partials/user/footer") %>

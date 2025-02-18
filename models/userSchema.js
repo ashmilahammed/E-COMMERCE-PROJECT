@@ -36,10 +36,6 @@ const userSchema = new Schema({
         type : Boolean,
         default : false
     },
-    // cart : [{
-    //     productId: { type: Schema.Types.ObjectId, ref: 'product' },
-    //     quantity: { type: Number, default: 1 },
-    //   }],
     cart :[{
         type : Schema.Types.ObjectId,
         ref :"Cart",
@@ -52,6 +48,10 @@ const userSchema = new Schema({
         type : Schema.Types.ObjectId,
         ref : "Wishlist"
     }],
+    // wishlist: [{
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'Product'
+    // }],
     orderHistory :[{
         type : Schema.Types.ObjectId,
         ref : "Order"

@@ -852,7 +852,7 @@
                 modal.show();
             }
 
-            // Frontend JavaScript - editAddress 
+            // editAddress 
             async function editAddress(event) {
                 event.preventDefault();
                 const formData = new FormData(document.getElementById('editAddressForm'));
@@ -971,7 +971,7 @@
                     // Get cart data from the server-rendered cart items
                     const cartItems = Array.from(document.querySelectorAll('.checkout__order__products')).map(item => {
                         return {
-                            productId: item.getAttribute('data-product-id'),  // Get the productId
+                            productId: item.getAttribute('data-product-id'),
                             name: item.querySelector('.product-name')?.textContent.trim() || '',
                             size: item.querySelector('.quantity')?.textContent.split('Size:')[1]?.split('|')[0]?.trim() || '',
                             quantity: parseInt(item.querySelector('.quantity')?.textContent.split('Quantity:')[1]) || 0,
@@ -983,7 +983,7 @@
                         throw new Error('No items in cart');
                     }
 
-                    console.log('Cart Items:', cartItems); // Debug log
+                    console.log('Cart Items:', cartItems); 
 
                     const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
                     if (!selectedPaymentMethod) {

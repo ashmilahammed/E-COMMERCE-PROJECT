@@ -1,5 +1,7 @@
 <%- include("../../views/partials/user/header") %>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         .btn {
             display: inline-block;
@@ -101,6 +103,11 @@
             background-color: #ff4c4c;
         }
     </style>
+
+
+
+
+
     <!-- Hero Section Begin -->
     <section class="hero">
         <div class="hero__slider owl-carousel">
@@ -162,7 +169,7 @@
                         </div>
                         <div class="banner__item__text">
                             <h2>Shoes Collections 2030</h2>
-                            <a href="#">Shop now</a>
+                            <a href="/shop">Shop now</a>
                         </div>
                     </div>
                 </div>
@@ -173,7 +180,7 @@
                         </div>
                         <div class="banner__item__text">
                             <h2>Best Products</h2>
-                            <a href="#">Shop now</a>
+                            <a href="/shop">Shop now</a>
                         </div>
                     </div>
                 </div>
@@ -184,7 +191,7 @@
                         </div>
                         <div class="banner__item__text">
                             <h2>Shoes Spring 2030</h2>
-                            <a href="#">Shop now</a>
+                            <a href="/shop">Shop now</a>
                         </div>
                     </div>
                 </div>
@@ -208,16 +215,16 @@
                     <% products.forEach(product=> { %>
                         <div class="col-lg-3 col-md-6 col-sm-6">
                             <div class="product__item">
-                                <div class="product__item__pic set-bg"  data-setbg="">
+                                <div class="product__item__pic set-bg" data-setbg="">
                                     <a href="/productDetails?id=<%= product._id %>">
                                         <img src="/uploads/re-image/<%= product.productImage[0] %>" alt="">
                                     </a>
-                                   
-                                   
+
+
                                     <% if (product.variants && product.variants.some(v=> v.quantity > 0)) { %>
                                         <span class="label">In Stock</span>
                                         <% } %>
-                                        
+
                                             <ul class="product__hover">
                                                 <li>
                                                     <a href="javascript:void(0)"
@@ -233,10 +240,10 @@
                                             </ul>
                                 </div>
                                 <div class="product__item__text">
-                                    
+
                                     <h5>
-                                            <%= product.productName ? product.productName : 'No Name Available' %>
-                                    </h5>   
+                                        <%= product.productName ? product.productName : 'No Name Available' %>
+                                    </h5>
 
                                     <% if (product.brand) { %>
                                         <p class="product-brand"><strong>Brand:</strong>
@@ -288,7 +295,7 @@
                                                                 Details</a> -->
                                 </div>
                             </div>
-                        </div> 
+                        </div>
                         <% }); %>
                             <% } else { %>
                                 <p>No products found.</p>
@@ -582,26 +589,50 @@
 
 
     <script>
-        // Initialize background images for products
-        document.addEventListener('DOMContentLoaded', function () {
-            const setBgElements = document.querySelectorAll('.set-bg');
-            setBgElements.forEach(element => {
-                const bg = element.getAttribute('data-setbg');
-                element.style.backgroundImage = `url(${bg})`;
-                element.style.backgroundSize = 'cover';
-                element.style.backgroundPosition = 'center';
-            });
-        });
 
-        function addToWishlist(productId) {
-            console.log('Adding to wishlist:', productId);
-            showToast('Product added to Wishlist', 'wishlist');
+        async function addToWishlist(productId) {
+            try {
+                let selectedSize = document.querySelector('input[name="size"]:checked');
+
+                if (!selectedSize) {
+                    const sizeElements = document.querySelectorAll('.size-badge');
+                    if (sizeElements.length > 0) {
+                        selectedSize = sizeElements[0].textContent.trim();
+                    } else {
+                        showToast('No size available for this product', 'error');
+                        return;
+                    }
+                } else {
+                    selectedSize = selectedSize.value;
+                }
+
+                const size = parseInt(selectedSize);
+
+                const response = await fetch('/wishlist/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        productId,
+                        size
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showToast('Product has been added to your wishlist', 'success');
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                showToast(error.message || 'Failed to add product to wishlist', 'error');
+            }
         }
 
-        function addToCart(productId) {              
-            console.log('Adding to cart:', productId);
-            showToast('Product added to Cart', 'cart');
-        }
+
+
 
         function showToast(message, type) {
             const toastContainer = document.getElementById('toast-container');
@@ -618,47 +649,64 @@
                 }, 500);
             }, 1500);
         }
+
+
     </script>
 
-    <style>
-        /* Toast Message Styles */
-        #toast-container {
-            position: fixed;
-            top: 8%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 300px;
-        }
- 
-        .toast-message {
-            background: #333;
-            color: #fff;
-            padding: 12px 24px;
-            border-radius: 0px;
-            margin-bottom: 10px;
-            opacity: 1;
-            transition: opacity 0.5s ease-in-out;
-            font-size: 14px;
-            font-weight: bold;
-            text-align: center;
-        }
 
-        .toast-message.cart {
-            background: #42a814;
-           
-        }
-
-        .toast-message.wishlist {
-            background: #ff583f;
-        }
-        
-    </style>
-
-    <!-- Toast Container -->
-    <div id="toast-container"></div>
 
     <%- include("../../views/partials/user/footer") %>
+
+
+        <style>
+            /* Toast Container */
+            #toast-container {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 1000;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            /* Toast Message */
+            .toast-message {
+                padding: 12px 18px;
+                border-radius: 3px;
+                font-size: 14px;
+                font-weight: bold;
+                color: #fff;
+                display: flex;
+                align-items: center;
+                min-width: 250px;
+                max-width: 350px;
+                opacity: 1;
+                transition: opacity 0.5s ease-in-out;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+
+            /* Success Toast */
+            .toast-message.success {
+                background-color: #28a745;
+            }
+
+            /* Error Toast */
+            .toast-message.error {
+                background-color: #dc3545;
+            }
+
+            /* Warning Toast */
+            .toast-message.warning {
+                background-color: #ffc107;
+                color: #333;
+            }
+
+            /* Fade Out Animation */
+            .toast-message.fade-out {
+                opacity: 0;
+            }
+        </style>
+
+        <!-- Toast Container -->
+        <div id="toast-container"></div>

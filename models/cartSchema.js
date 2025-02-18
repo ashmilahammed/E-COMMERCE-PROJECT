@@ -48,11 +48,6 @@ const cartSchema = new Schema({
 },{ timestamps: true})
 
 
-// **🔥 Auto-update cartTotal before saving**
-// cartSchema.pre("save", function (next) {
-//     this.cartTotal = this.items.reduce((sum, item) => sum + item.totalPrice, 0);
-//     next();
-// });
 
 const Cart = mongoose.model("Cart",cartSchema);
 module.exports = Cart;

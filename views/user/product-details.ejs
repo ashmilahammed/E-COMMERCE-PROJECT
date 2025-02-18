@@ -1,4 +1,7 @@
 <%- include("../../views/partials/user/header") %>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         .product__details__option__size label {
             display: inline-block;
@@ -254,15 +257,23 @@
                             </div>
                             <div class="product__details__cart__option">
                                 <div class="quantity">
-                                    <div class="pro-qty">
+                                    <!-- <div class="pro-qty">
                                         <input type="number" value="1" min="1" max="5" id="quantity" class="arrow">
+                                    </div> -->
+                                    <div class="arrow-box">
+                                        <button class="arrow-btn" id="decrease" aria-label="Decrease quantity">
+                                            < </button>
+                                                <input value="1" min="1" max="5" id="quantity" class="arrow">
+                                                <button class="arrow-btn" id="increase" aria-label="Increase quantity">
+                                                    > </button>
                                     </div>
                                 </div>
                                 <button class="primary-btn" onclick="addToCart('<%= product._id %>')" id="addToCartBtn"
                                     disabled>Add to cart</button>
                             </div>
                             <div class="product__details__btns__option">
-                                <a href="#"><i class="fa fa-heart"></i> add to wishlist</a>
+                                <a href="javascript:void(0)" onclick="addToWishlist('<%= product._id %>')"><i class="fa fa-heart" ></i>
+                                    add to wishlist</a>
                             </div>
                             <div class="product__details__last__option">
                                 <h5><span>Guaranteed Safe Checkout</span></h5>
@@ -274,11 +285,11 @@
                                     <li id="product-quantity">
                                         <span>In Stock: </span>
                                         <strong id="variant-quantity">
-                                            <% if (product.currentVariantQuantity > 0) { %>
+                                            <% if (product.currentVariantQuantity> 0) { %>
                                                 <%= product.currentVariantQuantity %> left
-                                            <% } else { %>
-                                                Select a size to check stock
-                                            <% } %>
+                                                    <% } else { %>
+                                                        Select a size to check stock
+                                                        <% } %>
                                         </strong>
                                     </li>
 
@@ -314,7 +325,9 @@
                             <div class="tab-content">
                                 <div class="tab-pane active" id="tabs-5" role="tabpanel">
                                     <div class="product__details__tab__content">
-                                        <p class="note"> <%= product.description %></p>
+                                        <p class="note">
+                                            <%= product.description %>
+                                        </p>
                                         <div class="product__details__tab__content__item">
                                             <h5>Products Infomation</h5>
                                             <p>A Pocket PC is a handheld computer, which features many of the same
@@ -349,7 +362,7 @@
                                         </div>
                                     </div>
                                 </div>
-                               
+
                             </div>
                         </div>
                     </div>
@@ -448,95 +461,175 @@
 
     <script>
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const productId = '<%= product._id %>'; 
-            const sizeLabels = document.querySelectorAll('.product__details__option__size label:not(.unavailable)');
-            const priceElement = document.getElementById('product-price');
-            const quantityElement = document.getElementById('product-quantity');
-            const addToCartBtn = document.getElementById('addToCartBtn');
+
+        // document.addEventListener('DOMContentLoaded', function () {
+        //     const productId = '<%= product._id %>';
+        //     const sizeLabels = document.querySelectorAll('.product__details__option__size label:not(.unavailable)');
+        //     const priceElement = document.getElementById('product-price');
+        //     const quantityElement = document.getElementById('product-quantity');
+        //     const addToCartBtn = document.getElementById('addToCartBtn');
 
 
-            // update price and quantity based on variant data
-            function updateProductDetails(variantData) {
-                //  price
-                if (variantData.salePrice && variantData.salePrice !== variantData.price) {
-                    priceElement.innerHTML = `₹.${variantData.salePrice} <span>₹.${variantData.price}</span>`;
-                } else {
-                    priceElement.innerHTML = `₹.${variantData.price}`;
-                }
-                //quantity
-                quantityElement.innerHTML = `Stock: ${variantData.quantity}`;
-            }
+        //     //  price and quantity based on variant data
+        //     function updateProductDetails(variantData) {
 
-            // save selected size to localStorage
-            function saveSelectedSize(size) {
-                localStorage.setItem(`selectedSize_${productId}`, size);
-            }
+        //         if (variantData.salePrice && variantData.salePrice !== variantData.price) {
+        //             priceElement.innerHTML = `₹.${variantData.salePrice} <span>₹.${variantData.price}</span>`;
+        //         } else {
+        //             priceElement.innerHTML = `₹.${variantData.price}`;
+        //         }
 
-            // get selected size from localStorage
-            function getSelectedSize() {
-                return localStorage.getItem(`selectedSize_${productId}`);
-            }
-
-            sizeLabels.forEach(label => {
-                label.addEventListener('click', function () {
-                    // Remove active class from all labels
-                    sizeLabels.forEach(l => l.classList.remove('active'));
-
-                    // Add active class to clicked label
-                    this.classList.add('active');
-
-                    // Get variant data and update details
-                    const variantData = JSON.parse(this.dataset.variant);
-                    updateProductDetails(variantData);
-
-                    // Save selected size
-                    saveSelectedSize(variantData.size);
-                });
-            });
-
-            // Check for previously selected size on page load
-            const savedSize = getSelectedSize();
-            if (savedSize) {
-                const savedSizeLabel = document.querySelector(`label[for="size-${savedSize}"]`);
-                if (savedSizeLabel && !savedSizeLabel.classList.contains('unavailable')) {
-                    // Simulate click on the saved size label
-                    savedSizeLabel.click();
-                    // Check the radio input
-                    const radioInput = document.getElementById(`size-${savedSize}`);
-                    if (radioInput) {
-                        radioInput.checked = true;
-                    }
-                }
-            }
-        });
+        //         quantityElement.innerHTML = `Stock: ${variantData.quantity}`;
+        //     }
 
 
-       
-        // Handle size selection
-        const sizeOptions = document.querySelectorAll('input[name="size"]');
-        const addToCartBtn = document.getElementById('addToCartBtn');
-        const priceElement = document.getElementById('product-price');
+        //     function saveSelectedSize(size) {
+        //         localStorage.setItem(`selectedSize_${productId}`, size);
+        //     }
 
-        sizeOptions.forEach(option => {
-            option.addEventListener('change', function () {
-                // Enable add to cart button
-                addToCartBtn.disabled = false;
 
-                // Update price display
-                const salePrice = this.dataset.price;
-                const regularPrice = this.dataset.regularPrice;
-                priceElement.innerHTML = `₹.${salePrice} <span>₹.${regularPrice}</span>`;
-            });
-        });
+        //     function getSelectedSize() {
+        //         return localStorage.getItem(`selectedSize_${productId}`);
+        //     }
+
+        //     sizeLabels.forEach(label => {
+        //         label.addEventListener('click', function () {
+        //             // Remove active class from all labels
+        //             sizeLabels.forEach(l => l.classList.remove('active'));
+
+        //             // Add active class to clicked label
+        //             this.classList.add('active');
+
+        //             // Get variant data and update details
+        //             const variantData = JSON.parse(this.dataset.variant);
+        //             updateProductDetails(variantData);
+
+        //             saveSelectedSize(variantData.size);
+        //         });
+        //     });
+
+        //     // Check for previously selected size on page load
+        //     const savedSize = getSelectedSize();
+        //     if (savedSize) {
+        //         const savedSizeLabel = document.querySelector(`label[for="size-${savedSize}"]`);
+        //         if (savedSizeLabel && !savedSizeLabel.classList.contains('unavailable')) {
+        //             // Simulate click on the saved size label
+        //             savedSizeLabel.click();
+        //             // Check the radio input
+        //             const radioInput = document.getElementById(`size-${savedSize}`);
+        //             if (radioInput) {
+        //                 radioInput.checked = true;
+        //             }
+        //         }
+        //     }
+        // });
 
 
 
+        // // Handle size selection
+        // const sizeOptions = document.querySelectorAll('input[name="size"]');
+        // const addToCartBtn = document.getElementById('addToCartBtn');
+        // const priceElement = document.getElementById('product-price');
+
+        // sizeOptions.forEach(option => {
+        //     option.addEventListener('change', function () {
+
+        //         addToCartBtn.disabled = false;
+
+        //         const salePrice = this.dataset.price;
+        //         const regularPrice = this.dataset.regularPrice;
+        //         priceElement.innerHTML = `₹.${salePrice} <span>₹.${regularPrice}</span>`;
+        //     });
+        // });
 
 
 
 
         // Add to cart function
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const productId = '<%= product._id %>';
+            const sizeLabels = document.querySelectorAll('.product__details__option__size label:not(.unavailable)');
+            const priceElement = document.getElementById('product-price');
+            const quantityElement = document.getElementById('product-quantity');
+            const addToCartBtn = document.getElementById('addToCartBtn');
+            const sizeOptions = document.querySelectorAll('input[name="size"]');
+
+            // update price and stock details
+            function updateProductDetails(variantData) {
+                if (!variantData) return;
+
+                if (variantData.salePrice && variantData.salePrice !== variantData.price) {
+                    priceElement.innerHTML = `₹${variantData.salePrice} <span class="old-price">₹${variantData.price}</span>`;
+                } else {
+                    priceElement.innerHTML = `₹${variantData.price}`;
+                }
+                quantityElement.innerHTML = `Stock: ${variantData.quantity}`;
+            }
+
+
+            function saveSelectedSize(size) {
+                if (size) {
+                    localStorage.setItem(`selectedSize_${productId}`, size);
+                }
+            }
+
+            function getSelectedSize() {
+                return localStorage.getItem(`selectedSize_${productId}`);
+            }
+
+
+            // Handle size label click
+            sizeLabels.forEach(label => {
+                label.addEventListener('click', function () {
+                    sizeLabels.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const variantData = this.dataset.variant ? JSON.parse(this.dataset.variant) : null;
+                    updateProductDetails(variantData);
+
+                    if (variantData && variantData.size) {
+                        saveSelectedSize(variantData.size);
+                    }
+                });
+            });
+
+            // Restore previously selected size after page reload
+            setTimeout(() => {
+                const savedSize = getSelectedSize();
+                if (savedSize) {
+                    const savedSizeLabel = document.querySelector(`label[for="size-${savedSize}"]`);
+                    if (savedSizeLabel && !savedSizeLabel.classList.contains('unavailable')) {
+                        savedSizeLabel.click();
+                    }
+                }
+            }, 500);
+
+            // Handle radio button selection (if separate from label click)
+            sizeOptions.forEach(option => {
+                option.addEventListener('change', function () {
+                    addToCartBtn.disabled = false;
+
+                    const salePrice = this.dataset.price;
+                    const regularPrice = this.dataset.regularPrice;
+
+                    if (salePrice && regularPrice) {
+                        priceElement.innerHTML = `₹${salePrice} <span class="old-price">₹${regularPrice}</span>`;
+                    } else {
+                        priceElement.innerHTML = `₹${salePrice || regularPrice}`;
+                    }
+
+                    saveSelectedSize(this.value);
+                });
+            });
+        });
+
+
+
+
+
+        //////  cart ////////
         async function addToCart(productId) {
             try {
                 const selectedSize = document.querySelector('input[name="size"]:checked');
@@ -588,45 +681,137 @@
         }
 
 
+        ////////  wishlist   ////////
+
+        async function addToWishlist(productId) {
+            try {
+                const selectedSize = document.querySelector('input[name="size"]:checked');
+
+                if (!selectedSize) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Size Required',
+                        text: 'Please select a size before adding to the wishlist'
+                    });
+                    return;
+                }
+
+                const size = selectedSize.value;
+
+                // Send the data to the server
+                const response = await fetch('/wishlist/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        productId,
+                        size: parseInt(size)
+                    })
+                });
+
+                const result = await response.json();
+
+
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Added!',
+                        text: 'Product has been added to your wishlist',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    // showToast('Product has been added to your wishlist', 'success');
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: error.message || 'Failed to add product to wishlist'
+                });
+            }
+        }
+
 
 
 
         //input field of addtocart
         document.addEventListener("DOMContentLoaded", function () {
-            const quantityInput = document.getElementById("quantity"); // Get the input element by its ID
-            const addToCartBtn = document.getElementById("addToCartBtn"); // Get the 'Add to Cart' button
+            const quantityInput = document.getElementById("quantity");
+            const addToCartBtn = document.getElementById("addToCartBtn");
+            const increaseBtn = document.getElementById("increase");
+            const decreaseBtn = document.getElementById("decrease");
 
-            if (quantityInput) {
-                quantityInput.addEventListener("input", function () {
-                    let value = parseInt(this.value);
+            // Add event listeners for the buttons
+            increaseBtn.addEventListener("click", function () {
+                let value = parseInt(quantityInput.value);
+                if (value < 5) {
+                    quantityInput.value = value + 1;
+                } else {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'warning',
+                        title: 'Maximum 5 items allowed per product',
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                }
+            });
 
-                  
-                    if (value > 5) {
-                        this.value = 5;
+            decreaseBtn.addEventListener("click", function () {
+                let value = parseInt(quantityInput.value);
+                if (value > 1) {
+                    quantityInput.value = value - 1;
+                } else {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'warning',
+                        title: 'Minimum 1 item required',
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                }
+            });
 
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            icon: 'warning',
-                            title: 'Maximum 5 items allowed per product',
-                            showConfirmButton: false,
-                            timer: 2000
-                        });
-                    }
+            quantityInput.addEventListener("input", function () {
+                let value = parseInt(this.value);
 
-                    // Enable the Add to Cart button if the quantity is between 1 and 5
-                    if (value >= 1 && value <= 5) {
-                        addToCartBtn.disabled = false; 
-                    } else {
-                        addToCartBtn.disabled = true; 
-                    }
-                });
-            }
+                if (value > 5) {
+                    this.value = 5;
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'warning',
+                        title: 'Maximum 5 items allowed per product',
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                } else if (value < 1) {
+                    this.value = 1;
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'warning',
+                        title: 'Minimum 1 item required',
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                }
+
+                if (value >= 1 && value <= 5) {
+                    addToCartBtn.disabled = false;
+                } else {
+                    addToCartBtn.disabled = true;
+                }
+            });
         });
 
 
 
-         
 
         //zoom
         const zoomContainers = document.querySelectorAll('.product-image-zoom');
@@ -653,7 +838,7 @@
         // Toast Notification Function
         function showToast(message, type = 'success') {
             const toastContainer = document.getElementById('toast-container');
-  
+
             const toast = document.createElement('div');
             toast.classList.add('toast-message', type);
             toast.textContent = message;
@@ -677,56 +862,27 @@
 
 
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const sizeInputs = document.querySelectorAll('input[name="size"]');
-        const quantityDisplay = document.getElementById('variant-quantity');
-        // const variantQuantities = <%- JSON.stringify(product.variantQuantities || {}) %>;
-        const variantQuantities =  JSON.parse('<%- variantQuantities %>'); 
-    
-        sizeInputs.forEach(input => {
-            input.addEventListener('change', function() {
-                const selectedSize = this.value;
-                const quantity = variantQuantities[selectedSize] || 0;
-                
-                if (quantity > 0) {
-                    quantityDisplay.textContent = `${quantity} left`;
-                } else {
-                    quantityDisplay.textContent = 'Out of Stock';
-                }
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sizeInputs = document.querySelectorAll('input[name="size"]');
+            const quantityDisplay = document.getElementById('variant-quantity');
+            // const variantQuantities = <%- JSON.stringify(product.variantQuantities || {}) %>;
+            const variantQuantities = JSON.parse('<%- variantQuantities %>');
+
+            sizeInputs.forEach(input => {
+                input.addEventListener('change', function () {
+                    const selectedSize = this.value;
+                    const quantity = variantQuantities[selectedSize] || 0;
+
+                    if (quantity > 0) {
+                        quantityDisplay.textContent = `${quantity} left`;
+                    } else {
+                        quantityDisplay.textContent = 'Out of Stock';
+                    }
+                });
             });
         });
-    });
     </script>
-    <!-- <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const sizeInputs = document.querySelectorAll('input[name="size"]');
-    const quantityDisplay = document.getElementById('variant-quantity');
-    const variantQuantities = JSON.parse('<%- variantQuantities %>'); // Parse the pre-stringified data
-    
-    // Initial display for default selected size
-    const initialSelectedSize = document.querySelector('input[name="size"]:checked');
-    if (initialSelectedSize) {
-        updateQuantityDisplay(initialSelectedSize.value);
-    }
-
-    sizeInputs.forEach(input => {
-        input.addEventListener('change', function() {
-            updateQuantityDisplay(this.value);
-        });
-    });
-
-    function updateQuantityDisplay(selectedSize) {
-        const quantity = variantQuantities[selectedSize] || 0;
-        if (quantity > 0) {
-            quantityDisplay.textContent = `${quantity} left`;
-        } else {
-            quantityDisplay.textContent = 'Out of Stock';
-        }
-    }
-});
-</script> -->
-
 
 
 
@@ -744,7 +900,7 @@ document.addEventListener('DOMContentLoaded', function() {
             background-color: #333;
             color: white;
             padding: 15px;
-            border-radius: 3px;
+            border-radius: 1px;
             margin-bottom: 10px;
             opacity: 0;
             transition: opacity 0.3s ease-in-out;
@@ -767,15 +923,74 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         .toast-message.show {
-            opacity: 1;  
-            transition: opacity 0.3s ease-in-out; 
+            opacity: 1;
+            transition: opacity 0.3s ease-in-out;
         }
-      
     </style>
+
+
+
 
     <%- include("../../views/partials/user/footer") %>
 
 
+        <style>
+            /* Container for the input and custom buttons */
+            .arrow-box {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 140px;
+                height: 40px;
+                border: 2px solid #ccc;
+                border-radius: 0px;
+                background-color: #ffffff;
+                padding: 0 5px;
+                box-sizing: border-box;
+            }
 
+            /* Input field styling */
+            .arrow-box input {
+                width: 60px;
+                height: 30px;
+                font-size: 16px;
+                text-align: center;
+                border: none;
+                background-color: transparent;
+                color: #333;
+                box-sizing: border-box;
+            }
 
+            /* Buttons for the arrows */
+            .arrow-btn {
+                background-color: rgb(0, 0, 0);
+                color: rgb(255, 255, 255);
+                border: none;
+                padding: 8px;
+                font-size: 18px;
+                cursor: pointer;
+                outline: none;
+                width: 30px;
+                height: 30px;
+                border-radius: 0px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
 
+            /* Hover effect for arrows */
+            .arrow-btn:hover {
+                background-color: #3c3c3c;
+            }
+
+            /* Focus state for input field */
+            .arrow-box input:focus {
+                outline: none;
+                border: 2px solid #525252;
+            }
+
+            /* Focus effect for arrow buttons */
+            .arrow-btn:focus {
+                border: 2px solid #ff6060;
+            }
+        </style>

@@ -1,79 +1,297 @@
 <%- include("../../views/partials/user/header") %>
-<main class="main">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
-   <div class="page-header breadcrumb-wrap">
-       <div class="container">
-           <div class="breadcrumb">
-               <a href="/" rel="nofollow">Home</a>
-               <span></span> Shop
-               <span></span> My Wishlist
-           </div>
-       </div>
-   </div>
+    <style>
+        .table thead th {
+            background-color: hsl(0, 0%, 96%);
+            border-bottom: 2px solid #dee2e6;
+            padding: 1rem;
+            font-weight: 600;
+        }
+
+        .table td {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+
+        .btn-primary {
+            color: rgb(255, 255, 255);
+            background-color: #f2952a;
+            border-color: #3d464d;
+        }
+
+        .btn-primary:hover {
+            background-color: #d36a00;
+            border-color: #2b3035;
+        }
+
+        .btn-outline-danger {
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .btn-outline-danger:hover {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .form-select {
+            min-width: 80px;
+            padding: 0.375rem 2rem 0.375rem 0.75rem;
+        }
+    </style>
+
+    <main class="main">
+        <section class="breadcrumb-option">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="breadcrumb__text">
+                            <h4>Wishlist</h4>
+                            <div class="breadcrumb__links">
+                                <a href="/">Home</a>
+                                <span>wishlist</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <br>
+
+        <section class="mt-5 mb-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Size</th>
+                                        <th>Price</th>
+                                        <th>Add to Cart</th>
+                                        <th>Remove</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (wishlist.length> 0) { %>
+                                        <% wishlist.forEach(item=> { %>
+                                            <tr data-product-id="<%= item._id %>">
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <a href="/productDetails?id=<%= item._id %>">
+                                                            <img src="/uploads/re-image/<%= item.productImage %>"
+                                                                class="img-thumbnail me-3"
+                                                                style="width: 100px; height: 100px; object-fit: cover;">
+                                                        </a>
+                                                        <div>
+                                                            <h6 class="mb-1">
+                                                                <%= item.name %>
+                                                            </h6>
+                                                            <span class="text-muted">
+                                                                <%= item.brand %>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+
+                                                <td>
+                                                    <select class="form-select stylish-dropdown"
+                                                        onchange="updateSize('<%= item._id %>', this.value)">
+                                                        <% if (item.availableSizes && item.availableSizes.length> 0) {
+                                                            %>
+                                                            <% item.availableSizes.forEach(size=> { %>
+                                                                <option value="<%= size %>" <%=item.size===size
+                                                                    ? 'selected' : '' %>><%= size %>
+                                                                </option>
+                                                                <% }); %>
+                                                                    <% } else { %>
+                                                                        <option disabled>No sizes available</option>
+                                                                        <% } %>
+                                                    </select>
+                                                </td>
+
+                                                <td>
+                                                    <span class="fw-bold">₹<%= item.salePrice %></span>
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-primary btn-sm"
+                                                        onclick="addToCart('<%= item._id %>', '<%= item.size %>')">
+                                                        Add to Cart
+                                                    </button>
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-outline-danger btn-sm"
+                                                        onclick="removeFromWishlist('<%= item._id %>')">
+                                                        <i class="fi-rs-trash me-1"></i>Remove
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <% }); %>
+                                                <% } else { %>
+                                                    <tr id="empty-wishlist">
+                                                        <td colspan="5" class="text-center py-5">
+                                                            <div class="d-flex flex-column align-items-center">
+                                                                <i class="fi-rs-heart"
+                                                                    style="font-size: 3rem; color: #ddd;"></i>
+                                                                <h5 class="mt-3 mb-2">Your wishlist is empty</h5>
+                                                                <p class="text-muted mb-4">Browse our store and find
+                                                                    something you love!</p>
+                                                                <a href="/shop" class="btn btn-primary">Continue
+                                                                    Shopping</a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 
 
-   <section class="mt-50 mb-50">
-       <div class="container">
-           <div class="row">
-               <div class="col-12">
-                   <div class="table-responsive">
-                       <table class="table shopping-summery text-center clean">
-                           <thead>
-                               <tr class="main-heading">
-                                   <th scope="col">Image</th>
-                                   <th scope="col">Name</th>
-                                   <th scope="col">Price</th>
-                                   <th scope="col">Add to Cart</th>
-                                   <th scope="col">Remove</th>
-                               </tr>
-                           </thead>
-                           <tbody>
-                             
-                                       <tr>
-                                           <td class="image product-thumbnail">
-                                               <img src="" />
-                                           </td>
-                                           <td class="product-des product-name">
-                                               <h5 class="product-name">
-                                                   <a href="">
-                                                      
-                                                   </a>
-                                               </h5>
-                                               <p class="font-xs">
-                                                   <br />
-                                                  
-                                               </p>
-                                           </td>
-                                           <td class="price" data-title="Price">₹<span>
-                                          
-                                           </span></td>
-                                           <td class="text-center" data-title="Add to Cart">
-                                               <a href="#" onclick="" class="btn btn-sm">Add to Cart</a>
-                                           </td>
-                                           <td class="action" data-title="Remove">
-                                               <a class="btn btn-sm" href="#" onclick="">
-                                                   <i class="fi-rs-trash"></i>
-                                               </a>
-                                           </td>
-                                       </tr>
-                                   <tr>
-                                       <td colspan="5" class="text-center">
-                                           <p class="lead mb-4">No items found in Wishlist</p>
-                                       </td>
-                                   </tr>
-                           </tbody>
-                       </table>
-                   </div>
-               </div>
-           </div>
-       </div>
-   </section>
-</main>
-<%- include("../../views/partials/user/footer") %>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+
+        async function updateSize(productId, newSize) {
+            try {
+                const response = await fetch('/update-wishlist-size', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ productId, size: newSize })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Size Updated!',
+                        text: 'The size has been updated in your wishlist',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+
+
+                    setTimeout(() => {
+                        // location.reload();
+                    }, 1500);
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: error.message || 'Failed to update size in wishlist'
+                });
+            }
+        }
+
+
+
+
+        async function addToCart(productId, size) {
+            try {
+                const response = await fetch('/cart/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ productId, size })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Added to Cart!',
+                        text: 'Product has been added to your cart',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    await removeFromWishlist(productId, size)
+
+                } else {
+                    throw new Error(result.message);
+                }
+
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: error.message || 'Failed to add product to cart'
+                });
+            }
+        }
 
 
 
 
 
+        async function removeFromWishlist(productId, size) {
+            try {
+
+                const result = await Swal.fire({
+                    title: 'Remove from Wishlist?',
+                    text: 'Are you sure you want to remove this item?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, remove it!'
+                });
+
+                if (result.isConfirmed) {
+                    const response = await fetch('/wishlist/remove', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ productId, size })
+                    });
+     
+                    const data = await response.json();
+
+                    if (data.success) {
+                        const productRow = document.querySelector(`tr[data-product-id="${productId}"]`);
+                        if (productRow) productRow.remove();
+
+                        // Check if wishlist is now empty
+                        const remainingProducts = document.querySelectorAll('tbody tr:not(#empty-wishlist)');
+                        const emptyWishlistElement = document.getElementById('empty-wishlist');
+
+                        if (remainingProducts.length === 0 && emptyWishlistElement) {
+                            emptyWishlistElement.classList.remove('d-none');
+                        }
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Removed!',
+                            text: 'Product has been removed',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    } else {
+                        throw new Error(data.message || "Unknown error occurred.");
+                    }
+                }
+            } catch (error) {
+                console.error("Error removing product:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: error.message || 'Failed to remove product'
+                });
+            }
+        }
+
+
+    </script>
+
+    <br>
+
+    <%- include("../../views/partials/user/footer") %>
