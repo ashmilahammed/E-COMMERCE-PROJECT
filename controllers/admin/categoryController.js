@@ -57,12 +57,13 @@ const addCategory = async (req,res) => {
 const getListCategory = async (req,res) => {
     try {
 
-        let id= req.query.categoryId;
-        await Category.updateOne({_id:id},{ $set: {isListed : false}});
-        res.redirect("/admin/category")
+        let id= req.body.categoryId;
+        await Category.updateOne({_id:id},{ $set: {isListed : true}});
+        
+        res.json({success:true, message:"Category listed Successfully"})
 
     } catch (error) {
-        res.redirect("/admin/pageError")
+        res.status(500).json({ success: false, message: "Error listing category" });
     }
 }
 
@@ -70,14 +71,16 @@ const getListCategory = async (req,res) => {
 const getUnlistCategory = async (req,res) => {
     try {
 
-        let id = req.query.categoryId;
-        await Category.updateOne({_id:id},{ $set: {isListed : true}});
-        res.redirect("/admin/category")
+        let id = req.body.categoryId;
+        await Category.updateOne({_id:id},{ $set: {isListed : false}});
+        
+        res.json({success:true, message:"Category Unlisted Successfully."})
         
     } catch (error) {
-        res.redirect("/admin/pageError")
+        res.status(500).json({ success: false, message: "Error Unlisting category" });
     }
 }
+
 
 
 const getEditCategory = async (req,res) => {

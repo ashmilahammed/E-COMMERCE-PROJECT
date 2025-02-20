@@ -7,47 +7,56 @@ const mongoose = require('mongoose');
 
 
 
-
 const getWishList = async (req, res) => {
     try {
-
         if (!req.session.user) {
             return res.redirect('/login');
         }
 
         const userId = req.session.user;
         
+        const wishlistData = await Wishlist.findOne({ UserId: userId })
+            .populate({
+                path: 'products.productId',
+                select: 'productName productImage brand variants'
+            })
+            .lean();
 
-        const wishlistData = await Wishlist.findOne({ UserId: userId }).populate({
-            path: 'products.productId',
-            select: 'productName productImage brand variants' 
-        });
-
-        if (!wishlistData) {
+        if (!wishlistData || !wishlistData.products.length) {
+            req.session.wishlist = [];
+            await req.session.save();
             return res.render('wishlist', { 
                 user: { _id: userId }, 
                 wishlist: [] 
             });
         }
 
-        const formattedWishlist = wishlistData.products.map(item => {
-            const product = item.productId;
-            const selectedVariant = product.variants.find(variant => variant.size === item.size);
+        const formattedWishlist = wishlistData.products
+            .filter(item => item.productId) 
+            .map(item => {
+                const product = item.productId;
+                const selectedVariant = product.variants.find(variant => 
+                    variant.size === item.size
+                );
 
-            return {
-                _id: product._id,
-                name: product.productName,
-                brand: product.brand,
-                productImage: product.productImage[0], 
-                size: item.size,
-                salePrice: selectedVariant ? selectedVariant.salePrice : "N/A",
-                addedOn: item.addedOn,
-                availableSizes: product.variants.map(variant => variant.size) 
-            };
-        });
+                return {
+                    _id: product._id,
+                    name: product.productName,
+                    brand: product.brand,
+                    productImage: product.productImage[0],
+                    size: item.size,
+                    salePrice: selectedVariant ? selectedVariant.salePrice : "N/A",
+                    addedOn: item.addedOn,
+                    availableSizes: product.variants.map(variant => variant.size)
+                };
+            });
 
+        // Update session with latest data
+        req.session.wishlist = formattedWishlist;
+        await req.session.save();
+        
         res.render('wishlist', { 
-            user:  userId , 
+            user: userId,
             wishlist: formattedWishlist 
         });
     } catch (error) {
@@ -156,10 +165,8 @@ const changeSize = async (req,res) => {
 
 
 
-
 const removeFromWishlist = async (req, res) => {
     try {
-        // Ensure the user is logged in
         if (!req.session.user) {
             return res.status(401).json({ success: false, message: 'Please login to remove items from wishlist' });
         }
@@ -167,29 +174,31 @@ const removeFromWishlist = async (req, res) => {
         const { productId, size } = req.body;
         const userId = req.session.user;
 
-      
-        const wishlist = await Wishlist.findOne({ UserId: userId });
 
-        if (!wishlist) {
+        const updatedWishlist = await Wishlist.findOneAndUpdate(
+            { UserId: userId },
+            { $pull: { 
+                    products: { 
+                        productId: productId, 
+                        size: parseInt(size) 
+                    } 
+                } 
+            },
+            { new: true } 
+        );
+
+        if (!updatedWishlist) {
             return res.status(404).json({ success: false, message: 'Wishlist not found' });
         }
 
-        const parsedSize = parseInt(size);
-
-
-        wishlist.products = wishlist.products.filter(item => 
-            !(item.productId.toString() === productId && item.size === parsedSize)
-        );
-
-        await wishlist.save();
-
-        // Update session wishlist
-        req.session.wishlist = wishlist.products;
+        req.session.wishlist = updatedWishlist.products;
+        
+        await req.session.save();
 
         return res.status(200).json({ 
             success: true, 
             message: 'Product removed from wishlist',
-            wishlistCount: wishlist.products.length,
+            wishlistCount: updatedWishlist.products.length,
         });
 
     } catch (error) {
@@ -200,59 +209,6 @@ const removeFromWishlist = async (req, res) => {
         });
     }
 };
-
-
-
-
-
-
-// const removeFromWishlist = async (req, res) => {
-//     try {
-//         if (!req.session.user) {
-//             return res.status(401).json({ success: false, message: 'Please login to remove items from wishlist' });
-//         }
-
-//         const { productId, size } = req.body;
-//         const userId = req.session.user;
-
-
-//         const parsedSize = parseInt(size);
-//         console.log("Parsed Size:", parsedSize);
-
-//         const wishlist = await Wishlist.findOne({ UserId: userId });
-//         if (!wishlist) {
-//             return res.status(404).json({ success: false, message: 'Wishlist not found' });
-//         }
-
-//         const updatedWishlist = await Wishlist.findOneAndUpdate(
-//             { UserId: userId },
-//             { $pull: { products: { productId: productId, size: parsedSize } } },
-//             { new: true }
-//         );
-
-
-//         if (!updatedWishlist) {
-//             return res.status(404).json({ success: false, message: 'Product not found in wishlist' });
-//         }
-
-//         req.session.wishlist = updatedWishlist.products;
-//         await req.session.save();
-
-//         return res.status(200).json({
-//             success: true,
-//             message: 'Product removed from wishlist',
-//             wishlistCount: updatedWishlist.products.length
-//         });
-
-//     } catch (error) {
-//         console.error('Error removing from wishlist:', error);
-//         return res.status(500).json({
-//             success: false,
-//             message: 'Error removing product from wishlist'
-//         });
-//     }
-// };
-
 
 
 

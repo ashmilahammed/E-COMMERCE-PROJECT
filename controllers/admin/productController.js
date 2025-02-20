@@ -70,7 +70,7 @@ const addProducts = async (req, res) => {
                 category: categoryId._id,
                 productImage: images,
                 status: "Available",
-                variants: variants, // Include variants in the product
+                variants: variants, 
             });
 
             await newProduct.save();
@@ -83,6 +83,7 @@ const addProducts = async (req, res) => {
         res.status(500).json("Server Error");
     }
 }
+
 
 
 
@@ -189,30 +190,32 @@ const GetAllProducts = async (req, res) => {
 };
 
 
+
 const blockProduct = async (req, res) => {
     try {
 
-        const id = req.query.productId;
+        const id = req.body.productId;
         await Product.updateOne({ _id: id }, { $set: { isBlocked: true } });
-        res.redirect("/admin/products")
+        
+        res.json({success: true, message:"Product blocked Successfully."})
 
     } catch (error) {
-        res.redirect("/admin/pageError")
+        res.status(500).json({ success: false, message: "Error blocking product" });
     }
 }
+
 
 
 const unblockProduct = async (req, res) => {
     try {
-
-        const id = req.query.productId;
+        const id = req.body.productId; 
         await Product.updateOne({ _id: id }, { $set: { isBlocked: false } });
-        res.redirect("/admin/products")
 
+        res.json({ success: true, message: "Product unblocked successfully" });
     } catch (error) {
-        res.redirect("/admin/pageError")
+        res.status(500).json({ success: false, message: "Error unblocking product" });
     }
-}
+};
 
 
 
@@ -234,7 +237,6 @@ const getEditProduct = async (req, res) => {
             return res.redirect("/admin/pageError");
         }
 
-        // Fetch active categories and brands
         const categories = await Category.find({ isListed: true }).lean();
         const brands = await Brand.find({ isBlocked: false }).lean();
 
@@ -267,13 +269,14 @@ const getEditProduct = async (req, res) => {
 };
 
 
+
 const editProduct = async (req, res) => {
     try {
         const productId = req.params.id;
         const updates = req.body;
         const images = [];
 
-        // Handle image uploads
+        //  image uploads
         if (req.files && req.files.length > 0) {
             for (let i = 0; i < req.files.length; i++) {
                 const originalImagepath = req.files[i].path;
@@ -283,13 +286,13 @@ const editProduct = async (req, res) => {
             }
         }
 
-        // Get category ID
+
         const categoryId = await Category.findOne({ name: updates.category });
         if (!categoryId) {
             return res.status(400).json("Invalid Category name");
         }
 
-        // Process variants
+
         const variants = updates.variants.map(variant => ({
             size: Number(variant.size),
             regularPrice: Number(variant.regularPrice),
@@ -298,7 +301,7 @@ const editProduct = async (req, res) => {
             status: variant.status
         }));
 
-        // Update product
+
         const updateData = {
             productName: updates.productName,
             description: updates.description,

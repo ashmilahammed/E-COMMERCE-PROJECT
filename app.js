@@ -70,6 +70,13 @@ app.use((err, req, res, next) => {
 
 
 
+app.get("/hola",(req,res)=> {
+    res.render("test")
+})
+
+
+
+
 
 const PORT= process.env.PORT
 app.listen(PORT, ()=>{

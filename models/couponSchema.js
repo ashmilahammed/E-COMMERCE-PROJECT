@@ -2,41 +2,84 @@ const mongoose = require("mongoose");
 const {Schema} = mongoose;
 
 
-const couponSchema = new Schema({
+
+
+const couponSchema = new mongoose.Schema({
     name: {
-        type : String,
-        required : true,
-        unique : true
+        type: String,
+        required: true,
+        unique: true,
+        trim: true
     },
-    createdOn: {
-        type : Date,
-        default : Date.now,
-        required : true
+    couponCode: {
+        type: String,
+        required: true,
+        unique: true,
+        uppercase: true, 
+        trim: true
     },
-    expireOn: {
-        type : Date,
-        required : true,
+    discountType: {
+        type: String,
+        enum: ['percentage'], 
+        default: "percentage"
     },
-    offerPrice: {
-        type : Number,
-        required : true
+    discountValue: {  
+        type: Number,
+        required: true,
+        min: [0, "Discount value must be a positive number"]
     },
-    minimumPrice: {
-        type : Number,
+    minPurchaseAmount: { 
+        type: Number,
+        default: 0,
+        min: [0, "Minimum purchase amount must be a positive number"]
+    },
+    maxDiscountAmount: { 
+        type: Number, 
+        default: null
+    },
+    startDate: {  
+        type: Date,
         required: true
     },
-    isListed: {
-        type : Boolean,
-        default : true
+    endDate: { 
+        type: Date,
+        required: true,
+        validate: {
+            validator: function (value) {
+                return this.startDate ? value > this.startDate : true;
+            },
+            message: "End date must be after the start date"
+        }
     },
-    userId: {
-        type : mongoose.Types.ObjectId,
-        ref : 'User',
+    usageLimit: {
+        type: Number, 
+        default: 1,
+        min: [1, "Usage limit must be at least 1"]
+    },
+    isActive: {
+        type: Boolean,
+        default: true
     }
 
-})
+},{timestamps:true});
+
+
+
+// // Middleware to ensure `couponCode` is always saved in uppercase
+// couponSchema.pre("save", function (next) {
+//     this.couponCode = this.couponCode.toUpperCase();
+//     next();
+// });
 
 
 
 const Coupon = mongoose.model("Coupon", couponSchema);
 module.exports = Coupon;
+
+
+
+
+
+
+
+

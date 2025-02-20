@@ -126,7 +126,7 @@
                                                 </td>
                                                 <td>
                                                     <button class="btn btn-outline-danger btn-sm"
-                                                        onclick="removeFromWishlist('<%= item._id %>')">
+                                                        onclick="removeFromWishlist('<%= item._id %>','<%= item.size %>')">
                                                         <i class="fi-rs-trash me-1"></i>Remove
                                                     </button>
                                                 </td>
@@ -139,8 +139,7 @@
                                                                 <i class="fi-rs-heart"
                                                                     style="font-size: 3rem; color: #ddd;"></i>
                                                                 <h5 class="mt-3 mb-2">Your wishlist is empty</h5>
-                                                                <p class="text-muted mb-4">Browse our store and find
-                                                                    something you love!</p>
+                                                                <p class="text-muted mb-4">Browse our store and explore!</p>
                                                                 <a href="/shop" class="btn btn-primary">Continue
                                                                     Shopping</a>
                                                             </div>
@@ -231,6 +230,72 @@
         }
 
 
+//         async function addToCart(productId, size) {
+//     try {
+//         const confirmAdd = await Swal.fire({
+//             title: 'Add to Cart?',
+//             text: 'Do you want to add this product to your cart?',
+//             icon: 'question',
+//             showCancelButton: true,
+//             confirmButtonColor: '#28a745',
+//             cancelButtonColor: '#6c757d',
+//             confirmButtonText: 'Yes, add it!'
+//         });
+
+//         if (!confirmAdd.isConfirmed) {
+//             return;
+//         }
+
+//         const response = await fetch('/cart/add', {
+//             method: 'POST',
+//             headers: { 'Content-Type': 'application/json' },
+//             body: JSON.stringify({ productId, size })
+//         });
+
+//         const result = await response.json();
+
+//         if (result.success) {
+//             showToast('Product added to cart', 'success');
+
+//             const confirmRemove = await Swal.fire({
+//                 title: 'Remove from Wishlist?',
+//                 text: 'Do you want to remove this product from your wishlist?',
+//                 icon: 'warning',
+//                 showCancelButton: true,
+//                 confirmButtonColor: '#dc3545',
+//                 cancelButtonColor: '#6c757d',
+//                 confirmButtonText: 'Yes, remove it!'
+//             });
+
+//             if (confirmRemove.isConfirmed) {
+//                 await removeFromWishlist(productId, size);
+//             }
+//         } else {
+//             throw new Error(result.message);
+//         }
+//     } catch (error) {
+//         showToast(error.message || 'Failed to add product to cart', 'error');
+//     }
+// }
+
+// // Toast Function
+// function showToast(message, type) {
+//     const toastContainer = document.getElementById('toast-container');
+//     const toast = document.createElement('div');
+//     toast.className = `toast-message ${type}`;
+//     toast.innerHTML = message;
+
+//     toastContainer.appendChild(toast);
+
+//     setTimeout(() => {
+//         toast.style.opacity = '0';
+//         setTimeout(() => {
+//             toast.remove();
+//         }, 500);
+//     }, 1500);
+// }
+
+
 
 
 
@@ -253,6 +318,10 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ productId, size })
                     });
+                //     body: JSON.stringify({ 
+                //     productId: productId, 
+                //     size: parseInt(size) 
+                //    })
      
                     const data = await response.json();
 

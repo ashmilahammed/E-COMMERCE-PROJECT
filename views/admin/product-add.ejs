@@ -1,9 +1,10 @@
 <%- include("../../views/partials/admin/header") %>
 
-    <head>
+
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    </head>
+
+
     <style>
 
         .error-message {
@@ -117,37 +118,7 @@
                                 <div id="description-error" class="error-message"></div>
                             </div>
 
-                            <!-- <div class="row">
-                                <div class="col-md-4 mb-4">
-                                    <label class="form-label">Regular Price</label>
-                                    <input placeholder="Rs." name="regularPrice" type="text"
-                                        class="form-control border">
-                                    <div id="regularPrice-error" class="error-message"></div>
-                                </div>
-                                <div class="col-md-4 mb-4">
-                                    <label class="form-label">Sale Price</label>
-                                    <input placeholder="Rs." name="salePrice" type="text" class="form-control border">
-                                    <div id="salePrice-error" class="error-message"></div>
-                                </div>
-                                <div class="col-md-4 mb-4">
-                                    <label class="form-label">Quantity</label>
-                                    <input placeholder="" name="quantity" type="text" class="form-control border">
-                                    <div id="quantity-error" class="error-message"></div>
-                                </div>
-                            </div> -->
-
-                            <!-- <div class="row">
-                                <div class="col-md-6 mb-4">
-                                    <label class="form-label">Color</label>
-                                    <input name="color" type="text" class="form-control border">
-                                    <div id="color-error" class="error-message"></div>
-                                </div>
-                                <div class="col-md-6 mb-4">
-                                    <label class="form-label">Size</label>
-                                    <input name="size" type="text" class="form-control border">
-                                    <div id="size-error" class="error-message"></div>
-                                </div>
-                            </div> -->
+       
 
                             <div class="mb-4">
                                 <label class="form-label">Category</label>
@@ -285,6 +256,7 @@
 
 
     <script>
+ 
 
 
         function validateAndSubmit() {
@@ -491,7 +463,7 @@
                 }
             }
 
-            // Validate at least one image
+
             const input1 = document.getElementById('input1');
             if (!input1 || (!input1.files[0] && !document.getElementById('imgView1').src)) {
                 showError('image', 'At least one product image is required');
@@ -499,6 +471,7 @@
 
             return isValid;
         }
+
 
         function addVariant() {
             const variantContainer = document.getElementById('variant-container').getElementsByClassName('card-body')[0];
@@ -549,21 +522,16 @@
                 alert('At least one variant is required');
             }
         }
+
+
+
     </script>
 
 
     <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
+
     <%- include("../../views/partials/admin/footer") %>
 
 
 
 
-
-
-
-        <!-- <label for="status" class="form-label">Status:</label>
-        <select name="variants[${newIndex}][status]" class="form-select border" required>
-            <option value="Available">Available</option>
-            <option value="out of stock">Out of Stock</option>
-            <option value="Discontinued">Discontinued</option>
-        </select> -->

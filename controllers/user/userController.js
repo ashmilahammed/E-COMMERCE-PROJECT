@@ -76,7 +76,7 @@ const loadHomepage = async (req, res) => {
         productData = productData.map(product => {
             const formattedProduct = product.toObject();
 
-            // Get available sizes from variants
+    
             if (formattedProduct.variants && formattedProduct.variants.length > 0) {
                 formattedProduct.availableSizes = [...new Set(
                     formattedProduct.variants
@@ -84,7 +84,7 @@ const loadHomepage = async (req, res) => {
                         .map(v => v.size)
                 )].sort((a, b) => a - b);
 
-                // Get the regular and sale prices
+
                 const activeVariant = formattedProduct.variants.find(v => v.quantity > 0);
                 if (activeVariant) {
                     formattedProduct.regularPrice = activeVariant.regularPrice;
@@ -101,7 +101,6 @@ const loadHomepage = async (req, res) => {
             product.variants.some(variant => variant.quantity > 0)
         );
 
-        // Render the homepage with or without user data
         if (userId) {
             const userData = await User.findById(userId);
             return res.render("home", {
@@ -134,23 +133,6 @@ const loadSignup = async (req, res) => {
     }
 }
 
-// const signup = async(req,res) => {
-
-//     const{fullName,email,phone,password} = req.body;
-//     try {
-
-//         const newUSer = new User({fullName,email,phone,password});
-//         console.log(newUSer)
-
-//         await newUSer.save();
-
-//         return res.redirect("/signup");
-
-//     } catch (error) {
-//         console.log("Error for saving user",error);
-//         res.status(500).send("Internal server error")
-//     }
-// }
 
 
 const signup = async (req, res) => {
@@ -195,7 +177,6 @@ const securePassword = async (password) => {
     try {
 
         const passwordHash = await bcrypt.hash(password, 10)
-
         return passwordHash;
 
     } catch (error) {
@@ -356,24 +337,24 @@ const loadShoppingpage = async (req, res) => {
 
         switch (sortOption) {
             case 'priceAsc':
-                sortCriteria = { 'variants.salePrice': 1 };
+                sortCriteria = {'variants.salePrice': 1};
                 break;
             case 'priceDesc':
-                sortCriteria = { 'variants.salePrice': -1 };
+                sortCriteria = {'variants.salePrice': -1};
                 break;
             case 'nameAsc':
-                sortCriteria = { productName: 1 };
+                sortCriteria = {productName: 1};
                 break;
             case 'nameDesc':
-                sortCriteria = { productName: -1 };
+                sortCriteria = {productName: -1};
                 break;
             case 'newArrivals':
             default:
-                sortCriteria = { createdAt: -1 };
+                sortCriteria = {createdAt: -1};
                 break;
         }
 
-        // Initialize filters
+      
         const filters = {
             isBlocked: false,
             'variants.quantity': { $gt: 0 }
@@ -419,7 +400,7 @@ const loadShoppingpage = async (req, res) => {
         products = products.map(product => {
             const formattedProduct = product.toObject();
 
-            // Get available sizes from variants
+          
             if (formattedProduct.variants && formattedProduct.variants.length > 0) {
                 formattedProduct.availableSizes = [...new Set(
                     formattedProduct.variants
@@ -427,7 +408,7 @@ const loadShoppingpage = async (req, res) => {
                         .map(v => v.size)
                 )].sort((a, b) => a - b);
 
-                // Get the regular and sale prices
+               
                 const activeVariant = formattedProduct.variants.find(v => v.quantity > 0);
                 if (activeVariant) {
                     formattedProduct.regularPrice = activeVariant.regularPrice;

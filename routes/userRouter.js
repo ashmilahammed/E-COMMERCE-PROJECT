@@ -84,6 +84,9 @@ router.post('/checkout/editAddress',userAuth,checkoutController.editAddress);
 //Order management
 router.get("/orderDetails",userAuth,checkoutController.getOrderDetails);
 router.post("/cancelOrder",userAuth,checkoutController.cancelOrder)
+router.post("/applyCoupon",userAuth,checkoutController.applyCoupon);
+
+
 
 // Order Management
 // router.post("/applyCoupon",userAuth,userController.applyCoupon);

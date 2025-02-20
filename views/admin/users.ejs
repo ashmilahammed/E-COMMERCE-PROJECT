@@ -1,12 +1,14 @@
 <%- include('../../views/partials/admin/header') %>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
     <style>
-        /* Table styles */
+        /* Your existing styles */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -102,124 +104,97 @@
         }
 
         .pagination a:hover {
-            background-color: #dc6b01;
+            background-color: #daa675;
         }
 
         .pagination .active {
-            background-color: #ff9b18;
+            background-color: #d08420;
             color: white;
         }
     </style>
 
     <div class="container">
-        <h1 id="title">Products Management</h1>
+        <h1 id="title">User Management</h1>
 
         <div class="search-section">
-            <input type="text" id="searchInput" placeholder="Search products or brands...">
+            <input type="text" id="searchInput" placeholder="Search users...">
             <button id="searchBtn">Search</button>
         </div>
 
         <table>
             <thead>
                 <tr>
-                    <th class="column-header">Product Name</th>
-                    <th class="column-header">Brand</th>
-                    <th class="column-header">Category</th>
-                    <th class="column-header">Offer Price</th>
-                    <th class="column-header">Offer</th>
+                    <th class="column-header">Username</th>
+                    <th class="column-header">Email</th>
+                    <th class="column-header">Mobile</th>
+                    <th class="column-header">Joined on</th>
                     <th class="column-header">Action</th>
-                    <th class="column-header">Edit</th>
                 </tr>
             </thead>
-            <tbody id="productTableBody">
-                <!-- Example product rows -->
-
-
-                <% for(let i=0;i<products.length;i++) { %>
-
+            <tbody id="userTableBody">
+                <% users.forEach(user=> { %>
                     <tr>
                         <td>
-                            <%= products[i].productName %>
+                            <%= user.fullName %>
                         </td>
                         <td>
-                            <%= products[i].brand %>
+                            <%= user.email %>
                         </td>
                         <td>
-                            <%= products[i].category.name %>
+                            <%= user.phone %>
                         </td>
                         <td>
-                            <%= products[i].offerPrice %>
+                            <%= new Date(user.createdOn).toDateString() %>
                         </td>
-
                         <td>
-                            <button class="action-btn" style="background-color: #2196F3; color: white;">Add
-                                Offer</button>
-                            <button class="action-btn" style="background-color: #FF5722; color: white;">Remove</button>
-                        </td>
+                            <% if (user.isBlocked) { %>
+                                <button class="action-btn unblock-btn" data-userid="<%= user._id %>"
+                                    onclick="unblockCustomer('<%= user._id %>')">Unblock</button>
+                             <% } else { %>
+                                    <button class="action-btn block-btn" data-userid="<%= user._id %>"
+                                        onclick="blockCustomer('<%= user._id %>')">Block</button>
+                             <% } %>
 
-                        <td>
-                            <% if (products[i].isBlocked===false) { %>
-
-                                <button class="action-btn block-btn" data-productid="<%= products[i]._id %>"
-                                    onclick="blockProduct('<%= products[i]._id %>')">Block</button>
-
-                                <% } else { %>
-
-                                    <button class="action-btn unblock-btn" data-productid="<%= products[i]._id %>"
-                                        onclick="unblockProduct('<%= products[i]._id %>')">Unblock</button>
-
-                                    <% } %>
-                        </td>           
-
-                        <td>
-                            <a href="/admin/editProduct?productId=<%= products[i]._id %>">
-                                <button class="action-btn"
-                                    style="background-color: #007bff; color: white;">Edit</button>
-                            </a>
                         </td>
                     </tr>
-
-                    <% } %>
+                    <% }); %>
             </tbody>
         </table>
 
         <!-- Pagination -->
-
         <div class="pagination">
             <% if (currentPage> 1) { %>
-                <a href="/admin/products?page=<%= currentPage - 1 %>">Previous</a>
+                <a href="/admin/users?page=<%= currentPage - 1 %>">Previous</a>
                 <% } %>
 
                     <% for (let i=1; i <=totalPages; i++) { %>
-                        <a href="/admin/products?page=<%= i %>" class="<%= currentPage === i ? 'active' : '' %>">
+                        <a href="/admin/users?page=<%= i %>" class="<%= currentPage === i ? 'active' : '' %>">
                             <%= i %>
                         </a>
                         <% } %>
 
                             <% if (currentPage < totalPages) { %>
-                                <a href="/admin/products?page=<%= currentPage + 1 %>">Next</a>
+                                <a href="/admin/users?page=<%= currentPage + 1 %>">Next</a>
                                 <% } %>
         </div>
+
     </div>
-    <br>
 
     <script>
 
-
-
-        async function blockProduct(productId) {
+        async function blockCustomer(userId) {
             try {
-
-                let response = await fetch("/admin/blockProduct", {
-                    method: "POST",
-                    headers: { 'content-Type': 'application/json' },
-                    body: JSON.stringify({productId})
-                })
+                let response = await fetch('/admin/blockCustomer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId })
+                });
 
                 let result = await response.json();
                 if (result.success) {
+                    // Show toast message
                     Toastify({
-                        text: "Product has been blocked!",
+                        text: "User has been blocked!",
                         duration: 1500,
                         gravity: "top",
                         position: "right",
@@ -228,53 +203,50 @@
                     }).showToast();
 
 
-                    let button = document.querySelector(`button[data-productid="${productId}"]`);
+                    let button = document.querySelector(`button[data-userid="${userId}"]`);
                     if (button) {
                         button.textContent = "Unblock";
                         button.classList.remove("block-btn");
                         button.classList.add("unblock-btn");
-                        button.setAttribute("onclick", `unblockProduct('${productId}')`);
+                        button.setAttribute("onclick", `unblockCustomer('${userId}')`);
                     }
                 } else {
                     Toastify({
-                        text: "Failed to block product.",
-                        duration: 3000,
+                        text: "Failed to block user.",
+                        duration: 1500,
                         gravity: "top",
                         position: "right",
                         backgroundColor: "orange",
                         close: true
                     }).showToast();
                 }
-
             } catch (error) {
                 console.error("Error:", error);
                 Toastify({
                     text: "Something went wrong!",
-                    duration: 3000,
+                    duration: 1500,
                     gravity: "top",
                     position: "right",
                     backgroundColor: "gray",
                     close: true
                 }).showToast();
-
             }
         }
 
 
 
-
-        async function unblockProduct(productId) {
+        async function unblockCustomer(userId) {
             try {
-                let response = await fetch('/admin/unblockProduct', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ productId })
+                let response = await fetch("/admin/unblockCustomer", {
+                    method: "POST",
+                    headers: { 'content-type': 'application/json' },
+                    body: JSON.stringify({ userId })
                 });
 
                 let result = await response.json();
                 if (result.success) {
                     Toastify({
-                        text: "Product has been unblocked!",
+                        text: "User has been unblocked!",
                         duration: 1500,
                         gravity: "top",
                         position: "right",
@@ -282,17 +254,16 @@
                         close: true
                     }).showToast();
 
-            
-                    let button = document.querySelector(`button[data-productid="${productId}"]`);
+                    let button = document.querySelector(`button[data-userid="${userId}"]`);
                     if (button) {
                         button.textContent = "Block";
                         button.classList.remove("unblock-btn");
                         button.classList.add("block-btn");
-                        button.setAttribute("onclick", `blockProduct('${productId}')`);
+                        button.setAttribute("onclick", `blockCustomer('${userId}')`);
                     }
                 } else {
                     Toastify({
-                        text: "Failed to unblock product.",
+                        text: "Failed to unblock user.",
                         duration: 1500,
                         gravity: "top",
                         position: "right",
@@ -316,11 +287,10 @@
 
 
 
-        //search
         document.addEventListener('DOMContentLoaded', () => {
             const searchInput = document.getElementById('searchInput');
             const searchBtn = document.getElementById('searchBtn');
-            const productTableBody = document.getElementById('productTableBody');
+            const userTableBody = document.getElementById('userTableBody');
 
             searchBtn.addEventListener('click', performSearch);
             searchInput.addEventListener('keyup', (e) => {
@@ -329,13 +299,14 @@
 
             function performSearch() {
                 const searchTerm = searchInput.value.toLowerCase();
-                const rows = productTableBody.querySelectorAll('tr');
+                const rows = userTableBody.querySelectorAll('tr');
 
                 rows.forEach(row => {
-                    const productName = row.cells[0].textContent.toLowerCase();
-                    const brand = row.cells[1].textContent.toLowerCase();
+                    const username = row.cells[0].textContent.toLowerCase();
+                    const email = row.cells[1].textContent.toLowerCase();
+                    const mobile = row.cells[2].textContent.toLowerCase();
 
-                    if (productName.includes(searchTerm) || brand.includes(searchTerm)) {
+                    if (username.includes(searchTerm) || email.includes(searchTerm) || mobile.includes(searchTerm)) {
                         row.style.display = '';
                     } else {
                         row.style.display = 'none';
@@ -343,6 +314,7 @@
                 });
             }
         });
+
 
     </script>
 

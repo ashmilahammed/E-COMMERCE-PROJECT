@@ -1,372 +1,483 @@
 <%- include('../../views/partials/admin/header') %>
 
-<style>
-    /* General styles */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed; 
-}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
-th, td {
-    padding: 10px;
-    text-align: center; /* Centers content in both header and body */
-    border-bottom: 1px solid #6d6d6d;
-}
-
-th {
-    background-color: rgba(8, 129, 120, 0.2);
-}
-
-td {
-    word-wrap: break-word; /* Prevents long text from overflowing */
-}
-
-/* Action buttons styles */
-.action-btn {
-    padding: 5px 10px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.edit-btn {
-    background-color: #007bff;
-    color: white;
-}
-
-.list-btn {
-    background-color: #4CAF50;
-    color: white;
-}
-
-.unlist-btn {
-    background-color: #f44336;
-    color: white;
-}
-
-.offer-btn {
-    background-color: #ffc107;
-    color: black;
-}
-
-/* Header and search styles */
-.header {
-    text-align: center;
-    margin-bottom: 30px;
-    font-size: 2rem;
-    font-weight: bold;
-}
-
-.search-section {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-#searchInput {
-    padding: 10px;
-    width: 300px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-#searchBtn {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#searchBtn:hover {
-    background-color: #0056b3;
-}
-
-/* Pagination styles */
-.pagination {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-.pagination a {
-    padding: 8px 12px;
-    margin: 0 5px;
-    text-decoration: none;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    color: #555;
-}
-
-.pagination :hover {
-    background-color: rgb(237, 185, 112);
-}
-
-.pagination .active {
-    background-color: #d28416;
-    color: white;
-}
-
-/* Form styles */
-.form-container {
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    margin: 20px 0;
-}
-
-.form-label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-}
-
-.form-control {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 15px;
-}
-
-.btn-primary {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.btn-primary:hover {
-    background-color: #0056b3;
-}
-
-.error-message {
-    color: red;
-    padding-bottom: 10px;
-}
-
-</style>
-<div class="container">
-    <h1 class="header">Brand Management</h1>
-
-    <!-- Search Section -->
-    <div class="search-section">
-        <input type="text" id="searchInput" placeholder="Search brands...">
-        <button id="searchBtn">Search</button>
-    </div>
-
-    <!-- Brand Table -->
-    <table>
-        <thead>
-            <tr>
-                <th>Brand Name</th>
-                <th>Description</th>
-                <th>Logo</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="brandTableBody">
-            <% brands.forEach(brand => { %>
-            <tr>
-                <td><%= brand.brandName %></td>
-                <td><%= brand.description %></td>
-                <td>
-                    <img src="/uploads/re-image/<%= brand.brandImage[0] %>" alt="<%= brand.brandName %>" style="width: 50px; height: auto;">
-                </td>
-                <td>
-                    <% if (brand.isBlocked===true) { %>
-                    <span class="badge unlist-btn">Blocked</span>
-                    <% } else { %>
-                    <span class="badge list-btn">Active</span>
-                    <% } %>
-                </td>
-                <td>
-                    <% if (brand.isBlocked===false) { %>
-                        <a href="/admin/blockBrand?brandId=<%= brand._id %>">
-                        <button class="action-btn unlist-btn">Block</button>
-                        </a>
-                    <% } else { %>
-                        <a href="/admin/unblockBrand?brandId=<%= brand._id %>">
-                        <button class="action-btn list-btn">Unblock</button>
-                        </a>
-                    <% } %>
-                    <a href="/admin/deleteBrand?brandId=<%= brand._id %>">
-                        <button class="action-btn edit-btn" onclick="return confirmDelete()">Delete</button>
-                    </a>
-                </td>
-            </tr>
-            <% }); %>
-        </tbody>
-    </table>
-
-    <!-- Pagination -->
-    <div class="pagination">
-        <% if (currentPage > 1) { %>
-        <a href="/admin/brands?page=<%= currentPage - 1 %>">Previous</a>
-        <% } %>
-
-        <% for (let i = 1; i <= totalPages; i++) { %>
-        <a href="/admin/brands?page=<%= i %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
-        <% } %>
-
-        <% if (currentPage < totalPages) { %>
-        <a href="/admin/brands?page=<%= currentPage + 1 %>">Next</a>
-        <% } %>
-    </div>
-
-    <!-- Form Section -->
-    <div class="form-container">
-        <h3>Create New Brand</h3>
-        <form method="post" action="/admin/addBrand" enctype="multipart/form-data" onsubmit="return handleFormSubmit(event)">
-            <label for="brandName" class="form-label">Brand Name</label>
-            <input type="text" name="brandName" id="brandName" class="form-control" placeholder="Enter brand name">
-            <span id="name-error" class="error-message"></span>
-
-            <label for="brandDescription" class="form-label">Description</label>
-            <textarea name="description" id="brandDescription" class="form-control" placeholder="Enter brand description"></textarea>
-            <span id="description-error" class="error-message"></span>
-
-            <label for="brandLogo" class="form-label">Upload Logo</label>
-            <input type="file" name="logo" id="brandLogo" class="form-control">
-
-            <button type="submit" class="btn-primary">Create Brand</button>
-        </form>
-    </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
-<script>
-    
-    function confirmDelete() {
-        return confirm("Are you sure you want to delete this brand?")
-
-    }
-
-    //swal
-    function handleFormSubmit(event) {
-        event.preventDefault();
-        if (!validateForm()) {
-            return;
+    <style>
+        /* General styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
         }
 
-        const brandName = document.getElementsByName("brandName")[0].value;
-        
-        // Get all existing brand names from the table
-        const existingBrands = Array.from(document.querySelectorAll('#brandTableBody tr td:first-child'))
-            .map(td => td.textContent);
+        th,
+        td {
+            padding: 10px;
+            text-align: center;
+            /* Centers content in both header and body */
+            border-bottom: 1px solid #6d6d6d;
+        }
 
-        // Check if brand exists in any case format
-        const exists = existingBrands.some(existingBrand => {
-            const newBrandLower = brandName.toLowerCase();
-            const existingBrandLower = existingBrand.toLowerCase();
-            const newBrandCapitalized = brandName.charAt(0).toUpperCase() + brandName.slice(1).toLowerCase();
-            const existingBrandCapitalized = existingBrand.charAt(0).toUpperCase() + existingBrand.slice(1).toLowerCase();
-            
-            return newBrandLower === existingBrandLower || 
-                   newBrandCapitalized === existingBrandCapitalized;
-        });
+        th {
+            background-color: rgba(8, 129, 120, 0.2);
+        }
 
-        if (exists) {
-            Swal.fire({
-                icon: "error",
-                title: "Brand Already Exists",
-                text: "This brand name already exists.",
-                confirmButtonColor: '#d33'
+        td {
+            word-wrap: break-word;
+            /* Prevents long text from overflowing */
+        }
+
+        /* Action buttons styles */
+        .action-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .edit-btn {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .list-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .unlist-btn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .offer-btn {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        /* Header and search styles */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .search-section {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        #searchInput {
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #searchBtn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #searchBtn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Pagination styles */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            padding: 8px 12px;
+            margin: 0 5px;
+            text-decoration: none;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            color: #555;
+        }
+
+        .pagination :hover {
+            background-color: rgb(237, 185, 112);
+        }
+
+        .pagination .active {
+            background-color: #d28416;
+            color: white;
+        }
+
+        /* Form styles */
+        .form-container {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .error-message {
+            color: red;
+            padding-bottom: 10px;
+        }
+    </style>
+    <div class="container">
+        <h1 class="header">Brand Management</h1>
+
+        <!-- Search Section -->
+        <div class="search-section">
+            <input type="text" id="searchInput" placeholder="Search brands...">
+            <button id="searchBtn">Search</button>
+        </div>
+
+        <!-- Brand Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Brand Name</th>
+                    <th>Description</th>
+                    <th>Logo</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="brandTableBody">
+                <% brands.forEach(brand=> { %>
+                    <tr>
+                        <td>
+                            <%= brand.brandName %>
+                        </td>
+                        <td>
+                            <%= brand.description %>
+                        </td>
+                        <td>
+                            <img src="/uploads/re-image/<%= brand.brandImage[0] %>" alt="<%= brand.brandName %>"
+                                style="width: 50px; height: auto;">
+                        </td>
+                        <td>
+                            <% if (brand.isBlocked===true) { %>
+                                <span class="badge unlist-btn">Blocked</span>
+                                <% } else { %>
+                                    <span class="badge list-btn">Active</span>
+                                    <% } %>
+                        </td>
+                        <td>
+                            <% if (brand.isBlocked===false) { %>
+                                <button class="action-btn unlist-btn" data-brandid="<%= brand._id %>"
+                                    onclick="blockBrand('<%= brand._id %>')">Block</button>
+                                <% } else { %>
+                                    <button class="action-btn list-btn" data-brandid="<%= brand._id %>"
+                                        onclick="unblockBrand('<%= brand._id %>')">Unblock</button>
+                                    <% } %>
+                                        <a href="/admin/deleteBrand?brandId=<%= brand._id %>">
+                                            <button class="action-btn edit-btn"
+                                                onclick="return confirmDelete()">Delete</button>
+                                        </a>
+                        </td>
+                    </tr>
+                    <% }); %>
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            <% if (currentPage> 1) { %>
+                <a href="/admin/brands?page=<%= currentPage - 1 %>">Previous</a>
+                <% } %>
+
+                    <% for (let i=1; i <=totalPages; i++) { %>
+                        <a href="/admin/brands?page=<%= i %>" class="<%= currentPage === i ? 'active' : '' %>">
+                            <%= i %>
+                        </a>
+                        <% } %>
+
+                            <% if (currentPage < totalPages) { %>
+                                <a href="/admin/brands?page=<%= currentPage + 1 %>">Next</a>
+                                <% } %>
+        </div>
+
+        <!-- Form Section -->
+        <div class="form-container">
+            <h3>Create New Brand</h3>
+            <form method="post" action="/admin/addBrand" enctype="multipart/form-data"
+                onsubmit="return handleFormSubmit(event)">
+                <label for="brandName" class="form-label">Brand Name</label>
+                <input type="text" name="brandName" id="brandName" class="form-control" placeholder="Enter brand name">
+                <span id="name-error" class="error-message"></span>
+
+                <label for="brandDescription" class="form-label">Description</label>
+                <textarea name="description" id="brandDescription" class="form-control"
+                    placeholder="Enter brand description"></textarea>
+                <span id="description-error" class="error-message"></span>
+
+                <label for="brandLogo" class="form-label">Upload Logo</label>
+                <input type="file" name="logo" id="brandLogo" class="form-control">
+
+                <button type="submit" class="btn-primary">Create Brand</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <script>
+
+        function confirmDelete() {
+            return confirm("Are you sure you want to delete this brand?")
+
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            if (!validateForm()) {
+                return;
+            }
+
+            const brandName = document.getElementsByName("brandName")[0].value;
+
+            // Get all existing brand names from the table
+            const existingBrands = Array.from(document.querySelectorAll('#brandTableBody tr td:first-child'))
+                .map(td => td.textContent);
+
+            // Check if brand exists in any case format
+            const exists = existingBrands.some(existingBrand => {
+                const newBrandLower = brandName.toLowerCase();
+                const existingBrandLower = existingBrand.toLowerCase();
+                const newBrandCapitalized = brandName.charAt(0).toUpperCase() + brandName.slice(1).toLowerCase();
+                const existingBrandCapitalized = existingBrand.charAt(0).toUpperCase() + existingBrand.slice(1).toLowerCase();
+
+                return newBrandLower === existingBrandLower ||
+                    newBrandCapitalized === existingBrandCapitalized;
             });
-            return;
+
+            if (exists) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Brand Already Exists",
+                    text: "This brand name already exists.",
+                    confirmButtonColor: '#d33'
+                });
+                return;
+            }
+
+            const formData = new FormData(event.target);
+
+            fetch('/admin/addBrand', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => {
+                            throw new Error(err.error);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    location.reload();
+                })
+                .catch(error => {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: error.message || "An error occurred while adding the brand",
+                        confirmButtonColor: '#d33'
+                    });
+                });
         }
 
-        const formData = new FormData(event.target);
 
-        fetch('/admin/addBrand', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(err => {
-                    throw new Error(err.error);
+
+        function validateForm() {
+            clearErrorMessages();
+            const name = document.getElementsByName("brandName")[0].value.trim();
+            const description = document.getElementById("brandDescription").value.trim();
+            let isValid = true;
+
+            if (name === "") {
+                displayErrorMessage("name-error", "Please enter a brand name.");
+                isValid = false;
+            }
+
+            if (description === "") {
+                displayErrorMessage("description-error", "Please enter a description.");
+                isValid = false;
+            }
+            return isValid;
+        }
+
+        function displayErrorMessage(elementId, message) {
+            document.getElementById(elementId).innerHTML = message;
+        }
+
+        function clearErrorMessages() {
+            document.querySelectorAll(".error-message").forEach(el => el.innerHTML = "");
+        }
+
+
+
+        ////////
+        async function blockBrand(brandId) {
+            try {
+                console.log("Blocking brandId:", brandId);
+
+                let response = await fetch("/admin/blockBrand", {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ brandId })
+                });
+
+                let result = await response.json();
+                console.log("Server Response:", result);
+
+                if (result.success) {
+                    Toastify({
+                        text: "Brand has been blocked!",
+                        duration: 1500,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "red",
+                        close: true
+                    }).showToast();
+
+                    let button = document.querySelector(`button[data-brandid="${brandId}"]`);
+                    if (button) {
+                        button.textContent = "Unblock";
+                        button.classList.remove("unlist-btn");
+                        button.classList.add("list-btn");
+                        button.setAttribute("onclick", `unblockBrand('${brandId}')`);
+                    }
+
+                    let badge = button.closest('tr').querySelector('.badge');
+                    if (badge) {
+                        badge.textContent = "Blocked";
+                        badge.classList.remove("list-btn");
+                        badge.classList.add("unlist-btn");
+                    }
+
+                } else {
+                    console.error("Error:", result.message);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+
+        //////////
+        async function unblockBrand(brandId) {
+            try {
+                console.log("Unblocking brandId:", brandId);
+
+                let response = await fetch("/admin/unblockBrand", {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ brandId })
+                });
+
+                let result = await response.json();
+                console.log("Server Response:", result);
+
+                if (result.success) {
+                    Toastify({
+                        text: "Brand has been Unblocked!",
+                        duration: 1500,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "green",
+                        close: true
+                    }).showToast();
+
+                    let button = document.querySelector(`button[data-brandid="${brandId}"]`);
+                    if (button) {
+                        button.textContent = "Block";
+                        button.classList.remove("list-btn");
+                        button.classList.add("unlist-btn");
+                        button.setAttribute("onclick", `blockBrand('${brandId}')`);
+                    }
+
+                    let badge = button.closest('tr').querySelector('.badge');
+                    if (badge) {
+                        badge.textContent = "Active";
+                        badge.classList.remove("unlist-btn");
+                        badge.classList.add("list-btn");
+                    }
+                } else {
+                    console.error("Error:", result.message);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+
+
+
+
+        // Add search functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('searchInput');
+            const searchBtn = document.getElementById('searchBtn');
+            const brandTableBody = document.getElementById('brandTableBody');
+
+            searchBtn.addEventListener('click', performSearch);
+            searchInput.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') performSearch();
+            });
+
+            function performSearch() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const rows = brandTableBody.querySelectorAll('tr');
+
+                rows.forEach(row => {
+                    const brandName = row.cells[0].textContent.toLowerCase();
+                    const description = row.cells[1].textContent.toLowerCase();
+
+                    if (brandName.includes(searchTerm) || description.includes(searchTerm)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
                 });
             }
-            return response.json();
-        })
-        .then(data => {
-            location.reload();
-        })
-        .catch(error => {
-            Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: error.message || "An error occurred while adding the brand",
-                confirmButtonColor: '#d33'
-            });
-        });
-    }
-    //error-msg
-    function validateForm() {
-        clearErrorMessages();
-        const name = document.getElementsByName("brandName")[0].value.trim();
-        const description = document.getElementById("brandDescription").value.trim();
-        let isValid = true;
-
-        if (name === "") {
-            displayErrorMessage("name-error", "Please enter a brand name.");
-            isValid = false;
-        }
-
-        if (description === "") {
-            displayErrorMessage("description-error", "Please enter a description.");
-            isValid = false;
-        }
-        return isValid;
-    }
-
-    function displayErrorMessage(elementId, message) {
-        document.getElementById(elementId).innerHTML = message;
-    }
-
-    function clearErrorMessages() {
-        document.querySelectorAll(".error-message").forEach(el => el.innerHTML = "");
-    }
-  
-
-    // Add search functionality
-    document.addEventListener('DOMContentLoaded', () => {
-        const searchInput = document.getElementById('searchInput');
-        const searchBtn = document.getElementById('searchBtn');
-        const brandTableBody = document.getElementById('brandTableBody');
-
-        searchBtn.addEventListener('click', performSearch);
-        searchInput.addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') performSearch();
         });
 
-        function performSearch() {
-            const searchTerm = searchInput.value.toLowerCase();
-            const rows = brandTableBody.querySelectorAll('tr');
+    </script>
 
-            rows.forEach(row => {
-                const brandName = row.cells[0].textContent.toLowerCase();
-                const description = row.cells[1].textContent.toLowerCase();
-
-                if (brandName.includes(searchTerm) || description.includes(searchTerm)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        }
-    });
-
-</script>
-
-<%- include('../../views/partials/admin/footer') %>
+    <%- include('../../views/partials/admin/footer') %>

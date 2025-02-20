@@ -1,4 +1,5 @@
 <%- include("../../views/partials/user/header") %>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -6,6 +7,11 @@
     <!-- Include Bootstrap JS and Popper.js -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+
 
     <!-- <style>
         /* Modal Background */
@@ -354,6 +360,107 @@
     </style> -->
 
 
+    <style>
+        /* Custom styles for the confirmation popup */
+        .custom-popup {
+            background-color: #f7f7f7;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .custom-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .custom-content {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .custom-button {
+            background-color: #28a745;
+            color: white;
+            border-radius: 5px;
+            padding: 10px 20px;
+        }
+
+        .custom-cancel-button {
+            background-color: #dc3545;
+            color: white;
+            border-radius: 5px;
+            padding: 10px 20px;
+        }
+
+        /* Custom styles for the success popup */
+        .custom-popup-success {
+            background-color: #e7f9e7;
+        }
+
+        .custom-title-success {
+            color: #28a745;
+        }
+
+        .custom-content-success {
+            color: #333;
+        }
+
+        .custom-button-success {
+            background-color: #28a745;
+        }
+
+        .custom-cancel-button-success {
+            background-color: #e44b43;
+        }
+
+        /* Custom styles for the error popup */
+        .custom-popup-error {
+            background-color: #f8d7da;
+        }
+
+        .custom-title-error {
+            color: #dc3545;
+        }
+
+        .custom-content-error {
+            color: #333;
+        }
+
+        .custom-button-error {
+            background-color: #dc3545;
+        }
+    </style>
+    
+       <style>
+        .toast-message {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #1ea13d;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 2px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            /* opacity: 0.9;     */
+            transition: opacity 0.3s ease-in-out;
+            font-size: 1p5x;
+        }
+
+        .toast-message.error {
+            background-color: #eb2337;
+        }
+
+        .toast-message.hide {
+            opacity: 0;
+        }
+    </style>
+    
+   
+
+
+
     <section class="breadcrumb-option">
         <div class="container">
             <div class="row">
@@ -490,9 +597,13 @@
                                             <div class="product-item d-flex align-items-center mb-3 pb-3 border-bottom"
                                                 data-product-id="<%= item.productId._id %>">
                                                 <div class="product-image me-3">
-                                                    <img src="/uploads/re-image/<%= item.productId.productImage[0] %>"
+                                                    <a href="/productDetails?id=<%= item.productId._id %>">
+
+                                                        <img src="/uploads/re-image/<%= item.productId.productImage[0] %>"
                                                         alt="<%= item.productId.productName %>" class="img-fluid"
                                                         style="max-width: 100px; max-height: 100px;">
+
+                                                    </a>                                                 
                                                 </div>
                                                 <div class="product-details flex-grow-1">
                                                     <h6 class="product-name">
@@ -514,17 +625,37 @@
                                 </div>
 
 
-
                                 <!-- Coupon Code Section -->
                                 <div class="checkout__coupon mb-4 p-3 border rounded bg-white">
                                     <h6 class="mb-3">
-                                        <i class="fas fa-tag me-2"></i>Have a Coupon?
+                                        <i class="fas fa-tag me-2"></i> Have a Coupon?
                                     </h6>
                                     <div class="input-group">
-                                        <input type="text" class="form-control" placeholder="Enter Coupon Code">
-                                        <button class="site-btn">Apply</button>
+                                        <input type="text" id="couponInput" class="form-control"
+                                            placeholder="Enter Coupon Code">
+                                        <button id="applyCouponBtn" class="site-btn">Apply</button>
+                                    </div>
+
+                                    <!-- Dynamically Display Coupons -->
+                                    <div id="couponList" class="mt-3">
+                                        <% if (coupons.length> 0) { %>
+                                            <% coupons.forEach(coupon=> { %>
+                                                <div class="coupon-item p-2 border rounded mt-2">
+                                                    <strong>
+                                                        <%= coupon.couponCode %>
+                                                    </strong> - <%= coupon.discountValue %>% off
+                                                        <button class="btn btn-sm btn-primary ms-2 apply-coupon"
+                                                            data-code="<%= coupon.couponCode %>">Use</button>
+                                                </div>
+                                                <% }); %>
+                                                    <% } else { %>
+                                                        <p class="text-muted">No available coupons at the moment.</p>
+                                                        <% } %>
                                     </div>
                                 </div>
+
+
+
 
                                 <!-- Order Summary with Taxes and Discounts -->
                                 <div class="checkout__order__summary p-4 border rounded bg-white">
@@ -546,16 +677,30 @@
                                             <span>Shipping</span>
                                             <span>₹<%= cart.shipping.toFixed(2) %></span>
                                         </div>
-                                        <li class="d-flex justify-content-between mb-2 text-success">
+
+                                        <!-- <li class="d-flex justify-content-between mb-2 text-success">
                                             Discount <span>-₹0</span>
-                                        </li>
+                                        </li> -->
+                                        <div class="d-flex justify-content-between mb-2 text-success">
+                                            <span>Discount</span>
+                                            <span id="discountAmount">- ₹0.00</span>
+                                            <!-- This will be updated dynamically -->
+                                        </div>
+
                                         <hr>
-                                        <div class="d-flex justify-content-between fw-bold" id="total-amount">
+
+                                        <!-- <div class="d-flex justify-content-between fw-bold" id="total-amount">
                                             <span>Total</span>
                                             <span>₹<%= cart.total.toFixed(2) %></span>
+                                        </div> -->
+                                        <div class="d-flex justify-content-between fw-bold" id="total-amount">
+                                            <span>Total</span>
+                                            <span>₹<span id="totalAmount"><%= cart.total.toFixed(2) %></span></span>
                                         </div>
                                     </div>
                                 </div>
+
+
 
 
 
@@ -634,39 +779,47 @@
                                 <label for="addressType">Address Type:</label>
                                 <input type="text" class="form-control border-3" id="addressType" name="addressType"
                                     required>
+                                <small class="text-danger error-message"></small>
                             </div>
                             <div class="form-group col-md-4">
                                 <label for="name">Name:</label>
                                 <input type="text" class="form-control border-3" id="name" name="name" required>
+                                <small class="text-danger error-message"></small>
                             </div>
                             <div class="form-group col-md-4">
                                 <label for="city">City:</label>
                                 <input type="text" class="form-control border-3" id="city" name="city" required>
+                                <small class="text-danger error-message"></small>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="form-group col-md-4">
                                 <label for="landMark">Landmark:</label>
                                 <input type="text" class="form-control border-3" id="landMark" name="landMark" required>
+                                <small class="text-danger error-message"></small>
                             </div>
                             <div class="form-group col-md-4">
                                 <label for="state">State:</label>
                                 <input type="text" class="form-control border-3" id="state" name="state" required>
+                                <small class="text-danger error-message"></small>
                             </div>
                             <div class="form-group col-md-4">
                                 <label for="pincode">Pincode:</label>
                                 <input type="number" class="form-control border-3" id="pincode" name="pincode" required>
+                                <small class="text-danger error-message"></small>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="form-group col-md-6">
                                 <label for="phone">Phone:</label>
                                 <input type="number" class="form-control border-3" id="phone" name="phone" required>
+                                <small class="text-danger error-message"></small>
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="altPhone">Alternate Phone:</label>
                                 <input type="number" class="form-control border-3" id="altPhone" name="altPhone"
                                     required>
+                                <small class="text-danger error-message"></small>
                             </div>
                         </div>
                     </form>
@@ -736,12 +889,11 @@
         </div>
     </div>
 
-
+    
 
     <%- include("../../views/partials/user/footer") %>
 
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <!-- Bootstrap 5 JS (Include before your script) -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 
@@ -756,25 +908,58 @@
                 }
             }
 
+
+
             function validateAddressForm() {
                 const form = document.getElementById('addAddressForm');
-                const phone = form.querySelector('#phone').value;
-                const pincode = form.querySelector('#pincode').value;
 
-                if (phone.length !== 10) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Invalid Phone Number',
-                        text: 'Phone number must be 10 digits'
-                    });
-                    return false;
+                const addressType = form.querySelector('#addressType').value.trim();
+                const name = form.querySelector('#name').value.trim();
+                const city = form.querySelector('#city').value.trim();
+                const landMark = form.querySelector('#landMark').value.trim();
+                const state = form.querySelector('#state').value.trim();
+                const pincode = form.querySelector('#pincode').value.trim();
+                const phone = form.querySelector('#phone').value.trim();
+                const altPhone = form.querySelector('#altPhone').value.trim();
+
+                const namePattern = /^[A-Za-z\s]+$/;
+                const pincodePattern = /^\d{6}$/;
+                const phonePattern = /^\d{10}$/;
+
+                let isValid = true;
+                let errorMessage = "";
+
+                if (!namePattern.test(name)) {
+                    errorMessage = "Name should contain alphabets only.";
+                    isValid = false;
+                } else if (!namePattern.test(city)) {
+                    errorMessage = "City should contain alphabets only.";
+                    isValid = false;
+                } else if (!namePattern.test(landMark)) {
+                    errorMessage = "Landmark should contain alphabets only.";
+                    isValid = false;
+                } else if (!namePattern.test(state)) {
+                    errorMessage = "State should contain alphabets only.";
+                    isValid = false;
+                } else if (!pincodePattern.test(pincode)) {
+                    errorMessage = "Pincode should be a 6-digit number.";
+                    isValid = false;
+                } else if (!phonePattern.test(phone)) {
+                    errorMessage = "Phone number should be a 10-digit number.";
+                    isValid = false;
+                } else if (!phonePattern.test(altPhone)) {
+                    errorMessage = "Alternate phone number should be a 10-digit number.";
+                    isValid = false;
+                } else if (phone === altPhone) {
+                    errorMessage = "Phone number and alternate phone number should be different.";
+                    isValid = false;
                 }
 
-                if (pincode.length !== 6) {
+                if (!isValid) {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Invalid Pincode',
-                        text: 'Pincode must be 6 digits'
+                        title: 'Validation Error',
+                        text: errorMessage
                     });
                     return false;
                 }
@@ -782,12 +967,52 @@
                 return true;
             }
 
+
+            // function validateAddressForm() {
+            //     const form = document.getElementById('addAddressForm');
+
+            //     // Input fields and validation rules
+            //     const fields = [
+            //         { id: 'name', pattern: /^[A-Za-z\s]+$/, message: 'Name should contain alphabets only.' },
+            //         { id: 'city', pattern: /^[A-Za-z\s]+$/, message: 'City should contain alphabets only.' },
+            //         { id: 'landMark', pattern: /^[A-Za-z\s]+$/, message: 'Landmark should contain alphabets only.' },
+            //         { id: 'state', pattern: /^[A-Za-z\s]+$/, message: 'State should contain alphabets only.' },
+            //         { id: 'pincode', pattern: /^\d{6}$/, message: 'Pincode should be a 6-digit number.' },
+            //         { id: 'phone', pattern: /^\d{10}$/, message: 'Phone number should be a 10-digit number.' },
+            //         { id: 'altPhone', pattern: /^\d{10}$/, message: 'Alternate phone number should be a 10-digit number.' }
+            //     ];
+
+            //     let isValid = true;
+
+            //     // Clear previous error messages
+            //     form.querySelectorAll('.error-message').forEach(error => error.textContent = "");
+
+            //     // Validate fields
+            //     fields.forEach(field => {
+            //         const input = form.querySelector(`#${field.id}`);
+            //         if (!field.pattern.test(input.value.trim())) {
+            //             input.nextElementSibling.textContent = field.message;
+            //             isValid = false;
+            //         }
+            //     });
+
+            //     // Validate phone & alternate phone
+            //     const phone = form.querySelector('#phone').value.trim();
+            //     const altPhone = form.querySelector('#altPhone').value.trim();
+            //     if (phone === altPhone) {
+            //         form.querySelector('#altPhone').nextElementSibling.textContent = "Phone number and alternate phone number should be different.";
+            //         isValid = false;
+            //     }
+
+            //     return isValid;
+            // }
+
+
+
             document.getElementById('addAddressModal').addEventListener('hidden.bs.modal', function () {
                 document.getElementById('addAddressForm').reset();
             });
 
-
-            //open add modal
             function openAddAddressModal() {
                 const modal = new bootstrap.Modal(document.getElementById('addAddressModal'));
                 modal.show();
@@ -838,7 +1063,6 @@
             function openAddressEditModal(address) {
                 const modal = new bootstrap.Modal(document.getElementById('editAddressModal'));
 
-                // Fill the form fields
                 document.getElementById('editAddressId').value = address._id;
                 document.getElementById('editAddressType').value = address.addressType;
                 document.getElementById('editName').value = address.name;
@@ -904,7 +1128,6 @@
 
 
 
-
             // async function deleteAddress(addressId, addressIndex) {
             //     const result = await Swal.fire({
             //         title: 'Are you sure?',
@@ -957,7 +1180,7 @@
 
             async function confirmOrder() {
                 try {
-                    // Get selected address
+                    // address
                     const selectedAddressRadio = document.querySelector('input[name="selectedAddress"]:checked');
                     if (!selectedAddressRadio) {
                         Swal.fire({
@@ -968,7 +1191,7 @@
                         return;
                     }
 
-                    // Get cart data from the server-rendered cart items
+                    //  cart data 
                     const cartItems = Array.from(document.querySelectorAll('.checkout__order__products')).map(item => {
                         return {
                             productId: item.getAttribute('data-product-id'),
@@ -983,7 +1206,7 @@
                         throw new Error('No items in cart');
                     }
 
-                    console.log('Cart Items:', cartItems); 
+                    console.log('Cart Items:', cartItems);
 
                     const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
                     if (!selectedPaymentMethod) {
@@ -996,7 +1219,7 @@
                     }
 
 
-                    // Show confirmation dialog before proceeding with order placement
+                    ////
                     const confirmResult = await Swal.fire({
                         icon: 'question',
                         title: 'Confirm Order',
@@ -1006,19 +1229,19 @@
                         cancelButtonText: 'Cancel',
 
                         customClass: {
-                                popup: 'custom-popup-success',
-                                title: 'custom-title-success',
-                                content: 'custom-content-success',
-                                confirmButton: 'custom-button-success',
-                                cancelButton: 'custom-cancel-button-success',
-                            }
+                            popup: 'custom-popup-success',
+                            title: 'custom-title-success',
+                            content: 'custom-content-success',
+                            confirmButton: 'custom-button-success',
+                            cancelButton: 'custom-cancel-button-success',
+                        }
                     });
 
                     if (!confirmResult.isConfirmed) {
                         return;
                     }
 
-                    // Call placeOrder with the collected data
+
                     const response = await placeOrder(selectedAddressRadio.value, cartItems, selectedPaymentMethod);
 
                     if (response.success) {
@@ -1086,78 +1309,82 @@
             }
 
 
-       </script>
+        </script>
 
 
+        <script>
 
-        <style>
-            /* Custom styles for the confirmation popup */
-            .custom-popup {
-                background-color: #f7f7f7;
-                border-radius: 15px;
-                padding: 20px;
-            }
+            document.addEventListener("DOMContentLoaded", function () {
+                // Auto-fill input when clicking a coupon
+                document.querySelectorAll(".apply-coupon").forEach(button => {
+                    button.addEventListener("click", function () {
+                        document.getElementById("couponInput").value = this.getAttribute("data-code");
+                    });
+                });
 
-            .custom-title {
-                font-size: 20px;
-                font-weight: bold;
-                color: #333;
-            }
 
-            .custom-content {
-                font-size: 16px;
-                color: #666;
-            }
+                // toast messages
+                function showToast(message, type = "success") {
+                    const toastContainer = document.getElementById("toastContainer");
 
-            .custom-button {
-                background-color: #28a745;
-                color: white;
-                border-radius: 5px;
-                padding: 10px 20px;
-            }
+                    if (!toastContainer) {
+                        console.error("Toast container not found!");
+                        return;
+                    }
 
-            .custom-cancel-button {
-                background-color: #dc3545;
-                color: white;
-                border-radius: 5px;
-                padding: 10px 20px;
-            }
+                    const toast = document.createElement("div");
+                    toast.className = `toast-message ${type}`;
+                    toast.textContent = message;
 
-            /* Custom styles for the success popup */
-            .custom-popup-success {
-                background-color: #e7f9e7;
-            }
+                    toastContainer.appendChild(toast);
 
-            .custom-title-success {
-                color: #28a745;
-            }
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 2000);
+                }
 
-            .custom-content-success {
-                color: #333;
-            }
 
-            .custom-button-success {
-                background-color: #28a745;
-            }
+                // Apply Coupon
+                document.getElementById("applyCouponBtn").addEventListener("click", async function () {
+                    const couponCode = document.getElementById("couponInput").value.trim();
 
-            .custom-cancel-button-success {
-                background-color: #e44b43;
-            }
+                    if (!couponCode) {
+                        showToast("Please enter a coupon code.", "error");
+                        return;
+                    }
 
-            /* Custom styles for the error popup */
-            .custom-popup-error {
-                background-color: #f8d7da;
-            }
+                    try {
+                        const response = await fetch("/applyCoupon", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ couponCode })
+                        });
 
-            .custom-title-error {
-                color: #dc3545;
-            }
+                        const data = await response.json();
 
-            .custom-content-error {
-                color: #333;
-            }
+                        if (data.success) {
+                            showToast(`Coupon Applied! You get ₹${data.discountAmount} off.`, "success");
 
-            .custom-button-error {
-                background-color: #dc3545;
-            }
-        </style>
+                            // Update cart summary dynamically
+                            const discountElement = document.getElementById("discountAmount");
+                            const totalElement = document.getElementById("totalAmount");
+
+                            if (discountElement && totalElement) {
+                                discountElement.textContent = `- ${data.discountAmount}`;
+                                totalElement.textContent = `${data.newTotal}`;
+                            }
+                        } else {
+                            showToast(data.message || "Invalid coupon code.", "error");
+                        }
+                    } catch (error) {
+                        console.error("Error applying coupon:", error);
+                        showToast("Something went wrong. Please try again.", "error");
+                    }
+                });
+            });
+
+
+        </script>
+
+
+<div id="toastContainer"></div>
