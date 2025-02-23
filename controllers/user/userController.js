@@ -72,7 +72,7 @@ const loadHomepage = async (req, res) => {
             .sort({ createdOn: -1 })
             .limit(8);
 
-        // Format product data
+       
         productData = productData.map(product => {
             const formattedProduct = product.toObject();
 
@@ -95,7 +95,7 @@ const loadHomepage = async (req, res) => {
             return formattedProduct;
         });
 
-        // Filter out products with no active variants
+       
         productData = productData.filter(product =>
             product.variants &&
             product.variants.some(variant => variant.quantity > 0)
@@ -152,14 +152,15 @@ const signup = async (req, res) => {
         if (!emailSent) {
             return res.json("email-error")
         }
-        //    else{
-        //     console.log("email sent successfully")
-        //    }
 
         //    console.log("Received OTP:", otp);
         //    console.log("Session OTP:", req.session.userOtp);
 
         req.session.userOtp = otp;
+
+        // Save OTP in database
+        // await Otp.create({ email, otp, createdAt: new Date() });
+
         req.session.userData = { fullName, phone, email, password };
 
         res.render("verify-otp");
@@ -194,7 +195,7 @@ const verifyOtp = async (req, res) => {
 
 
         if (req.session.userOtp && otp.toString() === req.session.userOtp.toString()) {
-            //  if(otp === req.session.userOtp.toString()){
+           
             const user = req.session.userData
             const passwordHash = await securePassword(user.password);
 
@@ -320,6 +321,7 @@ const logout = async (req, res) => {
 
 
 
+
 const loadShoppingpage = async (req, res) => {
     try {
         const user = req.session.user;
@@ -396,7 +398,7 @@ const loadShoppingpage = async (req, res) => {
             .skip(skip)
             .limit(limit);
 
-        // Format product data
+       
         products = products.map(product => {
             const formattedProduct = product.toObject();
 
@@ -422,7 +424,8 @@ const loadShoppingpage = async (req, res) => {
    
         const totalProducts = await Product.countDocuments(filters);
         const totalPages = Math.ceil(totalProducts / limit);
-        const brands = await Product.distinct("brand", { isBlocked: false });
+        // const brands = await Product.distinct("brand", { isBlocked: false });
+        const brands = await Brand.find({ isBlocked: false }).select("brandName");
         const categoriesWithIds = categories.map(category => ({ _id: category._id, name: category.name }));
 
 
@@ -455,6 +458,7 @@ const loadShoppingpage = async (req, res) => {
         res.redirect("/pageNotFound");
     }
 };
+
 
 
 

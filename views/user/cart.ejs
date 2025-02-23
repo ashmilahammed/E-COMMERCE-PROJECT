@@ -226,7 +226,7 @@
                                                         <%= item.productId.productName %>
                                                     </h6>
                                                     <br>
-                                                    <h5 style="font-size: 15px;font-weight: bold; color: #2d2d2d;">₹.<%= item.price %></h5>
+                                                    <h5 style="font-size: 15px;font-weight: bold; color: #2d2d2d;">₹<%= item.price %></h5>
                                                 </div>
                                             </td>
 
@@ -253,7 +253,7 @@
                                             </td>
 
                                             <td class="cart__price" style="width: 120px; text-align: right; vertical-align: middle; padding: 10px;font-size: medium;">
-                                                ₹.<%= item.totalPrice %>
+                                                ₹ <%= item.totalPrice %>
                                             </td>
 
                                             <td class="cart__close" style="width: 50px; text-align: center; vertical-align: middle; padding: 10px;">
@@ -287,7 +287,7 @@
                         <h6>Cart total</h6>
                         <ul>
 
-                            <li>Total <span>₹.<%= cart ? cart.cartTotal : 0 %></span></li>
+                            <li>Total <span>₹ <%= cart ? cart.cartTotal : 0 %></span></li>
 
                         </ul>
                         <% if (cart && cart.items && cart.items.length > 0) { %>

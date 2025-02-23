@@ -14,6 +14,7 @@ const productDetails = async (req, res) => {
         const userData = await User.findById(userId);
         const productId = req.params.id || req.query.id;
 
+
         const product = await Product.findById(productId)
             .populate('category')
             .populate('brand');
@@ -28,6 +29,7 @@ const productDetails = async (req, res) => {
         const productOffer = product.productOffer || 0;
         const totalOffer = categoryOffer + productOffer;
 
+
         // Process variants and format product data
         let formattedProduct = product.toObject();
         
@@ -39,7 +41,7 @@ const productDetails = async (req, res) => {
                     .map(v => v.size)
             )].sort((a, b) => a - b);
 
-            // variant quantities by size
+            
             formattedProduct.variantQuantities = formattedProduct.variants.reduce((acc, variant) => {
                 acc[variant.size] = variant.quantity; 
                 return acc;
@@ -53,7 +55,6 @@ const productDetails = async (req, res) => {
             }
         }
 
-        //  related products
         const relatedProducts = await Product.find({
             category: findCategory._id,
             _id: { $ne: productId },

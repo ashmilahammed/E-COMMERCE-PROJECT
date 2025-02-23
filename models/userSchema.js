@@ -48,10 +48,6 @@ const userSchema = new Schema({
         type : Schema.Types.ObjectId,
         ref : "Wishlist"
     }],
-    // wishlist: [{
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'Product'
-    // }],
     orderHistory :[{
         type : Schema.Types.ObjectId,
         ref : "Order"
@@ -60,16 +56,6 @@ const userSchema = new Schema({
         type : Date,
         default : Date.now,
     },
-    // referalCode :{
-    //     type : String
-    // },
-    // redeemed :{
-    //     type : Boolean
-    // },
-    // redeemedUsers :[{
-    //     type : mongoose.Schema.Types.ObjectId,
-    //     ref : "User"
-    // }],
     searchHistory :[{
         category :{
             type : Schema.Types.ObjectId,

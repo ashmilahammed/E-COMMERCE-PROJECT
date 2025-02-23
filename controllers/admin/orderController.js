@@ -10,6 +10,8 @@ const { v4: uuidv4 } = require('uuid');
 
 
 
+
+
 const orderListPage = async (req, res) => {
     try {
       const orders = await Order.find({}).sort({ createdAt: -1 });
@@ -36,39 +38,10 @@ const orderListPage = async (req, res) => {
 
 
 
-
-  // const getOrderDetails = async (req,res) => {
-  //   try {
-  //     const orderId = req.params.orderId;
-  //     const order = await Order.findById(orderId)
-  //       .populate('orderItems.product')
-  //       .populate('userId')
-  //       .populate('shippingAddress');
-  
-  //     if (!order) {
-  //       return res.redirect('/admin/orderList');
-  //     }
-  
-  //     // Transform order items to match the view's expectations
-  //     order.orderItems = order.orderItems.map(item => ({
-  //       ...item.toObject(),
-  //       productDetails: item.product,
-  //       variant: item.variant
-  //     }));
-  
-  //     res.render("orderList-details", { order });
-  //   } catch (error) {
-  //     console.error('Error fetching order details:', error);
-  //     res.redirect("/admin/pageError");
-  //   }
-  // }
-
-
   const getOrderDetails = async (req,res) => {
     try {
       const orderId = req.params.orderId;
   
-      // Fetch the order with full population of product details
       const order = await Order.findById(orderId)
         .populate({
           path: 'orderItems.product',
@@ -87,7 +60,6 @@ const orderListPage = async (req, res) => {
   
       // Enrich order items with additional details
       const enrichedOrderItems = order.orderItems.map(item => {
-        // Ensure product exists
         if (!item.product) {
           return null;
         }
@@ -102,9 +74,9 @@ const orderListPage = async (req, res) => {
             images: item.product.productImage
           }
         };
-      }).filter(item => item !== null); // Remove any null items
+      }).filter(item => item !== null);
   
-      // Prepare the order object for rendering
+      
       const orderData = {
         ...order.toObject(),
         orderItems: enrichedOrderItems
@@ -151,7 +123,6 @@ const updateOrderStatus = async (req, res) => {
 
       order.orderStatus = status;
 
-      // 'Cancelled', restore stock
       if (status === 'Cancelled') {
         order.cancelledBy = 'Admin';
           for (const item of order.orderItems) {
@@ -159,7 +130,7 @@ const updateOrderStatus = async (req, res) => {
               const variant = product.variants.find(v => v.size === item.variant.size);
               
               if (variant) {
-                  variant.quantity += item.variant.quantity; // Increase stock
+                  variant.quantity += item.variant.quantity; 
                   await product.save(); 
               }
           }

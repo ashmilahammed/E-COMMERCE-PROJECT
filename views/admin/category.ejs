@@ -3,6 +3,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
+
+
     <style>
         /* General styles */
         table {
@@ -179,7 +181,7 @@
                             <%= category.description %>
                         </td>
                         <td>
-                            <%= category.offerPrice || 'N/A' %>
+                            <%= category.categoryOffer || 'N/A' %>
                         </td>
                         <td>
                             <a href="/admin/addOffer?categoryId=<%= category._id %>">

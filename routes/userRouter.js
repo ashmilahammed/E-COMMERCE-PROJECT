@@ -88,14 +88,6 @@ router.post("/applyCoupon",userAuth,checkoutController.applyCoupon);
 
 
 
-// Order Management
-// router.post("/applyCoupon",userAuth,userController.applyCoupon);
-// router.post("/returnrequestOrder",userAuth,orderController.returnorder);
-// router.post("/verifyPayment", userAuth, orderController.verify);
-// router.post("/singleProductId",userAuth,orderController.changeSingleProductStatus);
-// router.post('/paymentConfirm',userAuth,orderController.paymentConfirm);
-// router.get("/downloadInvoice/:orderId",userAuth,orderController.downloadInvoice);
-
 
 //wishlist management
 router.get("/wishlist",userAuth,wishlistController.getWishList);

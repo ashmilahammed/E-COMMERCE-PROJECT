@@ -3,6 +3,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
+
+
+
     <style>
         /* General styles */
         table {
@@ -264,30 +267,19 @@
 
         }
 
+
         function handleFormSubmit(event) {
             event.preventDefault();
             if (!validateForm()) {
                 return;
             }
 
-            const brandName = document.getElementsByName("brandName")[0].value;
+            const brandName = document.getElementsByName("brandName")[0].value.trim().toLowerCase();
 
-            // Get all existing brand names from the table
             const existingBrands = Array.from(document.querySelectorAll('#brandTableBody tr td:first-child'))
-                .map(td => td.textContent);
+                .map(td => td.textContent.trim().toLowerCase());
 
-            // Check if brand exists in any case format
-            const exists = existingBrands.some(existingBrand => {
-                const newBrandLower = brandName.toLowerCase();
-                const existingBrandLower = existingBrand.toLowerCase();
-                const newBrandCapitalized = brandName.charAt(0).toUpperCase() + brandName.slice(1).toLowerCase();
-                const existingBrandCapitalized = existingBrand.charAt(0).toUpperCase() + existingBrand.slice(1).toLowerCase();
-
-                return newBrandLower === existingBrandLower ||
-                    newBrandCapitalized === existingBrandCapitalized;
-            });
-
-            if (exists) {
+            if (existingBrands.includes(brandName)) {
                 Swal.fire({
                     icon: "error",
                     title: "Brand Already Exists",

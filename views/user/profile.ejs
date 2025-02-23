@@ -82,7 +82,8 @@
       font-weight: bold;
       text-transform: uppercase;
       padding: 5px 10px;
-      border-radius: 5px;
+      border-radius: 3px;
+      font-size: 12px;
     }
 
     .status-pending {
@@ -368,8 +369,8 @@
                         <small class="text-muted ml-2">
                           <%= new Date(order.createdAt).toLocaleDateString() %>
                         </small>
-                      </div>
-                      <div class="order-status <%= 'status-' + order.orderStatus.toLowerCase() %>">
+                      </div> 
+                      <div class="order-status <%= 'status-' + order.orderStatus.toLowerCase() %>">  
                         <%= order.orderStatus %>
                       </div>
                     </div>

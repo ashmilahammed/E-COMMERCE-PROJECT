@@ -361,6 +361,7 @@
 
 
     <style>
+        
         /* Custom styles for the confirmation popup */
         .custom-popup {
             background-color: #f7f7f7;
@@ -431,8 +432,8 @@
             background-color: #dc3545;
         }
     </style>
-    
-       <style>
+
+    <style>
         .toast-message {
             position: fixed;
             top: 20px;
@@ -456,8 +457,8 @@
             opacity: 0;
         }
     </style>
-    
-   
+
+
 
 
 
@@ -600,10 +601,10 @@
                                                     <a href="/productDetails?id=<%= item.productId._id %>">
 
                                                         <img src="/uploads/re-image/<%= item.productId.productImage[0] %>"
-                                                        alt="<%= item.productId.productName %>" class="img-fluid"
-                                                        style="max-width: 100px; max-height: 100px;">
+                                                            alt="<%= item.productId.productName %>" class="img-fluid"
+                                                            style="max-width: 100px; max-height: 100px;">
 
-                                                    </a>                                                 
+                                                    </a>
                                                 </div>
                                                 <div class="product-details flex-grow-1">
                                                     <h6 class="product-name">
@@ -695,7 +696,9 @@
                                         </div> -->
                                         <div class="d-flex justify-content-between fw-bold" id="total-amount">
                                             <span>Total</span>
-                                            <span>₹<span id="totalAmount"><%= cart.total.toFixed(2) %></span></span>
+                                            <span>₹<span id="totalAmount">
+                                                    <%= cart.total.toFixed(2) %>
+                                                </span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -889,7 +892,7 @@
         </div>
     </div>
 
-    
+
 
     <%- include("../../views/partials/user/footer") %>
 
@@ -1293,11 +1296,14 @@
                         body: JSON.stringify({
                             selectedAddress,
                             cartItems,
-                            paymentMethod
+                            paymentMethod,
+                            couponCode: document.getElementById("couponInput").value,
+                            discount: parseFloat(document.getElementById("discountAmount").textContent.replace('- ₹', ''))
                         })
                     });
 
                     const data = await response.json();
+
                     if (!response.ok) {
                         throw new Error(data.message || 'Failed to place order');
                     }
@@ -1309,11 +1315,8 @@
             }
 
 
-        </script>
 
-
-        <script>
-
+            //////
             document.addEventListener("DOMContentLoaded", function () {
                 // Auto-fill input when clicking a coupon
                 document.querySelectorAll(".apply-coupon").forEach(button => {
@@ -1387,4 +1390,4 @@
         </script>
 
 
-<div id="toastContainer"></div>
+        <div id="toastContainer"></div>

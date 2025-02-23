@@ -28,7 +28,7 @@ const checkoutPage = async (req, res) => {
         }
 
         cart.subtotal = cart.items.reduce((total, item) => {
-            // Find the variant matching the cart item's size
+            // variant matching the cart item's size
             const variant = item.productId.variants.find(v => v.size === item.size);
             return total + (variant ? variant.salePrice * item.quantity : 0);
         }, 0);
@@ -128,7 +128,6 @@ const placeOrder = async (req, res) => {
         const discountAmount = cart.discount || 0;
         const tax = subtotal * 0.0; 
         const shipping = subtotal > 1000 ? 0 : 50; 
-        // const finalAmount = subtotal + tax + shipping;
         const finalAmount = subtotal - discountAmount + tax + shipping;
 
 
@@ -146,8 +145,8 @@ const placeOrder = async (req, res) => {
 
       
         const normalizedPaymentMethod = paymentMethod.toUpperCase();
-
-       
+            
+   
         const order = new Order({
             userId,
             orderId, 
@@ -168,9 +167,9 @@ const placeOrder = async (req, res) => {
                 productOffersTotal: 0,
                 discount: discountAmount,
                 coupon: {
-                    // discount: 0
                     code: cart.couponCode || null,
-                    discount:discountAmount
+                    // discount:discountAmount
+                    discount: cart.discount || 0
                 }
             },
             payment: {
@@ -179,7 +178,7 @@ const placeOrder = async (req, res) => {
                 paidAt: normalizedPaymentMethod === 'COD' ? null : new Date()
             },
             orderStatus: "Pending",
-            expectedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
+            expectedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) 
         });
 
         // Reduce stock for each item in the order
@@ -194,10 +193,7 @@ const placeOrder = async (req, res) => {
 
         await order.save();
 
-        await Cart.findOneAndUpdate(
-            { userId },
-            { $set: { items: [],discount:0,couponCode: null } }
-        );
+        await Cart.findOneAndUpdate(  { userId },  { $set: { items: [],discount:0,couponCode: null } } );
 
         res.json({
             success: true,
@@ -225,8 +221,6 @@ const placeOrder = async (req, res) => {
         });
     }
 }
-
-
 
 
 
@@ -299,17 +293,11 @@ const editAddress = async (req, res) => {
         };
 
         const result = await Address.findOneAndUpdate(
-            {
-                userId,
-                "address._id": addressId
-            },
-            {
-                $set: { "address.$": updatedData }
-            },
-            {
-                new: true,
-                runValidators: true
-            }
+            { userId,  "address._id": addressId},
+
+            { $set: { "address.$": updatedData } },
+
+            { new: true,  runValidators: true}
         );
 
         if (!result) {
@@ -372,7 +360,6 @@ const getOrderDetails = async (req, res) => {
             return res.redirect("/userProfile");
         }
 
-        // Fetch the order with full population of product details
         const order = await Order.findOne({ 
             _id: orderId, 
             userId: userId 
@@ -394,7 +381,7 @@ const getOrderDetails = async (req, res) => {
 
         // Enrich order items with additional details
         const enrichedOrderItems = order.orderItems.map(item => {
-            // Ensure product exists
+            
             if (!item.product) {
                 return null;
             }
@@ -409,7 +396,7 @@ const getOrderDetails = async (req, res) => {
                     images: item.product.productImage
                 }
             };
-        }).filter(item => item !== null); // Remove any null items
+        }).filter(item => item !== null); 
 
         // Prepare the order object for rendering
         const orderData = {
@@ -417,7 +404,7 @@ const getOrderDetails = async (req, res) => {
             orderItems: enrichedOrderItems
         };
 
-        // Render full page
+        
         res.render("order-details", { 
             order: orderData, 
             user: userData
@@ -451,7 +438,7 @@ const cancelOrder = async (req, res) => {
             });
         }
 
-        // Update order status and reason
+        
         order.orderStatus = 'Cancelled';
         order.cancelReason = cancelReason;
 
@@ -460,7 +447,6 @@ const cancelOrder = async (req, res) => {
             order.cancelledBy = "User"
         }
 
-        // Update individual item statuses
         order.orderItems.forEach(item => {
             item.itemStatus = 'Cancelled';
         });
@@ -483,10 +469,6 @@ const cancelOrder = async (req, res) => {
             }
         }
 
-        // Uncomment if refund logic is needed
-        // if (order.payment.method !== 'COD') {
-        //     await processRefund(order);
-        // }
 
         res.json({
             success: true,
@@ -523,6 +505,7 @@ const applyCoupon = async (req, res) => {
             return res.status(400).json({ success: false, message: "Invalid or expired Coupon." });
         }
 
+
         const cart = await Cart.findOne({ userId }).populate({
             path: "items.productId",
             select: "variants",
@@ -555,6 +538,15 @@ const applyCoupon = async (req, res) => {
 
 
         const newTotal = subtotal - discountAmount;
+
+        //
+        await Cart.findOneAndUpdate(
+            { userId },
+            { 
+                couponCode: coupon.code,
+                discount: discountAmount
+            }
+        );
 
          // Save applied coupon details in the cart
          cart.discount = discountAmount;

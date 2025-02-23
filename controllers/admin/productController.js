@@ -5,8 +5,7 @@ const User = require("../../models/userSchema")
 const fs = require("fs");
 const path = require("path");
 const sharp = require("sharp");
-// const { error } = require("console");
-// const { response } = require("express");
+
 
 
 
@@ -147,7 +146,7 @@ const GetAllProducts = async (req, res) => {
 
             const sizes = [...new Set(variants.map(v => v.size || 0))].filter(size => size !== 0).sort((a, b) => a - b);
 
-            // Determine overall product status based on variants
+           
             const hasAvailableVariants = variants.some(v => v.status === "Available" && (v.quantity || 0) > 0);
             const overallStatus = hasAvailableVariants ? "Available" : "out of stock";
 
@@ -223,14 +222,13 @@ const getEditProduct = async (req, res) => {
     try {
         const productId = req.query.productId;
 
-        // console.log('Attempting to edit product with ID:', productId);
+        // console.log( productId);
 
-        // Fetch product with populated category
         const product = await Product.findById(productId)
             .populate('category')
             .lean();
 
-        // console.log('Found product:', product);
+        // console.log(product);
 
         if (!product) {
             console.log('Product not found');

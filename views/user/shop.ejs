@@ -164,16 +164,19 @@
             font-weight: bold;
             color: #e83232;
         }
+
         #active-price-filter2 {
             background-color: #ffffff;
             font-weight: bold;
             color: #e83232;
         }
+
         #active-price-filter3 {
             background-color: #ffffff;
             font-weight: bold;
             color: #e83232;
         }
+
         #active-price-filter4 {
             background-color: #ffffff;
             font-weight: bold;
@@ -292,15 +295,22 @@
                                             <div class="card-body">
                                                 <div class="shop__sidebar__brand">
                                                     <ul>
-                                                        <% for(let i=0; i < brand.length; i++) { %>
-                                                            <li>
-                                                                <a href="/shop?brand=<%= brand[i] %>&category=<%= selectedCategory %>&sort=<%= sortOption %>&search=<%= searchQuery %>"
-                                                                    id="<%= selectedBrand === brand[i] ? 'active-filter-brand' : '' %>">
-                                                                    <%= brand[i] %>
-                                                                </a>
 
-                                                            </li>
-                                                            <% } %>
+                                                        <% let availableBrands=brand.filter(b=> !b.isBlocked); 
+                                                            if (availableBrands.length > 0) { %>
+                                                            <% for (let i=0; i < availableBrands.length; i++) { %>
+                                                                <li>
+                                                                    <a href="/shop?brand=<%= availableBrands[i].brandName %>&category=<%= selectedCategory %>&sort=<%= sortOption %>&search=<%= searchQuery %>"
+                                                                        id="<%= selectedBrand === availableBrands[i].brandName ? 'active-filter-brand' : '' %>">
+                                                                        <%= availableBrands[i].brandName %>
+                                                                    </a>
+                                                                </li>
+                                                             <% } %>
+                                                             <% } else { %>
+                                                                        <li style="color: red;">No brands available</li>
+                                                             <% } %>
+
+
                                                     </ul>
                                                 </div>
                                             </div>
@@ -532,7 +542,7 @@
 
                                 </div>
 
-                                <% } %>                                  
+                                <% } %>
                         </div>
                         <!-- product session end -->
 

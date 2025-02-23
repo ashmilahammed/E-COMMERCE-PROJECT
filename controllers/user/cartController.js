@@ -17,15 +17,14 @@ const cartPage = async (req,res) => {
         if (!userData) {
             return res.redirect("/login");
         }
-        
-        // Get cart items with product details
+
         const cart = await Cart.findOne({ userId }).populate({
             path: 'items.productId',
             select: 'productName productImage variants brand price'
         });
         
         if (cart) {
-            // Calculate detailed cart summary
+
             cart.subtotal = cart.items.reduce((total, item) => total + (item.productId.price * item.quantity), 0);
             cart.tax = cart.subtotal * 0.0; 
             cart.discount = 0; 
@@ -65,7 +64,6 @@ const addToCart = async (req, res) => {
             return res.status(400).json({ success: false, message: "This product cannot be added to the cart as it is blocked." });
         }
 
-        // variant with the selected size
         const variant = product.variants.find(v => v.size === parseInt(size));
         if (!variant) {
             return res.status(400).json({ success: false, message: "Selected size not available" });
@@ -94,7 +92,7 @@ const addToCart = async (req, res) => {
             const item = cart.items[existingItemIndex];
             const newQuantity = item.quantity + parseInt(quantity);
             
-            // max quantity
+            
             if (newQuantity > MAX_QUANTITY_PER_SIZE) {
                 return res.status(400).json({ 
                     success: false, 
@@ -111,7 +109,7 @@ const addToCart = async (req, res) => {
             item.quantity = newQuantity;
             item.totalPrice = variant.salePrice * newQuantity;
         } else {
-            // if adding new item would exceed max limit
+            
             const sameProductSizeItems = cart.items.filter(
                 item => item.productId.toString() === productId && item.size === parseInt(size)
             );
@@ -159,12 +157,10 @@ const updateQuantity = async (req, res) => {
         const userId = req.session.user;
         const { productId, size, quantity } = req.body;
 
-        // Validate inputs
         if (!userId) {
             return res.status(401).json({ success: false, message: "Please login to update cart" });
         }
 
-        // Validate quantity
         const parsedQuantity = parseInt(quantity);
         if (parsedQuantity <= 0) {
             return res.status(400).json({ success: false, message: "Invalid quantity" });
@@ -189,7 +185,7 @@ const updateQuantity = async (req, res) => {
             return res.status(404).json({ success: false, message: "Cart not found" });
         }
 
-        // Find the specific cart item
+        
         const cartItem = cart.items.find(
             item => item.productId._id.toString() === productId && item.size === parseInt(size)
         );
@@ -198,13 +194,13 @@ const updateQuantity = async (req, res) => {
             return res.status(404).json({ success: false, message: "Product not found in cart" });
         }
 
-        // Find the product variant
+    
         const variant = cartItem.productId.variants.find(v => v.size === parseInt(size));
         if (!variant) {
             return res.status(400).json({ success: false, message: "Selected size not available" });
         }
 
-        // Check stock availability
+       
         if (variant.quantity < parsedQuantity) {
             return res.status(400).json({ 
                 success: false, 
@@ -251,7 +247,6 @@ const removeItem = async (req, res) => {
             return res.status(404).json({ success: false, message: "Cart not found" });
         }
 
-        // Remove item from cart
         const itemIndex = cart.items.findIndex(
             item => item.productId.toString() === productId && item.size === parseInt(size)
         );
@@ -260,7 +255,7 @@ const removeItem = async (req, res) => {
             return res.status(404).json({ success: false, message: "Item not found in cart" });
         }
 
-        // Remove the item
+        //remove
         cart.items.splice(itemIndex, 1);
 
         cart.cartTotal = cart.items.reduce((total, item) => total + item.totalPrice, 0);

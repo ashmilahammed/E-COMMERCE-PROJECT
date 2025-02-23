@@ -1,4 +1,5 @@
 const Category = require("../../models/categorySchema");
+const Product = require("../../models/productSchema");
 
 
 
@@ -7,7 +8,7 @@ const categoryInfo = async (req,res) => {
     try {
 
         const page = parseInt(req.query.page) || 1;
-        const limit = 3;
+        const limit = 4;
         const skip = (page-1)*limit;
 
         const categoryData = await Category.find({})
@@ -37,7 +38,8 @@ const addCategory = async (req,res) => {
     const {name,description} = req.body;
     try {
         
-        const existingCategory = await Category.findOne({name});
+        const existingCategory = await Category.findOne({ name: { $regex: `^${name}$`, $options: 'i' } });
+
         if(existingCategory) {
             return res.status(400).json({error: "Category already exists"})
         }
@@ -59,6 +61,8 @@ const getListCategory = async (req,res) => {
 
         let id= req.body.categoryId;
         await Category.updateOne({_id:id},{ $set: {isListed : true}});
+
+        await Product.updateMany({ category: id }, { $set: { isBlocked: false} });
         
         res.json({success:true, message:"Category listed Successfully"})
 
@@ -73,6 +77,8 @@ const getUnlistCategory = async (req,res) => {
 
         let id = req.body.categoryId;
         await Category.updateOne({_id:id},{ $set: {isListed : false}});
+
+        await Product.updateMany({ category: id }, { $set: { isBlocked: true } });
         
         res.json({success:true, message:"Category Unlisted Successfully."})
         

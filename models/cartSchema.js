@@ -7,6 +7,12 @@ const cartSchema = new Schema({
         ref : "User",
         required : true
     },
+    couponCode:{
+        type: String
+    },
+    discount: {
+        type: Number
+    },
     items: [{
         productId :{
             type : Schema.Types.ObjectId,

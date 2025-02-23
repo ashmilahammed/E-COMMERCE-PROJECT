@@ -54,14 +54,15 @@ const sendVerificationEmail = async (email,otp) => {
 
 const securePassword = async (password) => {
     try {
-
         const passwordHash = await bcrypt.hash(password,10);
         return passwordHash;
-        
+
     } catch (error) {
         
     }
 }
+
+
 
 /////////////
 const getForgotPassword = async (req ,res) => {
@@ -180,59 +181,13 @@ const postNewPassword = async (req,res) => {
 
 
 
-// const userProfile = async (req,res) => {
-//     try {
-
-//         const userId = req.session.user;
-//         const userData = await User.findById(userId);
-//         const addressData = await Address.findOne({userId : userId});
-//         res.render("profile",{
-//              user: userData ,
-//              userAddress: addressData
-//         })
-        
-//     } catch (error) {
-//         console.error("Error for rendering profile",error);
-//         res.redirect("/pageNotFound")
-//     }
-// }
-// const userProfile = async (req,res) => {
-//     try {
-//         const userId = req.session.user;
-        
-//         // Fetch user details
-//         const userData = await User.findById(userId);
-        
-//         // Fetch user's addresses
-//         const addressData = await Address.findOne({userId : userId});
-        
-//         // Fetch user's orders with basic details
-//         const orders = await Order.find({ userId: userId })
-//             .sort({ createdAt: -1 }) // Sort by most recent first
-//             .select('orderId status totalAmount createdAt') // Select only required fields
-//             .populate({
-//                 path: 'orderItems.product',
-//                 select: 'productName' // Optionally populate product name
-//             });
-        
-//         res.render("profile", {
-//             user: userData,
-//             userAddress: addressData,
-//             orders: orders
-//         });
-        
-//     } catch (error) {
-//         console.error("Error for rendering profile", error);
-//         res.redirect("/pageNotFound");
-//     }
-// }
 const userProfile = async (req,res) => {
     try {
         const userId = req.session.user;
         const userData = await User.findById(userId);
         const addressData = await Address.findOne({userId : userId});
         
-        // Fetch orders for the user, sorted by most recent first
+        
         const orders = await Order.find({ userId: userId })
             .populate({
                 path: 'orderItems.product',
@@ -308,7 +263,6 @@ const changeEmailValid = async (req,res) => {
         res.redirect("/pageNotFound")
     }
 }
-
 
 
 const verifyEmailOtp = async (req,res) => {
@@ -423,11 +377,10 @@ const verifyChangePassOtp = async (req,res) => {
 }
 
 
-//addresss
+
 
 const addAddress = async (req,res) => {
     try {
-
         const user = req.session.user;
         res.render("add-address", {user: user})
         
@@ -499,42 +452,6 @@ const editAddress = async (req,res) => {
 
 
 
-// const postEditAddress = async (req,res) => {
-//     try {
-
-//         const data = req.body;
-//         const addressId = req.query.id;
-//         const user = req.session.user;
-//         const findAddress = await Address.findOne({"address._id":addressId});
-
-//         if(!findAddress) {
-//             res.redirect("/pageNotFound")
-//         }
-
-//         await Address.updateOne(
-//             {"address._id": addressId},
-//             {$set: {
-//                 "address.$" :{
-//                     _id: addressId,
-//                     addressType: data.addressType,
-//                     name: data.name,
-//                     city: data.city,
-//                     landMark: data.landMark,
-//                     state: data.state,
-//                     phone: data.phone,
-//                     altPhone: data.altPhone
-//                 }
-//             }}
-//         )
-
-//         res.redirect("/userProfile")
-        
-//     } catch (error) {
-//         console.error("Error in editing Address",error);
-//         res.redirect("/pageNotFound");
-//     }
-// }
-
 const postEditAddress = async (req, res) => {
     try {
         const { addressType, name, city, landMark, state, phone, altPhone } = req.body;
@@ -603,7 +520,6 @@ const updateProfile = async (req, res) => {
         const { fullName, phone } = req.body;
         const userId = req.user.id;
 
-        // Validation
         if (!fullName || !phone) {
             return res.status(400).json({
                 success: false,

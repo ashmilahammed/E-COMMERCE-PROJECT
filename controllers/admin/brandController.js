@@ -38,7 +38,8 @@ const addBrand = async (req, res) => {
    
         const logo = req.file ? req.file.filename : 'default-logo.png';  
 
-        const existingBrand = await Brand.findOne({ brandName: brandName });
+        const existingBrand = await Brand.findOne({ brandName:{$regex: `^${brandName}$`, $options: 'i'}});
+
         if (existingBrand) {
             return res.status(400).json({ error: 'Brand already exists' });
         }
@@ -64,6 +65,11 @@ const blockBrand = async (req,res) => {
 
         const id = req.body.brandId;
         await Brand.updateOne({_id:id},{ $set: {isBlocked : true}});
+
+        const brandData = await Brand.findById(id);
+        if (brandData) {
+            await Product.updateMany({ brand: brandData.brandName }, { $set: { isBlocked: true } });
+        }
      
         res.json({ success: true, message: "Brand Blocked Successfully" });
 
@@ -78,6 +84,11 @@ const unBlockBrand = async (req,res) => {
 
         const id = req.body.brandId;
         await Brand.updateOne({_id:id},{ $set: {isBlocked : false}});
+
+        const brandData = await Brand.findById(id);
+        if (brandData) {
+            await Product.updateMany({ brand: brandData.brandName }, { $set: { isBlocked: false } });
+        }
        
         res.json({ success: true, message: "Brand Unblocked Successfully" });
         
