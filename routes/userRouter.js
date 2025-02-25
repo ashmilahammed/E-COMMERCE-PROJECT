@@ -36,7 +36,7 @@ router.get("/logout",userController.logout);
 
 //home page and Shop
 router.get("/",isBlocked,userController.loadHomepage);
-router.get("/shop",userAuth,userController.loadShoppingpage);
+router.get("/shop",userController.loadShoppingpage);
 
 //Profile management
 router.get("/forgot-password",profileController.getForgotPassword);

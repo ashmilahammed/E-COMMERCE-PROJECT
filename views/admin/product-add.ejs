@@ -1,12 +1,11 @@
 <%- include("../../views/partials/admin/header") %>
 
 
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
     <style>
-
         .error-message {
             color: red;
         }
@@ -62,18 +61,17 @@
             padding: 5px;
             border-radius: 8px;
         }
-        
+
         .btn-danger {
             background-color: #ff4444;
             color: white;
             border: none;
-            
+
         }
 
         .btn-danger:hover {
             background-color: #e10000;
         }
-      
     </style>
 
     <section class="content-main">
@@ -118,7 +116,7 @@
                                 <div id="description-error" class="error-message"></div>
                             </div>
 
-       
+
 
                             <div class="mb-4">
                                 <label class="form-label">Category</label>
@@ -169,7 +167,7 @@
                                             <option value="Discontinued">Discontinued</option>
                                         </select> -->
                                         <br>
-                                        <button type="button"  class="btn btn-danger mt-2"
+                                        <button type="button" class="btn btn-danger mt-2"
                                             onclick="removeVariant(this)">Remove Variant</button>
                                     </div>
                                 </div>
@@ -256,10 +254,26 @@
 
 
     <script>
- 
 
 
-        function validateAndSubmit() {
+        // function validateAndSubmit() {
+        //     if (validateForm()) {
+        //         // Show loading state
+        //         Swal.fire({
+        //             title: 'Publishing...',
+        //             text: 'Please wait while we process your submission',
+        //             allowOutsideClick: false,
+        //             didOpen: () => {
+        //                 Swal.showLoading();
+        //             }
+        //         });
+
+        //         // Submit the form
+        //         document.querySelector('form').submit();
+        //     }
+        // }
+
+        async function validateAndSubmit() {
             if (validateForm()) {
                 // Show loading state
                 Swal.fire({
@@ -271,11 +285,45 @@
                     }
                 });
 
-                // Submit the form
-                document.querySelector('form').submit();
+                // Submit the form using Fetch API
+                const form = document.querySelector('form');
+                const formData = new FormData(form);
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: "POST",
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Product Added!',
+                            text: result.message,
+                            timer: 1000, 
+                            showConfirmButton: false, 
+                        }).then(() => {
+                            window.location.href = "/admin/addProducts";
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Duplicate Product',
+                            text: result.message,
+                        });
+                    }
+
+                } catch (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Server Error',
+                        text: 'Something went wrong! Please try again later.',
+                    });
+                }
             }
         }
-
 
 
 
@@ -397,13 +445,13 @@
         function validateForm() {
             let isValid = true;
 
-            // Helper function to safely get input value
+
             function getInputValue(id) {
                 const element = document.getElementById(id);
                 return element ? element.value.trim() : '';
             }
 
-            // Helper function to show error
+
             function showError(id, message) {
                 const errorElement = document.getElementById(id + '-error');
                 if (errorElement) {
@@ -412,19 +460,17 @@
                 isValid = false;
             }
 
-            // Validate product name
+
             const productName = getInputValue('product_name');
             if (!productName) {
                 showError('productName', 'Product name is required');
             }
 
-            // Validate description
             const description = getInputValue('descriptionid');
             if (!description) {
                 showError('description', 'Description is required');
             }
 
-            // Validate variants
             const variantContainer = document.getElementById('variant-container');
             if (variantContainer) {
                 const variants = variantContainer.getElementsByClassName('variant');
@@ -531,7 +577,3 @@
     <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
 
     <%- include("../../views/partials/admin/footer") %>
-
-
-
-

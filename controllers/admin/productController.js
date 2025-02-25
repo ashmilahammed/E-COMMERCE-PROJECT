@@ -27,61 +27,119 @@ const getProductAddPage = async (req, res) => {
 }
 
 
+// const addProducts = async (req, res) => {
+//     try {
+//         const products = req.body;
+//         const productExists = await Product.findOne({
+//             productName: products.productName,
+//         });
+
+//         if (!productExists) {
+//             const images = [];
+
+//             if (req.files && req.files.length > 0) {
+//                 for (let i = 0; i < req.files.length; i++) {
+//                     const originalImagepath = req.files[i].path;
+
+//                     const resizedImagePath = path.join("public", "uploads", "product-images", req.files[i].filename);
+//                     await sharp(originalImagepath).resize({ width: 440, height: 440 }).toFile(resizedImagePath);
+//                     images.push(req.files[i].filename);
+//                 }
+//             }
+
+//             const categoryId = await Category.findOne({ name: products.category });
+
+//             if (!categoryId) {
+//                 return res.status(400).json("Invalid Category name");
+//             }
+
+//             // Extract variants from the request body
+//             const variants = products.variants.map(variant => ({
+//                 size: variant.size,
+//                 regularPrice: variant.regularPrice,
+//                 salePrice: variant.salePrice,
+//                 quantity: variant.quantity,
+//                 status: variant.status
+//             }));
+
+//             const newProduct = new Product({
+//                 productName: products.productName,
+//                 description: products.description,
+//                 brand: products.brand,
+//                 category: categoryId._id,
+//                 productImage: images,
+//                 status: "Available",
+//                 variants: variants, 
+//             });
+
+//             await newProduct.save();
+//             return res.redirect("/admin/addProducts");
+//         } else {
+//             return res.status(400).json("Product already exists. Please try with another name.");
+//         }
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).json("Server Error");
+//     }
+// }
+
 const addProducts = async (req, res) => {
     try {
         const products = req.body;
-        const productExists = await Product.findOne({
+        const productExists = await Product.findOne({ productName: products.productName });
+
+        if (productExists) {
+            return res.json({ success: false, message: "Product already exists. Please try with another name." });
+        }
+
+        const images = [];
+
+        if (req.files && req.files.length > 0) {
+            for (let i = 0; i < req.files.length; i++) {
+                const originalImagepath = req.files[i].path;
+                const resizedImagePath = path.join("public", "uploads", "product-images", req.files[i].filename);
+
+                await sharp(originalImagepath)
+                    .resize({ width: 440, height: 440 })
+                    .toFile(resizedImagePath);
+
+                images.push(req.files[i].filename);
+            }
+        }
+
+        const categoryId = await Category.findOne({ name: products.category });
+
+        if (!categoryId) {
+            return res.status(400).json({ success: false, message: "Invalid Category name" });
+        }
+
+        const variants = products.variants.map(variant => ({
+            size: variant.size,
+            regularPrice: variant.regularPrice,
+            salePrice: variant.salePrice,
+            quantity: variant.quantity,
+            status: variant.status
+        }));
+
+        const newProduct = new Product({
             productName: products.productName,
+            description: products.description,
+            brand: products.brand,
+            category: categoryId._id,
+            productImage: images,
+            status: "Available",
+            variants: variants, 
         });
 
-        if (!productExists) {
-            const images = [];
+        await newProduct.save();
+        return res.json({ success: true, message: "Product added successfully!" });
 
-            if (req.files && req.files.length > 0) {
-                for (let i = 0; i < req.files.length; i++) {
-                    const originalImagepath = req.files[i].path;
-
-                    const resizedImagePath = path.join("public", "uploads", "product-images", req.files[i].filename);
-                    await sharp(originalImagepath).resize({ width: 440, height: 440 }).toFile(resizedImagePath);
-                    images.push(req.files[i].filename);
-                }
-            }
-
-            const categoryId = await Category.findOne({ name: products.category });
-
-            if (!categoryId) {
-                return res.status(400).json("Invalid Category name");
-            }
-
-            // Extract variants from the request body
-            const variants = products.variants.map(variant => ({
-                size: variant.size,
-                regularPrice: variant.regularPrice,
-                salePrice: variant.salePrice,
-                quantity: variant.quantity,
-                status: variant.status
-            }));
-
-            const newProduct = new Product({
-                productName: products.productName,
-                description: products.description,
-                brand: products.brand,
-                category: categoryId._id,
-                productImage: images,
-                status: "Available",
-                variants: variants, 
-            });
-
-            await newProduct.save();
-            return res.redirect("/admin/addProducts");
-        } else {
-            return res.status(400).json("Product already exists. Please try with another name.");
-        }
     } catch (error) {
-        console.log(error);
-        res.status(500).json("Server Error");
+        console.error(error);
+        return res.status(500).json({ success: false, message: "Server Error" });
     }
-}
+};
+
 
 
 
@@ -364,6 +422,87 @@ const deleteSingleImage = async (req, res) => {
 
 
 
+
+const addProductOffer = async (req, res) => {
+    try {
+        const { productId, percentage, startDate, expiryDate } = req.body;
+
+        if (!productId || !percentage || !startDate || !expiryDate) {
+            return res.json({ success: false, message: "All fields are required!" });
+        }
+
+        const start = new Date(startDate);
+        const expiry = new Date(expiryDate);
+
+        if (expiry <= start) {
+            return res.json({ success: false, message: "Expiry date must be after the start date!" });
+        }
+
+        const findProduct = await Product.findById(productId);
+        if (!findProduct) {
+            return res.json({ success: false, message: "Product not found" });
+        }
+
+        const findCategory = await Category.findById(findProduct.category);
+
+        findProduct.productOffer = parseInt(percentage);
+        findProduct.offerStartDate = start;
+        findProduct.offerEndDate = expiry;
+
+       
+        findProduct.variants.forEach(variant => {
+            const bestOffer = Math.max(findProduct.productOffer, findCategory?.categoryOffer || 0);
+            variant.salePrice = variant.regularPrice - Math.floor(variant.regularPrice * (bestOffer / 100));
+        });
+
+        await findProduct.save();
+
+        res.json({ success: true, message: "Product offer applied successfully." });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+};
+
+
+
+
+
+const removeProductOffer = async (req, res) => {
+    try {
+        const { productId } = req.body;
+
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.json({ success: false, message: "Product not found" });
+        }
+
+        const category = await Category.findById(product.category);
+        const categoryOffer = category ? category.categoryOffer || 0 : 0;
+
+        product.productOffer = 0;
+
+        product.variants.forEach(variant => {
+            const bestOffer = categoryOffer > 0 ? categoryOffer : 0;
+            variant.salePrice = variant.regularPrice - Math.floor(variant.regularPrice * (bestOffer / 100));
+        });
+
+        await product.save();
+
+        return res.json({ success: true, message: "Product offer removed successfully." });
+
+    } catch (error) {
+        console.error("Error removing product offer:", error);
+        return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+};
+
+
+
+
+
+
 module.exports = {
     getProductAddPage,
     addProducts,
@@ -372,5 +511,7 @@ module.exports = {
     unblockProduct,
     getEditProduct,
     editProduct,
-    deleteSingleImage
+    deleteSingleImage,
+    addProductOffer,
+    removeProductOffer  
 }

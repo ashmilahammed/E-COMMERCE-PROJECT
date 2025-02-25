@@ -50,7 +50,12 @@ async function sendVerificationEmail(email, otp) {
 
 const pageNotFound = async (req, res) => {
     try {
-        res.render("page-404")
+        const userId = req.session.user;
+        const userData = await User.findById({userId})
+
+        res.render("page-404",{
+            user: userData
+        })
 
     } catch (error) {
         res.redirect("/pageNotFound")

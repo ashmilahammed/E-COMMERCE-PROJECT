@@ -184,6 +184,34 @@
         }
     </style>
 
+    <style>
+        .offer-badge-container {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .offer-badge {
+            background: rgba(255, 0, 0, 0.85);
+            /* Red color for product offer */
+            color: #fff;
+            font-size: 12px;
+            padding: 5px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .category-offer {
+            background: rgba(255, 165, 0, 0.9);
+            /* Orange color for category offer */
+        }
+    </style>
+
 
     <body>
 
@@ -219,6 +247,7 @@
                                         value="<%= searchQuery %>" id="search-input-active">
 
                                     <input type="hidden" name="brand" value="<%= selectedBrand %>">
+
                                     <input type="hidden" name="category" value="<%= selectedCategory %>">
                                     <input type="hidden" name="sort" value="<%= sortOption %>">
 
@@ -296,7 +325,7 @@
                                                 <div class="shop__sidebar__brand">
                                                     <ul>
 
-                                                        <% let availableBrands=brand.filter(b=> !b.isBlocked); 
+                                                        <% let availableBrands=brand.filter(b=> !b.isBlocked);
                                                             if (availableBrands.length > 0) { %>
                                                             <% for (let i=0; i < availableBrands.length; i++) { %>
                                                                 <li>
@@ -305,10 +334,10 @@
                                                                         <%= availableBrands[i].brandName %>
                                                                     </a>
                                                                 </li>
-                                                             <% } %>
-                                                             <% } else { %>
+                                                                <% } %>
+                                                                    <% } else { %>
                                                                         <li style="color: red;">No brands available</li>
-                                                             <% } %>
+                                                                        <% } %>
 
 
                                                     </ul>
@@ -485,7 +514,6 @@
                             </div>
                         </div>
 
-
                         <!-- product session start -->
 
                         <div class="row">
@@ -493,39 +521,81 @@
                             <% for(let i=0;i<products.length;i++) { %>
                                 <div class="col-lg-4 col-md-6 col-sm-6">
                                     <div class="product__item">
-                                        <div class="product__item__pic set-bg" data-setbg="">
 
-                                            <a href="/productDetails?id=<%= products[i]._id %>">
+                                        <div class="product__item__pic set-bg" data-setbg="" style="position: relative;">
 
-                                                <img src="/uploads/re-image/<%= products[i].productImage[0] %>"
-                                                    alt="<%= products[i].productName %>">
-                                                <ul class="product__hover">
-                                                    <li><a href="#"><img src="img/icon/heart.png" alt=""></a></li>
-                                                </ul>
+                                            <!-- Offer Badges Positioned on Image -->
+                                            <% if (products[i].productOffer || products[i].category?.categoryOffer) { %>
+                                                <div class="offer-badge-container">
+
+                                                    <% const productOffer=products[i].productOffer || 0; 
+                                                       const categoryOffer=products[i].category?.categoryOffer || 0;
+                                                       const bestOffer=Math.max(productOffer, categoryOffer); %>
+
+                                                        <span class="offer-badge best-offer">Best Offer: <%= bestOffer %>% OFF</span>
+                                                </div>
+                                                <% } %>
+
+  
+                                                    <a href="/productDetails?id=<%= products[i]._id %>">
+
+                                                        <img src="/uploads/re-image/<%= products[i].productImage[0] %>"
+                                                            alt="<%= products[i].productName %>">
+
+                                                        <ul class="product__hover">
+                                                            <li>
+                                                                <a href="javascript:void(0)">
+                                                                    <img src="img/icon/heart.png"
+                                                                        onclick="addToWishlist('<%= products[i]._id %>')"
+                                                                        alt="">
+                                                                </a>
+                                                            </li>
+
+                                                        </ul>
+                                                    </a>
                                         </div>
+
                                         <div class="product__item__text">
                                             <h6>
                                                 <%= products[i].productName %>
                                             </h6>
-                                            <h6>Brand: <%= products[i].brand %>
+
+                                            <h6><strong>Brand:</strong>
+                                                <%= products[i].brand %>
                                             </h6>
 
-                                            <!-- <p>brands</p> -->
-                                            <div class="rating">
-                                                <i class="fa fa-star-o"></i>
-                                                <i class="fa fa-star-o"></i>
-                                                <i class="fa fa-star-o"></i>
-                                                <i class="fa fa-star-o"></i>
-                                                <i class="fa fa-star-o"></i>
-                                            </div>
+                                            <% if (products[i].availableSizes && products[i].availableSizes.length> 0) {
+                                                %>
+                                                <div class="size-badges">
+                                                    <strong>Size:</strong>
+                                                    <% products[i].availableSizes.forEach(size=> { %>
+                                                        <span class="size-badge">
+                                                            <%= size %>
+                                                        </span>
+                                                        <% }); %>
+                                                </div>
+                                                <% } %>
 
-                                            <p>price:<strong>₹<%= products[i].salePrice.toLocaleString('en-IN') %>
-                                                </strong> <span class="text-muted"><strike>₹<%=
-                                                            products[i].regularPrice.toLocaleString('en-IN') %>
-                                                    </strike></span></p>
-                                            </a>
-                                            <a href="#" class="add-cart">+ Add To Cart</a>
-                                            <!-- <div class="product__color__select">
+                                                    <!-- <p>brands</p> -->
+                                                    <div class="rating">
+                                                        <i class="fa fa-star-o"></i>
+                                                        <i class="fa fa-star-o"></i>
+                                                        <i class="fa fa-star-o"></i>
+                                                        <i class="fa fa-star-o"></i>
+                                                        <i class="fa fa-star-o"></i>
+                                                    </div>
+
+                                                    <p>price:<strong>₹<%= products[i].salePrice.toLocaleString('en-IN')   %>
+
+                                                        </strong> <span class="text-muted"><strike>₹<%=
+                                                                    products[i].regularPrice.toLocaleString('en-IN') %>
+                                                            </strike></span></p>                                                     
+
+
+                                                    <a href="#" class="add-cart">+ Add To Cart</a>
+
+
+                                                    <!-- <div class="product__color__select">
                                             <label for="pc-4">
                                                 <input type="radio" id="pc-4">
                                             </label>
@@ -538,7 +608,6 @@
                                         </div> -->
                                         </div>
                                     </div>
-
 
                                 </div>
 
@@ -584,6 +653,147 @@
 
 
     </body>
+
+
+    <script>
+
+        async function addToWishlist(productId) {
+            try {
+                let selectedSize = document.querySelector('input[name="size"]:checked');
+
+                if (!selectedSize) {
+                    const sizeElements = document.querySelectorAll('.size-badge');
+                    if (sizeElements.length > 0) {
+                        selectedSize = sizeElements[0].textContent.trim();
+                    } else {
+                        showToast('No size available for this product', 'error');
+                        return;
+                    }
+                } else {
+                    selectedSize = selectedSize.value;
+                }
+
+                const size = parseInt(selectedSize);
+
+                const response = await fetch('/wishlist/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        productId,
+                        size
+                    })
+                });
+
+
+                // if not logged
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    showToast('You need to log in to add products to your wishlist', 'error');
+                    return;
+                }
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showToast('Product has been added to your wishlist', 'success');
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                showToast(error.message || 'Failed to add product to wishlist', 'error');
+            }
+        }
+
+
+
+        function showToast(message, type) {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast-message ${type}`;
+            toast.innerHTML = message;
+
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => {
+                    toast.remove();
+                }, 500);
+            }, 1500);
+        }
+
+    </script>
+
+
+    <style>
+        /* Toast Container */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Toast Message */
+        .toast-message {
+            padding: 12px 18px;
+            border-radius: 3px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            min-width: 250px;
+            max-width: 350px;
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Success Toast */
+        .toast-message.success {
+            background-color: #28a745;
+        }
+
+        /* Error Toast */
+        .toast-message.error {
+            background-color: #dc3545;
+        }
+
+        /* Warning Toast */
+        .toast-message.warning {
+            background-color: #ffc107;
+            color: #333;
+        }
+
+        /* Fade Out Animation */
+        .toast-message.fade-out {
+            opacity: 0;
+        }
+
+
+        .size-badges {
+            margin: 10px 0;
+        }
+
+        .size-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            margin: 0 2px;
+            background: #f5f5f5;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
 
 
     <%- include("../../views/partials/user/footer") %>

@@ -262,6 +262,37 @@
 
 
 
+<style>
+    .offer-badge-container {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .offer-badge {
+        background: rgba(255, 0, 0, 0.85);
+        /* Red color for product offer */
+        color: #fff;
+        font-size: 12px;
+        padding: 5px 8px;
+        border-radius: 3px;
+        font-weight: bold;
+        margin-bottom: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .category-offer {
+        background: rgba(255, 165, 0, 0.9);
+        /* Orange color for category offer */
+    }
+</style>
+
+
+
+
 
 
 
@@ -372,30 +403,40 @@
                     <% products.forEach(product=> { %>
                         <div class="col-lg-3 col-md-6 col-sm-6">
                             <div class="product__item">
-                                <div class="product__item__pic set-bg" data-setbg="">
+                                
+
+                                <div class="product__item__pic set-bg" data-setbg="" style="position: relative;">
+    
+                                    <!-- Offer Badges Positioned on Image -->
+                                    <% if (product.productOffer || product.category?.categoryOffer) { %>
+                                        <div class="offer-badge-container">
+                                            <% const productOffer = product.productOffer || 0; 
+                                               const categoryOffer = product.category?.categoryOffer || 0;
+                                               const bestOffer = Math.max(productOffer, categoryOffer); %>
+                                
+                                            <span class="offer-badge best-offer">Best Offer: <%= bestOffer %>% OFF</span>
+                                        </div>
+                                    <% } %>
+                                
+
                                     <a href="/productDetails?id=<%= product._id %>">
-                                        <img src="/uploads/re-image/<%= product.productImage[0] %>" alt="">
+                                        <img src="/uploads/re-image/<%= product.productImage[0] %>" alt="<%= product.productName %>">
                                     </a>
-
-
-                                    <% if (product.variants && product.variants.some(v=> v.quantity > 0)) { %>
+                                
+                                    <!-- <% if (product.variants && product.variants.some(v => v.quantity > 0)) { %>
                                         <span class="label">In Stock</span>
-                                        <% } %>
-
-                                            <ul class="product__hover">
-                                                <li>
-                                                    <a href="javascript:void(0)"
-                                                        onclick="addToWishlist('<%= product._id %>')">
-                                                        <i class="fa fa-heart"></i>
-                                                    </a>
-                                                </li>
-                                                <!-- <li>
-                                                    <a href="/product/<%= product._id %>">
-                                                        <i class="fa fa-search"></i>
-                                                    </a>
-                                                </li> -->
-                                            </ul>
+                                    <% } %> -->
+                                
+                                    <ul class="product__hover">
+                                        <li>
+                                            <a href="javascript:void(0)" onclick="addToWishlist('<%= product._id %>')">
+                                                <i class="fa fa-heart"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                
                                 </div>
+                                
                                 <div class="product__item__text">
 
                                     <h5>

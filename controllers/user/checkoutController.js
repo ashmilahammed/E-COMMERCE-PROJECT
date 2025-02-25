@@ -193,7 +193,22 @@ const placeOrder = async (req, res) => {
 
         await order.save();
 
-        await Cart.findOneAndUpdate(  { userId },  { $set: { items: [],discount:0,couponCode: null } } );
+        // await Cart.findOneAndUpdate(  { userId },  { $set: { items: [],discount:0,couponCode: null } } );
+        await Cart.findOneAndUpdate(
+            { userId },
+            {
+                $set: {
+                    items: [],
+                    discount: 0,
+                    couponCode: null,
+                    subtotal: 0,
+                    total: 0,
+                    cartTotal: 0  
+                }
+            },
+            { new: true }
+        );
+        
 
         res.json({
             success: true,

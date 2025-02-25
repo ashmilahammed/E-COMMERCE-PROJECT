@@ -86,6 +86,91 @@
         }
     </style>
 
+    <style>
+        /* Container for the input and custom buttons */
+        .arrow-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 140px;
+            height: 40px;
+            border: 2px solid #ccc;
+            border-radius: 0px;
+            background-color: #ffffff;
+            padding: 0 5px;
+            box-sizing: border-box;
+        }
+
+        /* Input field styling */
+        .arrow-box input {
+            width: 60px;
+            height: 30px;
+            font-size: 16px;
+            text-align: center;
+            border: none;
+            background-color: transparent;
+            color: #333;
+            box-sizing: border-box;
+        }
+
+        /* Buttons for the arrows */
+        .arrow-btn {
+            background-color: rgb(0, 0, 0);
+            color: rgb(255, 255, 255);
+            border: none;
+            padding: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            outline: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 0px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Hover effect for arrows */
+        .arrow-btn:hover {
+            background-color: #3c3c3c;
+        }
+
+        /* Focus state for input field */
+        .arrow-box input:focus {
+            outline: none;
+            border: 2px solid #525252;
+        }
+
+        /* Focus effect for arrow buttons */
+        .arrow-btn:focus {
+            border: 2px solid #ff6060;
+        }
+    </style>
+
+    <style>
+        .offer-badge {
+            display: inline-block;
+            background-color: #ff3030;
+            /* Red Badge */
+            color: white;
+            font-size: 13px;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 3px;
+            margin-left: 10px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .regular-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 18px;
+            margin-left: 10px;
+        }
+    </style>
+
+
     <!-- Shop Details Section Begin -->
 
     <section class="shop-details">
@@ -167,7 +252,6 @@
                     </div>
 
 
-
                     <!-- <div class="col-lg-6 col-md-9">
 
                         <% for(let i=0;i<product.productImage.length;i++) { %>
@@ -203,6 +287,7 @@
         </div>
         <!-- image section finish -->
 
+
         <div class="product__details__content">
             <div class="container">
                 <div class="row d-flex justify-content-center">
@@ -212,6 +297,15 @@
                             <h3>
                                 <%= product.productName %>
                             </h3>
+
+                            <!-- Offer Badge near Product Name -->
+                            <% if (product.productOffer || product.category?.categoryOffer) { %>
+                            <% const productOffer=product.productOffer || 0; const
+                            categoryOffer=product.category?.categoryOffer || 0; const
+                             bestOffer=Math.max(productOffer, categoryOffer); %>
+
+                            <span class="offer-badge"> <%= bestOffer %>% OFF</span> <% } %>
+
 
                             <h5>Brand : <%= product.brand %>
                             </h5>
@@ -225,9 +319,11 @@
                                 <i class="fa fa-star-o"></i>
                                 <span> - 5 Reviews</span>
                             </div>
-                            <h3 id="product-price"> ₹.<%= product.salePrice %> <span>₹.<%= product.regularPrice %>
-                                    </span></h3>
 
+
+                            <h3 id="product-price"> ₹.<%= product.salePrice %>
+                                    <span>₹.<%= product.regularPrice %> </span>
+                            </h3>
 
                             <p>
                                 <%= product.description %>
@@ -238,7 +334,8 @@
                                     <span>Size:</span>
                                     <% if (product.availableSizes && product.availableSizes.length> 0) { %>
                                         <% product.availableSizes.forEach(size=> { %>
-                                            <% const variant=product.variants.find(v=> v.size === size && v.quantity >
+                                            <% const variant=product.variants.find(v=> v.size === size &&
+                                                v.quantity >
                                                 0); %>
                                                 <% if (variant) { %>
                                                     <label for="size-<%= size %>" class="size-option">
@@ -272,7 +369,8 @@
                                     disabled>Add to cart</button>
                             </div>
                             <div class="product__details__btns__option">
-                                <a href="javascript:void(0)" onclick="addToWishlist('<%= product._id %>')"><i class="fa fa-heart" ></i>
+                                <a href="javascript:void(0)" onclick="addToWishlist('<%= product._id %>')"><i
+                                        class="fa fa-heart"></i>
                                     add to wishlist</a>
                             </div>
                             <div class="product__details__last__option">
@@ -462,92 +560,6 @@
     <script>
 
 
-        // document.addEventListener('DOMContentLoaded', function () {
-        //     const productId = '<%= product._id %>';
-        //     const sizeLabels = document.querySelectorAll('.product__details__option__size label:not(.unavailable)');
-        //     const priceElement = document.getElementById('product-price');
-        //     const quantityElement = document.getElementById('product-quantity');
-        //     const addToCartBtn = document.getElementById('addToCartBtn');
-
-
-        //     //  price and quantity based on variant data
-        //     function updateProductDetails(variantData) {
-
-        //         if (variantData.salePrice && variantData.salePrice !== variantData.price) {
-        //             priceElement.innerHTML = `₹.${variantData.salePrice} <span>₹.${variantData.price}</span>`;
-        //         } else {
-        //             priceElement.innerHTML = `₹.${variantData.price}`;
-        //         }
-
-        //         quantityElement.innerHTML = `Stock: ${variantData.quantity}`;
-        //     }
-
-
-        //     function saveSelectedSize(size) {
-        //         localStorage.setItem(`selectedSize_${productId}`, size);
-        //     }
-
-
-        //     function getSelectedSize() {
-        //         return localStorage.getItem(`selectedSize_${productId}`);
-        //     }
-
-        //     sizeLabels.forEach(label => {
-        //         label.addEventListener('click', function () {
-        //             // Remove active class from all labels
-        //             sizeLabels.forEach(l => l.classList.remove('active'));
-
-        //             // Add active class to clicked label
-        //             this.classList.add('active');
-
-        //             // Get variant data and update details
-        //             const variantData = JSON.parse(this.dataset.variant);
-        //             updateProductDetails(variantData);
-
-        //             saveSelectedSize(variantData.size);
-        //         });
-        //     });
-
-        //     // Check for previously selected size on page load
-        //     const savedSize = getSelectedSize();
-        //     if (savedSize) {
-        //         const savedSizeLabel = document.querySelector(`label[for="size-${savedSize}"]`);
-        //         if (savedSizeLabel && !savedSizeLabel.classList.contains('unavailable')) {
-        //             // Simulate click on the saved size label
-        //             savedSizeLabel.click();
-        //             // Check the radio input
-        //             const radioInput = document.getElementById(`size-${savedSize}`);
-        //             if (radioInput) {
-        //                 radioInput.checked = true;
-        //             }
-        //         }
-        //     }
-        // });
-
-
-
-        // // Handle size selection
-        // const sizeOptions = document.querySelectorAll('input[name="size"]');
-        // const addToCartBtn = document.getElementById('addToCartBtn');
-        // const priceElement = document.getElementById('product-price');
-
-        // sizeOptions.forEach(option => {
-        //     option.addEventListener('change', function () {
-
-        //         addToCartBtn.disabled = false;
-
-        //         const salePrice = this.dataset.price;
-        //         const regularPrice = this.dataset.regularPrice;
-        //         priceElement.innerHTML = `₹.${salePrice} <span>₹.${regularPrice}</span>`;
-        //     });
-        // });
-
-
-
-
-        // Add to cart function
-
-
         document.addEventListener('DOMContentLoaded', function () {
             const productId = '<%= product._id %>';
             const sizeLabels = document.querySelectorAll('.product__details__option__size label:not(.unavailable)');
@@ -698,7 +710,6 @@
 
                 const size = selectedSize.value;
 
-                // Send the data to the server
                 const response = await fetch('/wishlist/add', {
                     method: 'POST',
                     headers: {
@@ -744,7 +755,7 @@
             const increaseBtn = document.getElementById("increase");
             const decreaseBtn = document.getElementById("decrease");
 
-            // Add event listeners for the buttons
+
             increaseBtn.addEventListener("click", function () {
                 let value = parseInt(quantityInput.value);
                 if (value < 5) {
@@ -861,8 +872,8 @@
 
 
 
-
     <script>
+
         document.addEventListener('DOMContentLoaded', function () {
             const sizeInputs = document.querySelectorAll('input[name="size"]');
             const quantityDisplay = document.getElementById('variant-quantity');
@@ -932,65 +943,3 @@
 
 
     <%- include("../../views/partials/user/footer") %>
-
-
-        <style>
-            /* Container for the input and custom buttons */
-            .arrow-box {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                width: 140px;
-                height: 40px;
-                border: 2px solid #ccc;
-                border-radius: 0px;
-                background-color: #ffffff;
-                padding: 0 5px;
-                box-sizing: border-box;
-            }
-
-            /* Input field styling */
-            .arrow-box input {
-                width: 60px;
-                height: 30px;
-                font-size: 16px;
-                text-align: center;
-                border: none;
-                background-color: transparent;
-                color: #333;
-                box-sizing: border-box;
-            }
-
-            /* Buttons for the arrows */
-            .arrow-btn {
-                background-color: rgb(0, 0, 0);
-                color: rgb(255, 255, 255);
-                border: none;
-                padding: 8px;
-                font-size: 18px;
-                cursor: pointer;
-                outline: none;
-                width: 30px;
-                height: 30px;
-                border-radius: 0px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            /* Hover effect for arrows */
-            .arrow-btn:hover {
-                background-color: #3c3c3c;
-            }
-
-            /* Focus state for input field */
-            .arrow-box input:focus {
-                outline: none;
-                border: 2px solid #525252;
-            }
-
-            /* Focus effect for arrow buttons */
-            .arrow-btn:focus {
-                border: 2px solid #ff6060;
-            }
-        </style>

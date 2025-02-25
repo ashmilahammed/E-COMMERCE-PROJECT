@@ -454,7 +454,7 @@ const editAddress = async (req,res) => {
 
 const postEditAddress = async (req, res) => {
     try {
-        const { addressType, name, city, landMark, state, phone, altPhone } = req.body;
+        const { addressType, name, city, landMark, state,pincode, phone, altPhone } = req.body;
         const addressId = req.query.id;
         
         const findAddress = await Address.findOne({ "address._id": addressId });
@@ -472,6 +472,7 @@ const postEditAddress = async (req, res) => {
                     "address.$.city": city,
                     "address.$.landMark": landMark,
                     "address.$.state": state,
+                    "address.$.pincode": pincode,
                     "address.$.phone": phone,
                     "address.$.altPhone": altPhone
                 }

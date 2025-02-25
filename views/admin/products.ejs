@@ -1,9 +1,9 @@
 <%- include('../../views/partials/admin/header') %>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         /* Table styles */
@@ -31,7 +31,7 @@
         }
 
         .block-btn {
-            background-color: #f44336;
+            background-color: #f72c1e;
             color: white;
         }
 
@@ -106,8 +106,9 @@
         }
 
         .pagination .active {
-            background-color: #ff9b18;
+            background-color: #d6943f;
             color: white;
+            border-color: black;
         }
     </style>
 
@@ -148,14 +149,24 @@
                             <%= products[i].category.name %>
                         </td>
                         <td>
-                            <%= products[i].offerPrice %> 
+                            <% if (locals.products[i].productOffer) { %>
+                                <span style="font-weight: bold;color: rgb(32, 122, 0);">
+                                    <%= products[i].productOffer %> %
+                                </span>
+                                <% } else { %>
+                                    <span>0 %</span>
+                                    <% } %>
+
                         </td>
-                        
 
                         <td>
-                            <button class="action-btn" style="background-color: #2196F3; color: white;">
-                                Add Offer</button>
-                            <button class="action-btn" style="background-color: #FF5722; color: white;">Remove</button>
+                            <% if(locals.products[i].productOffer===0 ) { %>
+                                <button class="action-btn" onclick="addOffer('<%= products[i]._id %>')"
+                                    style="background-color: #ffb330; color: rgb(0, 0, 0);"> Add Offer</button>
+                                <% }else { %>
+                                    <button class="action-btn" onclick="removeOffer('<%= products[i]._id %>')"
+                                        style="background-color: #ff1515; color: white;">Remove Offer</button>
+                                    <% } %>
                         </td>
 
                         <td>
@@ -170,7 +181,7 @@
                                         onclick="unblockProduct('<%= products[i]._id %>')">Unblock</button>
 
                                     <% } %>
-                        </td>           
+                        </td>
 
                         <td>
                             <a href="/admin/editProduct?productId=<%= products[i]._id %>">
@@ -206,15 +217,13 @@
 
     <script>
 
-
-
         async function blockProduct(productId) {
             try {
 
                 let response = await fetch("/admin/blockProduct", {
                     method: "POST",
                     headers: { 'content-Type': 'application/json' },
-                    body: JSON.stringify({productId})
+                    body: JSON.stringify({ productId })
                 })
 
                 let result = await response.json();
@@ -263,7 +272,6 @@
 
 
 
-
         async function unblockProduct(productId) {
             try {
                 let response = await fetch('/admin/unblockProduct', {
@@ -283,7 +291,7 @@
                         close: true
                     }).showToast();
 
-            
+
                     let button = document.querySelector(`button[data-productid="${productId}"]`);
                     if (button) {
                         button.textContent = "Block";
@@ -346,5 +354,208 @@
         });
 
     </script>
+
+    <!-- <script>
+
+        async function addOffer(productId) {
+            const { value: amount } = await Swal.fire({
+                title: 'Offer in Percentage',
+                input: 'number',
+                inputLabel: 'percentage',
+                inputPlaceHolder: '%'
+            })
+
+            $.ajax({
+                url: "/admin/addProductOffer",
+                method: "POST",
+                data: {
+                    percentage: amount,
+                    productId: productId
+                },
+                success: (response) => {
+                    if (response.success === true) {
+                        location.reload()
+                        Swal.fire('Offer added', 'The offer has been removed', 'success')
+                    } else {
+                        alert("failed")
+                    }
+                }
+            })
+
+        }
+
+
+
+        function removeOffer(productId) {
+            try {
+                Swal.fire({
+                    title: 'Remove offer',
+                    text: 'Are you sure you want to remove this offer?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3885d6',
+                    cancelButtonColor: 'd33',
+                    confirmButtonText: 'Yes, remove it!',
+                    timer: 2000,
+                    timeProgressBar: true
+                }).then(async (result => {
+                    if(result.isConfirmed){
+                        $.ajax({
+                            url: '/admin/removeProductOffer',
+                            method: 'post',
+                            data: {
+                                productId : productId
+                            },
+                            success: (response) => {
+                                if(response.success === true){
+                                    Swal.fire('Removed!','The offer has been removed', 'success');
+                                    location.reload()
+                                }else if(response.success === false) {
+                                    Swal.fire('failed');
+                                }else{
+                                    alert('failed')
+                                }
+                            }
+                        })
+                    }
+                }))
+
+            } catch (error) {
+                console.error(error)
+            }
+        }
+
+    </script> -->
+
+
+    <script>
+
+
+        async function addOffer(productId) {
+            try {
+                const { value: formValues } = await Swal.fire({
+                    title: 'Add Product Offer',
+                    html: `
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                    <label style="font-weight: 600; font-size: 14px;">Offer Percentage:</label>
+                    <input id="swal-percentage" type="number" class="swal2-input" placeholder="%" 
+                        min="1" max="100" step="1"
+                        style="width: 80%; height: 40px; font-size: 14px; text-align: center; padding: 5px;">
+
+                    <label style="font-weight: 600; font-size: 14px;">Start Date:</label>
+                    <input id="swal-start-date" type="date" class="swal2-input"
+                        style="width: 80%; height: 40px; font-size: 14px; text-align: center; padding: 5px;">
+
+                    <label style="font-weight: 600; font-size: 14px;">Expiry Date:</label>
+                    <input id="swal-expiry-date" type="date" class="swal2-input"
+                        style="width: 80%; height: 40px; font-size: 14px; text-align: center; padding: 5px;">
+                </div>
+            `,
+                    focusConfirm: false,
+                    showCancelButton: true,
+                    confirmButtonText: "Submit",
+                    confirmButtonColor: "#007bff",
+                    cancelButtonColor: "#d33",
+                    preConfirm: () => {
+                        const percentage = document.getElementById('swal-percentage').value;
+                        const startDate = document.getElementById('swal-start-date').value;
+                        const expiryDate = document.getElementById('swal-expiry-date').value;
+                        const today = new Date().toISOString().split("T")[0];
+
+                        // Validation checks
+                        if (!percentage || !startDate || !expiryDate) {
+                            Swal.showValidationMessage("All fields are required!");
+                            return false;
+                        }
+                        if (startDate < today) {
+                            Swal.showValidationMessage("Start date must be today or later!");
+                            return false;
+                        }
+                        if (new Date(expiryDate) <= new Date(startDate)) {
+                            Swal.showValidationMessage("Expiry date must be after the start date!");
+                            return false;
+                        }
+
+                        return { percentage, startDate, expiryDate };
+                    }
+                });
+
+                if (!formValues) return;
+
+                const response = await fetch('/admin/addProductOffer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        percentage: formValues.percentage,
+                        startDate: formValues.startDate,
+                        expiryDate: formValues.expiryDate,
+                        productId: productId
+                    }),
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    Swal.fire({
+                        title: "Success",
+                        text: "Offer added successfully!",
+                        icon: "success",
+                        confirmButtonColor: "#46cd4a"
+                    }).then(() => location.reload());
+                } else {
+                    Swal.fire('Failed', result.message, 'error');
+                }
+
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Error', 'Something went wrong!', 'error');
+            }
+        }
+
+
+
+        async function removeOffer(productId) {
+            try {
+                const confirm = await Swal.fire({
+                    title: 'Remove Offer',
+                    text: 'Are you sure you want to remove this offer?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3885d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, remove it!',
+                });
+
+                if (!confirm.isConfirmed) return;
+
+                const response = await fetch('/admin/removeProductOffer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ productId: productId }),
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    if (result.success) {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Removed!",
+                            text: "The offer has been removed",
+                            showConfirmButton: false,
+                            timer: 1000
+                        }).then(() => location.reload());
+                    }
+                } else {
+                    Swal.fire('Failed', result.message, 'error');
+                }
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Error', 'Something went wrong!', 'error');
+            }
+        }
+
+    </script>
+
 
     <%- include('../../views/partials/admin/footer') %>

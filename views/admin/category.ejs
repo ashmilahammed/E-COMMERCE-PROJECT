@@ -3,6 +3,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
     <style>
@@ -15,13 +16,12 @@
         th,
         td {
             padding: 10px;
-            text-align: left;
+            text-align: center;
             border-bottom: 1px solid #6d6d6d;
         }
 
         th {
             background-color: rgba(8, 129, 120, 0.2);
-            text-align: center;
         }
 
         .action-btn {
@@ -105,8 +105,9 @@
         }
 
         .pagination .active {
-            background-color: #d28416;
+            background-color: #ca9243;
             color: white;
+            border-color: black;
         }
 
         /* Form styles */
@@ -171,7 +172,9 @@
                     <th>Actions</th>
                 </tr>
             </thead>
+
             <tbody id="categoryTableBody">
+
                 <% category.forEach(category=> { %>
                     <tr>
                         <td>
@@ -181,34 +184,39 @@
                             <%= category.description %>
                         </td>
                         <td>
-                            <%= category.categoryOffer || 'N/A' %>
+                            <% if (category.categoryOffer) { %>
+                                <span style="font-weight: bold;color:green;"> <%= category.categoryOffer %> %</span>
+                               
+                                    <% } else { %>
+                                      <span> 0 %</span>
+                                        <% } %>
                         </td>
                         <td>
-                            <a href="/admin/addOffer?categoryId=<%= category._id %>">
-                                <button class="action-btn offer-btn">Add Offer</button>
-                            </a>
-                            <a href="/admin/removeOffer?categoryId=<%= category._id %>">
-                                <button class="action-btn offer-btn">Remove Offer</button>
-                            </a>
-                        </td>
-                        <td>
-                            <% if (category.isListed) { %>
-                                <span class="badge list-btn">Listed</span>
+                            <% if (!category.categoryOffer || category.categoryOffer===0) { %>
+                                <button class="action-btn offer-btn" onclick="addCategoryOffer('<%= category._id %>')">
+                                    Add Offer
+                                </button>
                                 <% } else { %>
-                                    <span class="badge unlist-btn">Unlisted</span>
+                                    <button class="action-btn offer-btn" style="background-color: red; color: white;"
+                                        onclick="removeCategoryOffer('<%= category._id %>')">
+                                        Remove Offer
+                                    </button>
                                     <% } %>
                         </td>
                         <td>
                             <% if (category.isListed) { %>
-
+                                <span class="badge list-btn" style="font-size: 12px;">Listed</span>
+                                <% } else { %>
+                                    <span class="badge unlist-btn" style="font-size: 12px;">Unlisted</span>
+                                    <% } %>
+                        </td>
+                        <td>
+                            <% if (category.isListed) { %>
                                 <button class="action-btn unlist-btn" data-categoryid="<%= category._id %>"
                                     onclick="unlistCategory('<%= category._id %>')">Unlist</button>
-
                                 <% } else { %>
-
                                     <button class="action-btn list-btn" data-categoryid="<%= category._id %>"
                                         onclick="listCategory('<%= category._id %>')">List</button>
-
                                     <% } %>
                                         <a href="/admin/editCategory?categoryId=<%= category._id %>">
                                             <button class="action-btn edit-btn">Edit</button>
@@ -225,37 +233,37 @@
                 <a href="/admin/category?page=<%= currentPage - 1 %>">Previous</a>
                 <% } %>
 
-            <% for (let i=1; i <=totalPages; i++) { %>
-                   <a href="/admin/category?page=<%= i %>" class="<%= currentPage === i ? 'active' : '' %>">
-                        <%= i %>
-               </a>
-               <% } %>
+                    <% for (let i=1; i <=totalPages; i++) { %>
+                        <a href="/admin/category?page=<%= i %>" class="<%= currentPage === i ? 'active' : '' %>">
+                            <%= i %>
+                        </a>
+                        <% } %>
 
-            <% if (currentPage < totalPages) { %>
-                    <a href="/admin/category?page=<%= currentPage + 1 %>">Next</a>
-               <% } %>
+                            <% if (currentPage < totalPages) { %>
+                                <a href="/admin/category?page=<%= currentPage + 1 %>">Next</a>
+                                <% } %>
         </div>
 
+
+        <!-- Category Creation Form -->
         <div class="form-container">
             <h3>Create New Category</h3>
             <form method="post" action="/admin/addCategory" onsubmit="return handleFormSubmit(event)">
+
                 <label for="categoryName" class="form-label">Category Name</label>
                 <input type="text" name="name" id="categoryName" class="form-control" placeholder="Enter category name">
-                <span id="name-error" class="error-message"></span> <!-- Error message container -->
+                <span id="name-error" class="error-message"></span>
 
                 <label for="categoryDescription" class="form-label">Description</label>
                 <textarea name="description" id="categoryDescription" class="form-control"
                     placeholder="Enter category description"></textarea>
-                <span id="description-error" class="error-message"></span> <!-- Error message container -->
+                <span id="description-error" class="error-message"></span>
 
                 <button type="submit" class="btn-primary">Create Category</button>
             </form>
         </div>
-
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 
     <script>
@@ -298,7 +306,15 @@
                     return response.json();
                 })
                 .then(data => {
-                    location.reload();
+                    Swal.fire({
+                        icon: "success",
+                        title: "Success",
+                        text: "Category added successfully!",
+                        showConfirmButton: false,
+                        timer: 1000
+                    }).then(() => {
+                        location.reload();
+                    });
                 })
                 .catch(error => {
                     if (error.message === "Category already exists") {
@@ -358,7 +374,7 @@
         }
 
 
-        
+
         /////////
         async function unlistCategory(categoryId) {
             try {
@@ -496,6 +512,133 @@
                 });
             }
         });
+
+    </script>
+
+    <script>
+
+   
+        async function addCategoryOffer(categoryId) {
+            try {
+                const { value: formValues } = await Swal.fire({
+                    title: 'Category Offer Details',
+                    html: `
+                 <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+                  <label style="font-weight: 600; font-size: 14px; align-self: flex-start;">Offer Percentage:</label>
+                 <input id="offerPercentage" type="number" min="0" max="100" class="swal2-input"
+                 placeholder="%" style="width: 80%; height: 40px; font-size: 14px; text-align: center; padding: 5px;">
+
+                 <label style="font-weight: 600; font-size: 14px; align-self: flex-start;">Start Date:</label>
+                 <input id="startDate" type="date" class="swal2-input"
+                 style="width: 80%; height: 40px; font-size: 14px; text-align: center; padding: 5px;">
+
+                 <label style="font-weight: 600; font-size: 14px; align-self: flex-start;">Expiry Date:</label>
+                 <input id="expiryDate" type="date" class="swal2-input"
+                  style="width: 80%; height: 40px; font-size: 14px; text-align: center; padding: 5px;">
+                </div>
+                `,
+
+                    focusConfirm: false,
+                    showCancelButton: true,
+                    confirmButtonText: "Submit",
+                    confirmButtonColor: "#007bff",
+                    cancelButtonColor: "#d33",
+                    preConfirm: () => {
+                        const percentage = document.getElementById('offerPercentage').value;
+                        const startDate = document.getElementById('startDate').value;
+                        const expiryDate = document.getElementById('expiryDate').value;
+                        const today = new Date().toISOString().split("T")[0];
+
+                        // Validation checks
+                        if (!percentage || !startDate || !expiryDate) {
+                            Swal.showValidationMessage("All fields are required!");
+                            return false;
+                        }
+                        if (startDate < today) {
+                            Swal.showValidationMessage("Start date must be today or later!");
+                            return false;
+                        }
+                        if (new Date(expiryDate) <= new Date(startDate)) {
+                            Swal.showValidationMessage("Expiry date must be after the start date!");
+                            return false;
+                        }
+
+                        return { percentage, startDate, expiryDate };
+                    }
+                });
+
+                if (!formValues) return;
+
+                const response = await fetch('/admin/addCategoryOffer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        percentage: formValues.percentage,
+                        startDate: formValues.startDate,
+                        expiryDate: formValues.expiryDate,
+                        categoryId: categoryId
+                    }),
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    Swal.fire({
+                        title: "Success",
+                        text: "Offer added successfully!",
+                        icon: "success",
+                        confirmButtonColor: "#46cd4a"
+                    }).then(() => location.reload());
+                } else {
+                    Swal.fire('Failed', result.message, 'error');
+                }
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Error', 'Something went wrong!', 'error');
+            }
+        }
+
+
+
+
+        async function removeCategoryOffer(categoryId) {
+            try {
+                const confirm = await Swal.fire({
+                    title: 'Remove Category Offer',
+                    text: 'Are you sure you want to remove this category offer?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3885d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, remove it!',
+                });
+
+                if (!confirm.isConfirmed) return;
+
+                const response = await fetch('/admin/removeCategoryOffer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ categoryId: categoryId }),
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Removed!",
+                        text: "The offer has been removed",
+                        showConfirmButton: false,
+                        timer: 1000
+                    }).then(() => location.reload())
+                } else {
+                    Swal.fire('Failed', result.message, 'error');
+                }
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Error', 'Something went wrong!', 'error');
+            }
+        }
 
     </script>
 

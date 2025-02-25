@@ -24,6 +24,21 @@ const productSchema = new Schema({
         type: Number,
         default: 0,
     },
+    offerStartDate: {  
+        type: Date,
+        default: null,
+    },
+    offerEndDate: { 
+        type: Date,
+        default: null,
+        validate: {
+            validator: function (value) {
+                return !this.offerStartDate || !value || value > this.offerStartDate;
+            },
+            message: "Offer end date must be after the start date",
+        },
+    },
+
     productImage: {
         type: [String],
         required: true,

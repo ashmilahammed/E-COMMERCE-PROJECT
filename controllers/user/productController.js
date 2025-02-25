@@ -25,28 +25,35 @@ const productDetails = async (req, res) => {
         }
 
         const findCategory = product.category;
-        const categoryOffer = findCategory?.categoryOffer || 0;
-        const productOffer = product.productOffer || 0;
-        const totalOffer = categoryOffer + productOffer;
+
+        // const categoryOffer = findCategory?.categoryOffer || 0;
+        // const productOffer = product.productOffer || 0;
+        // const totalOffer = categoryOffer + productOffer;
+
+        const now = new Date();
+        const categoryOffer = (findCategory?.endDate && now > findCategory.endDate) ? 0 : (findCategory?.categoryOffer || 0);
+        const productOffer = (product.offerEndDate && now > product.offerEndDate) ? 0 : (product.productOffer || 0);
+        const totalOffer = Math.max(categoryOffer, productOffer); 
+
 
 
         // Process variants and format product data
         let formattedProduct = product.toObject();
-        
+
         if (formattedProduct.variants && formattedProduct.variants.length > 0) {
-    
+
             formattedProduct.availableSizes = [...new Set(
                 formattedProduct.variants
                     .filter(v => v.quantity > 0)
                     .map(v => v.size)
             )].sort((a, b) => a - b);
 
-            
+
             formattedProduct.variantQuantities = formattedProduct.variants.reduce((acc, variant) => {
-                acc[variant.size] = variant.quantity; 
+                acc[variant.size] = variant.quantity;
                 return acc;
             }, {});
-    
+
             const activeVariant = formattedProduct.variants.find(v => v.quantity > 0);
             if (activeVariant) {
                 formattedProduct.regularPrice = activeVariant.regularPrice;
@@ -61,16 +68,16 @@ const productDetails = async (req, res) => {
             isBlocked: false,
             'variants.quantity': { $gt: 0 }
         })
-        .populate('category')
-        .populate('brand')
-        .limit(4);
+            .populate('category')
+            .populate('brand')
+            .limit(4);
 
         // Format related products
         const formattedRelatedProducts = relatedProducts.map(relProduct => {
             const formatted = relProduct.toObject();
-            
+
             if (formatted.variants && formatted.variants.length > 0) {
-           
+
                 formatted.availableSizes = [...new Set(
                     formatted.variants
                         .filter(v => v.quantity > 0)
@@ -84,7 +91,7 @@ const productDetails = async (req, res) => {
                 }
 
                 formatted.totalQuantity = formatted.variants.reduce(
-                    (sum, variant) => sum + variant.quantity, 
+                    (sum, variant) => sum + variant.quantity,
                     0
                 );
             }
@@ -101,7 +108,7 @@ const productDetails = async (req, res) => {
             relatedProducts: formattedRelatedProducts,
             variantQuantities: JSON.stringify(formattedProduct.variantQuantities || {})
         });
-        
+
     } catch (error) {
         console.error("Error fetching product details:", error);
         res.redirect("/pageNotFound");
