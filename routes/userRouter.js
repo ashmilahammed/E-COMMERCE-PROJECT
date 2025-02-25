@@ -85,7 +85,9 @@ router.post('/checkout/editAddress',userAuth,checkoutController.editAddress);
 router.get("/orderDetails",userAuth,checkoutController.getOrderDetails);
 router.post("/cancelOrder",userAuth,checkoutController.cancelOrder)
 router.post("/applyCoupon",userAuth,checkoutController.applyCoupon);
+router.post("/removeCoupon",userAuth,checkoutController.removeCoupon);
 
+//razorpay
 
 
 

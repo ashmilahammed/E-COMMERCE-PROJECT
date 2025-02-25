@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
+    <!-- razorpay -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
 
 
     <!-- <style>
@@ -361,7 +364,6 @@
 
 
     <style>
-        
         /* Custom styles for the confirmation popup */
         .custom-popup {
             background-color: #f7f7f7;
@@ -626,6 +628,7 @@
                                 </div>
 
 
+
                                 <!-- Coupon Code Section -->
                                 <div class="checkout__coupon mb-4 p-3 border rounded bg-white">
                                     <h6 class="mb-3">
@@ -637,7 +640,14 @@
                                         <button id="applyCouponBtn" class="site-btn">Apply</button>
                                     </div>
 
-                                    <!-- Dynamically Display Coupons -->
+                                    <div id="appliedCoupon" class="mt-3" style="display: none;">
+                                        <div class="applied-coupon-item p-2 border rounded " style="background-color: rgb(58, 184, 0);color: white;">
+                                            <strong id="appliedCouponCode"></strong> - Applied
+                                            <button class="btn btn-sm btn-danger ms-2 remove-coupon" style="background-color: red;">Remove</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Available Coupons -->
                                     <div id="couponList" class="mt-3">
                                         <% if (coupons.length> 0) { %>
                                             <% coupons.forEach(coupon=> { %>
@@ -726,7 +736,7 @@
                                             <input class="form-check-input" type="radio" value="wallet"
                                                 name="paymentMethod" id="wallet">
                                             <label class="form-check-label" for="wallet">
-                                                <i class="fas fa-wallet me-2"></i>Wallet 
+                                                <i class="fas fa-wallet me-2"></i>Wallet
                                             </label>
                                         </div>
                                         <!-- <div class="form-check mb-3">
@@ -737,7 +747,7 @@
                                             </label>
                                         </div> -->
                                         <div class="form-check mb-3">
-                                            <input class="form-check-input" type="radio" value="credit_card"
+                                            <input class="form-check-input" type="radio" value="razorpay"
                                                 name="paymentMethod" id="card">
                                             <label class="form-check-label" for="card">
                                                 <i class="fas fa-credit-card me-2"></i>Razor Pay
@@ -1317,6 +1327,7 @@
 
 
             //////
+
             document.addEventListener("DOMContentLoaded", function () {
                 // Auto-fill input when clicking a coupon
                 document.querySelectorAll(".apply-coupon").forEach(button => {
@@ -1325,32 +1336,23 @@
                     });
                 });
 
-
-                // toast messages
                 function showToast(message, type = "success") {
                     const toastContainer = document.getElementById("toastContainer");
-
                     if (!toastContainer) {
                         console.error("Toast container not found!");
                         return;
                     }
-
                     const toast = document.createElement("div");
                     toast.className = `toast-message ${type}`;
                     toast.textContent = message;
-
                     toastContainer.appendChild(toast);
-
-                    setTimeout(() => {
-                        toast.remove();
-                    }, 2000);
+                    setTimeout(() => toast.remove(), 2000);
                 }
 
-
+                
                 // Apply Coupon
                 document.getElementById("applyCouponBtn").addEventListener("click", async function () {
                     const couponCode = document.getElementById("couponInput").value.trim();
-
                     if (!couponCode) {
                         showToast("Please enter a coupon code.", "error");
                         return;
@@ -1368,12 +1370,16 @@
                         if (data.success) {
                             showToast(`Coupon Applied! You get ₹${data.discountAmount} off.`, "success");
 
-                            // Update cart summary dynamically
+                            // Show applied coupon
+                            const appliedCouponDiv = document.getElementById("appliedCoupon");
+                            document.getElementById("appliedCouponCode").textContent = couponCode;
+                            appliedCouponDiv.style.display = "block";
+
+                            // Update cart summary
                             const discountElement = document.getElementById("discountAmount");
                             const totalElement = document.getElementById("totalAmount");
-
                             if (discountElement && totalElement) {
-                                discountElement.textContent = `- ${data.discountAmount}`;
+                                discountElement.textContent = `-${data.discountAmount}`;
                                 totalElement.textContent = `${data.newTotal}`;
                             }
                         } else {
@@ -1384,8 +1390,43 @@
                         showToast("Something went wrong. Please try again.", "error");
                     }
                 });
-            });
+                
 
+                // Remove Coupon
+                document.querySelectorAll(".remove-coupon").forEach(button => {
+                    button.addEventListener("click", async function () {
+                        try {
+                            const response = await fetch("/removeCoupon", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" }
+                            });
+
+                            const data = await response.json();
+
+                            if (data.success) {
+                                showToast("Coupon removed successfully.", "success");
+
+                                // Hide applied coupon
+                                document.getElementById("appliedCoupon").style.display = "none";
+                                document.getElementById("couponInput").value = "";
+
+                                // Reset cart summary
+                                const discountElement = document.getElementById("discountAmount");
+                                const totalElement = document.getElementById("totalAmount");
+                                if (discountElement && totalElement) {
+                                    discountElement.textContent = "₹0";
+                                    totalElement.textContent = `${data.originalTotal}`;
+                                }
+                            } else {
+                                showToast(data.message || "Failed to remove coupon.", "error");
+                            }
+                        } catch (error) {
+                            console.error("Error removing coupon:", error);
+                            showToast("Something went wrong. Please try again.", "error");
+                        }
+                    });
+                });
+            });
 
         </script>
 

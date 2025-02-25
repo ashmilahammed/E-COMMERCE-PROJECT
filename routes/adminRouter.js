@@ -61,7 +61,8 @@ router.post("/removeProductOffer",adminAuth,productController.removeProductOffer
 //order  management
 router.get("/order-list",adminAuth,orderController.orderListPage);
 router.get("/orderList-details/:orderId",adminAuth,orderController.getOrderDetails);
-router.post("/update-order-status",adminAuth,orderController.updateOrderStatus)
+router.post("/update-order-status",adminAuth,orderController.updateOrderStatus);
+
 
 //coupon management
 router.get("/coupons",adminAuth,couponController.getCouponPage);
