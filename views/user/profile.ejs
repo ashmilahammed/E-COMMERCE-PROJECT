@@ -365,7 +365,7 @@
                   <div class="order-card">
                     <div class="order-header">
                       <div>
-                        <strong>Order #<%= order.orderNumber %></strong>
+                        <strong>Order #<%= order.orderId %></strong>
                         <small class="text-muted ml-2">
                           <%= new Date(order.createdAt).toLocaleDateString() %>
                         </small>
@@ -387,7 +387,7 @@
                       </div>
 
 
-                      <a href="/orderDetails?id=<%= order._id %>">
+                      <a href="/order-details/<%= order._id %>">
                         <button class="btn btn-primary view-order-details">
                           View Details
                         </button>
@@ -404,7 +404,6 @@
                 <% } %>
           </div>
         </div>
-
 
 
 

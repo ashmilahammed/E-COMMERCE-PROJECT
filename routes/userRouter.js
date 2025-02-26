@@ -82,13 +82,28 @@ router.post('/add-address',userAuth,checkoutController.addAddress);
 router.post('/checkout/editAddress',userAuth,checkoutController.editAddress);
 
 //Order management
-router.get("/orderDetails",userAuth,checkoutController.getOrderDetails);
+// router.get("/orderDetails",userAuth,checkoutController.getOrderDetails);   
+router.get("/order-details/:orderId", userAuth, checkoutController.getOrderDetails);
 router.post("/cancelOrder",userAuth,checkoutController.cancelOrder)
 router.post("/applyCoupon",userAuth,checkoutController.applyCoupon);
 router.post("/removeCoupon",userAuth,checkoutController.removeCoupon);
 
 //razorpay
+router.post("/verify-payment",userAuth,checkoutController.verifyPayment);
+router.post("/retry-payment",userAuth,checkoutController.retryPayment)
 
+
+
+
+router.get('/order-success', async (req, res) => {
+    const { orderId } = req.query;
+    res.render('order-success', { orderId });
+});
+
+router.get('/order-failure', async (req, res) => {
+    const { orderId } = req.query;
+    res.render('order-failure', { orderId });
+});
 
 
 //wishlist management

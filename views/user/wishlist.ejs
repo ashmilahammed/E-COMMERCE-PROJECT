@@ -139,7 +139,8 @@
                                                                 <i class="fi-rs-heart"
                                                                     style="font-size: 3rem; color: #ddd;"></i>
                                                                 <h5 class="mt-3 mb-2">Your wishlist is empty</h5>
-                                                                <p class="text-muted mb-4">Browse our store and explore!</p>
+                                                                <p class="text-muted mb-4">Browse our store and explore!
+                                                                </p>
                                                                 <a href="/shop" class="btn btn-primary">Continue
                                                                     Shopping</a>
                                                             </div>
@@ -199,6 +200,19 @@
 
         async function addToCart(productId, size) {
             try {
+                // Ask for confirmation before adding to cart
+                const confirmAdd = await Swal.fire({
+                    title: 'Add to Cart?',
+                    text: 'Are you sure you want to add this item to your cart?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, add it!'
+                });
+
+                if (!confirmAdd.isConfirmed) return; 
+
                 const response = await fetch('/cart/add', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -208,6 +222,7 @@
                 const result = await response.json();
 
                 if (result.success) {
+
                     Swal.fire({
                         icon: 'success',
                         title: 'Added to Cart!',
@@ -215,7 +230,8 @@
                         showConfirmButton: false,
                         timer: 1500
                     });
-                    await removeFromWishlist(productId, size)
+
+                    await removeFromWishlist(productId, size, false, false);
 
                 } else {
                     throw new Error(result.message);
@@ -231,45 +247,40 @@
         }
 
 
-
-        async function removeFromWishlist(productId, size) {
+        async function removeFromWishlist(productId, size, showConfirmation = true, showSuccessMessage = true) {
             try {
+                if (showConfirmation) {
+                    const result = await Swal.fire({
+                        title: 'Remove from Wishlist?',
+                        text: 'Are you sure you want to remove this item?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#dc3545',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Yes, remove it!'
+                    });
 
-                const result = await Swal.fire({
-                    title: 'Remove from Wishlist?',
-                    text: 'Are you sure you want to remove this item?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#dc3545',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Yes, remove it!'
+                    if (!result.isConfirmed) return; 
+                }
+
+                const response = await fetch('/wishlist/remove', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ productId, size })
                 });
 
-                if (result.isConfirmed) {
-                    const response = await fetch('/wishlist/remove', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ productId, size })
-                    });
-                //     body: JSON.stringify({ 
-                //     productId: productId, 
-                //     size: parseInt(size) 
-                //    })
-     
-                    const data = await response.json();
+                const data = await response.json();
 
-                    if (data.success) {
-                        const productRow = document.querySelector(`tr[data-product-id="${productId}"]`);
-                        if (productRow) productRow.remove();
+                if (data.success) {
+                    const productRow = document.querySelector(`tr[data-product-id="${productId}"]`);
+                    if (productRow) productRow.remove();
 
-                        // Check if wishlist is now empty
-                        const remainingProducts = document.querySelectorAll('tbody tr:not(#empty-wishlist)');
-                        const emptyWishlistElement = document.getElementById('empty-wishlist');
+                    // Check if wishlist is now empty
+                    const remainingProducts = document.querySelectorAll('tbody tr[data-product-id]');
+                    if (remainingProducts.length === 0) {
+                        location.reload();
 
-                        if (remainingProducts.length === 0 && emptyWishlistElement) {
-                            emptyWishlistElement.classList.remove('d-none');
-                        }
-
+                    } else if (showSuccessMessage) {
                         Swal.fire({
                             icon: 'success',
                             title: 'Removed!',
@@ -277,9 +288,9 @@
                             showConfirmButton: false,
                             timer: 1500
                         });
-                    } else {
-                        throw new Error(data.message || "Unknown error occurred.");
                     }
+                } else {
+                    throw new Error(data.message || "Unknown error occurred.");
                 }
             } catch (error) {
                 console.error("Error removing product:", error);

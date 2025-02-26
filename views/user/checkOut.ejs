@@ -641,9 +641,11 @@
                                     </div>
 
                                     <div id="appliedCoupon" class="mt-3" style="display: none;">
-                                        <div class="applied-coupon-item p-2 border rounded " style="background-color: rgb(58, 184, 0);color: white;">
+                                        <div class="applied-coupon-item p-2 border rounded "
+                                            style="background-color: rgb(58, 184, 0);color: white;">
                                             <strong id="appliedCouponCode"></strong> - Applied
-                                            <button class="btn btn-sm btn-danger ms-2 remove-coupon" style="background-color: red;">Remove</button>
+                                            <button class="btn btn-sm btn-danger ms-2 remove-coupon"
+                                                style="background-color: red;">Remove</button>
                                         </div>
                                     </div>
 
@@ -1232,7 +1234,6 @@
                     }
 
 
-                    ////
                     const confirmResult = await Swal.fire({
                         icon: 'question',
                         title: 'Confirm Order',
@@ -1258,6 +1259,71 @@
                     const response = await placeOrder(selectedAddressRadio.value, cartItems, selectedPaymentMethod);
 
                     if (response.success) {
+                        if (response.isRazorpay) {
+                            const customOrderId = response.orderId
+                            const options = {
+                                key: response.key,
+                                amount: response.amount,
+                                currency: 'INR',
+                                order_id: response.razorpayOrderId,
+                                handler: async function (paymentResponse) {
+                                    const verifyResponse = await fetch('/verify-payment?orderId=' + customOrderId, {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({
+                                            razorpay_order_id: paymentResponse.razorpay_order_id,
+                                            razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                                            razorpay_signature: paymentResponse.razorpay_signature
+                                        })
+                                    });
+
+                                    const verifyData = await verifyResponse.json();
+
+                                    if (verifyData.success) {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Payment Successful!',
+                                            text: 'Your order has been placed successfully.',
+                                            showCancelButton: true,
+                                            confirmButtonText: 'View Orders',
+                                            cancelButtonText: 'Continue Shopping',
+
+                                            customClass: {
+                                                popup: 'custom-popup-success',
+                                                title: 'custom-title-success',
+                                                content: 'custom-content-success',
+                                                confirmButton: 'custom-button-success',
+                                                cancelButton: 'custom-cancel-button-success',
+                                            }
+                                        }).then((result) => {
+                                            if (result.isConfirmed) {
+                                                window.location.href = '/userProfile';
+                                            } else {
+                                                window.location.href = '/shop';
+                                            }
+                                        });
+                                    } else {
+                                        window.location.href = `/order-details/${customOrderId}`;
+                                    }
+                                },
+                                prefill: {
+                                    name: "Customer Name",
+                                    email: "customer@example.com",
+                                    contact: "9999999999"
+                                },
+                                theme: { color: "#3399cc" }
+                            };
+
+
+                            const rzp = new Razorpay(options);
+                            rzp.on('payment.failed', function (response) {
+
+                            console.log('Payment failed, redirecting to order details with orderId:', customOrderId);
+                            window.location.href = `/order-details/${customOrderId}`;
+                        });
+                        rzp.open();
+
+                    } else {
                         Swal.fire({
                             icon: 'success',
                             title: 'Order Placed Successfully!',
@@ -1280,17 +1346,19 @@
                                 window.location.href = '/shop';
                             }
                         });
-                    } else {
-                        throw new Error(response.message || 'Failed to place order');
                     }
-                } catch (error) {
-                    console.error('Error in confirmOrder:', error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Order Failed',
-                        text: error.message || 'Something went wrong while placing your order'
-                    });
+                } else {
+                    throw new Error(response.message || 'Failed to place order');
                 }
+            } catch (error) {
+                console.error('Error in confirmOrder:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Order Failed',
+                    text: error.message || 'Something went wrong'
+                });
+            }
+
             }
 
 
@@ -1349,7 +1417,7 @@
                     setTimeout(() => toast.remove(), 2000);
                 }
 
-                
+
                 // Apply Coupon
                 document.getElementById("applyCouponBtn").addEventListener("click", async function () {
                     const couponCode = document.getElementById("couponInput").value.trim();
@@ -1390,7 +1458,7 @@
                         showToast("Something went wrong. Please try again.", "error");
                     }
                 });
-                
+
 
                 // Remove Coupon
                 document.querySelectorAll(".remove-coupon").forEach(button => {

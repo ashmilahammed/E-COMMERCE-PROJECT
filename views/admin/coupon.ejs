@@ -25,6 +25,10 @@
             color: white;
             border-color: black;
         }
+        .table-hover tbody tr {
+            border-bottom: 1px solid #4f4f4f
+        }
+
     </style>
 
     <!-- Coupon List Table -->
@@ -48,7 +52,7 @@
                                 <th>Code</th>
                                 <th>Discount Type</th>
                                 <th>Value</th>
-                                <th>Max Discount</th>
+                                <th>Min Purchase</th>
                                 <th>Start Date</th>
                                 <th>End Date</th>
                                 <th>Status</th>
@@ -70,8 +74,11 @@
                                             <%= coupon.discountValue %>
                                                 <%= coupon.discountType==="percentage" ? "%" : "Flat" %>
                                         </td>
-                                        <td>
+                                        <!-- <td>
                                             <%= coupon.maxDiscountAmount ? "₹" + coupon.maxDiscountAmount : "N/A" %>
+                                        </td> -->
+                                        <td>
+                                            <%= coupon.minPurchaseAmount ? "₹" + coupon.minPurchaseAmount : "N/A" %>
                                         </td>
                                         <td>
                                             <%= new Date(coupon.startDate).toLocaleDateString() %>

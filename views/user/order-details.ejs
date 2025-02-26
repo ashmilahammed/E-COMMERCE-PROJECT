@@ -1,157 +1,157 @@
 <%- include("../../views/partials/user/header") %>
- 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
 
-<style>
-    body {
-        background-color: #e0e0e0;
-    }
+    <style>
+        body {
+            background-color: #e0e0e0;
+        }
 
-    .order-card {
-        background: #fff;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-        margin-bottom: 20px;
-    }
+        .order-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
 
-    .order-card-header {
-        font-size: 1.25rem;
-        font-weight: bold;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
+        .order-card-header {
+            font-size: 1.25rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-    .order-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 15px;
-    }
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
 
-    .order-item img {
-        width: 80px;
-        height: 80px;
-        object-fit: cover;
-        border-radius: 5px;
-        margin-right: 15px;
-    }
+        .order-item img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-right: 15px;
+        }
 
-    .order-item-details {
-        flex-grow: 1;
-    }
+        .order-item-details {
+            flex-grow: 1;
+        }
 
-    .order-item-status {
-        display: flex;
-        align-items: center;
-    }
+        .order-item-status {
+            display: flex;
+            align-items: center;
+        }
 
-    .status-badge {
-        font-size: 0.85rem;
-        padding: 5px 10px;
-        border-radius: 15px;
-        margin-right: 15px;
-    }
+        .status-badge {
+            font-size: 0.85rem;
+            padding: 5px 10px;
+            border-radius: 15px;
+            margin-right: 15px;
+        }
 
-    .btn-cancel {
-        background-color: #dc3545;
-        color: white;
-        border-radius: 5px;
-        padding: 5px 10px;
-        font-size: 0.85rem;
-        cursor: pointer;
-        border: none;
-    }
+        .total-price {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-top: 15px;
+        }
 
-    .btn-cancel:hover {
-        background-color: #c82333;
-    }
+        .order-tracking {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
 
-    .total-price {
-        font-size: 1.1rem;
-        font-weight: bold;
-        margin-top: 15px;
-    }
-
-    .order-tracking {
-        margin-top: 20px;
-        padding: 15px;
-        background-color: #f9f9f9;
-        border-radius: 8px;
-    }
-
-    .cancel-btn{
-        background-color: red;
-        color: white;;
-        border-radius: 3px;
-        
-    }
-
-   
-    /* Modal styles for cancellation */
-    .cancel-modal .modal-header {
-        background-color: #f8d7da;
-        color: #721c24;
-    }
-    .cancel-modal .modal-body {
-        background-color: #fff3cd;
-    }
-    #cancelReasonTextarea {
-        resize: vertical;
-        min-height: 100px;
-    }
-
-</style>
+        .cancel-btn {
+            background-color: red;
+            color: white;
+            border-radius: 3px;
+            padding: 3px 10px;
+        }
+        .retry-btn{
+          border-radius: 3px;
+          padding: 3px 10px;
+        }
 
 
 
-<div class="container py-5">
-    <a href="/userProfile">
-        <button type="button" class="btn btn-dark mb-3"> < Back </button>
-    </a>
+        /* Modal styles for cancellation */
+        .cancel-modal .modal-header {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
 
-    <div class="row">
-        <div class="col-12">
-            <h2 class="text-center mb-4">Order Details</h2>
+        .cancel-modal .modal-body {
+            background-color: #fff3cd;
+        }
 
-            <div class="order-card">
-                <div class="order-card-header">
-                    Order ID: <%= order.orderNumber %> 
-                    <span class="badge 
+        #cancelReasonTextarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+    </style>
+
+
+
+    <div class="container py-5">
+        <a href="/userProfile">
+            <button type="button" class="btn btn-dark mb-3">
+                < Back </button>
+        </a>
+
+        <div class="row">
+            <div class="col-12">
+                <h2 class="text-center mb-4">Order Details</h2>
+
+                <div class="order-card">
+                    <div class="order-card-header">
+                        Order ID: <%= order.orderId %>
+                            <span class="badge 
                         <%= order.orderStatus === 'Delivered' ? 'bg-success' : 
                             order.orderStatus === 'Cancelled' ? 'bg-danger' : 
                             order.orderStatus === 'Pending' ? 'bg-warning' : 
                             'bg-info' %>">
-                        <%= order.orderStatus %>
-                    </span>
-                </div>
-                <div class="order-card-body">
-                    <% order.orderItems.forEach(function(item) { %>
-                        <div class="order-item">
-                            <a href="/productDetails?id=<%= item.product._id %>">
-                                <img 
-                                src="/uploads/re-image/<%= item.productImage %>" 
-                                alt="<%= item.productDetails.name %>"
-                            >
+                                <%= order.orderStatus %>
+                            </span>
+                    </div>
+                    <div class="order-card-body">
+                        <% order.orderItems.forEach(function(item) { %>
+                            <div class="order-item">
+                                <a href="/productDetails?id=<%= item.product._id %>">
+                                    <img src="/uploads/re-image/<%= item.productImage %>"
+                                        alt="<%= item.productDetails.name %>">
 
-                            </a>
-                           
-                            <div class="order-item-details">
-                                <h5><%= item.productDetails.name%></h5>
-                                <p>
-                                    <strong>Category:</strong> <%= item.productDetails.category %><br>
-                                    <strong>Brand:</strong> <%= item.productDetails.brand %><br>
-                                    <strong>Size:</strong> <%= item.variant.size %><br>
-                                    <strong>Quantity:</strong> <%= item.variant.quantity %><br>
-                                    <strong>Price:</strong> ₹<%= item.price.salePrice.toFixed(2) %>
-                                </p>
-                            </div>
-                            <!-- <div class="order-item-status">
+                                </a>
+
+                                <div class="order-item-details">
+                                    <h5>
+                                        <%= item.productDetails.name%>
+                                    </h5>
+                                    <p>
+                                        <strong>Category:</strong>
+                                        <%= item.productDetails.category %><br>
+                                            <strong>Brand:</strong>
+                                            <%= item.productDetails.brand %><br>
+                                                <strong>Size:</strong>
+                                                <%= item.variant.size %><br>
+                                                    <strong>Quantity:</strong>
+                                                    <%= item.variant.quantity %><br>
+                                                        <strong>Price:</strong> ₹<%= item.price.salePrice.toFixed(2) %>
+                                    </p>
+                                </div>
+                                <!-- <div class="order-item-status">
                                 <span class="status-badge 
                                     <%= item.itemStatus === 'Delivered' ? 'bg-success' : 
                                         item.itemStatus === 'Cancelled' ? 'bg-danger' : 
@@ -160,202 +160,367 @@
                                     <%= item.itemStatus %>
                                 </span>
                             </div> -->
-                        </div>
-                    <% }); %>
-                  
-                    <!-- <a href="/cancelOrder">
-                        <button type="button" class="cancel-btn">Cancel Order</button>
-                    </a> -->
-                    <button type="button" class="cancel-btn" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
+                            </div>
+                            <% }); %>
+
+
+                                <!-- <button type="button" class="cancel-btn" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
                         Cancel Order
-                    </button>
-                    
+                             </button> -->
 
-                    <div class="total-price text-end">
-                        <p><strong>Subtotal: </strong>₹<%= order.pricing.subtotal.toFixed(2) %></p>
-                        <p><strong>Total: </strong>₹<%= order.pricing.finalAmount.toFixed(2) %></p>
-                    </div>
+                                <!-- Dynamic Button -->
+                                <% if (order.orderStatus==='Cancelled' ) { %>
+                                    <button type="button" class="btn btn-secondary" style="padding: 3px 10px; background-color:rgb(79, 79, 79);"
+                                     disabled>Order Cancelled</button>
+                                <% } else if (order.payment.method==='RAZORPAY' && order.payment.status==='Pending') { %>
+                                    <button type="button" class="btn btn-primary retry-btn"
+                                         onclick="retryPayment('<%= order.orderId %>')">Retry Payment</button>
+                                 <% } else { %>
+                                    <button type="button" class="cancel-btn btn btn-danger"
+                                          data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
+                                          Cancel Order</button>
+                                 <% } %>
 
-                    <div class="shipping-details">
-                        <h5>Shipping Address</h5>
-                        <p>
-                            <%= order.shippingAddress.name %><br>
-                            <%= order.shippingAddress.landMark %>, 
-                            <%= order.shippingAddress.city %>, 
-                            <%= order.shippingAddress.state %> - 
-                            <%= order.shippingAddress.pincode %><br>
-                            Phone: <%= order.shippingAddress.phone %>
-                        </p>
-                    </div>
 
-                    <div class="payment-details">
-                        <h5>Payment Details</h5>
-                        <p>
-                            <strong>Method:</strong> <%= order.payment.method %><br>
-                            <strong>Status:</strong> <%= order.payment.status %>
-                        </p>
-                    </div>
+                                                <div class="total-price text-end">
+                                                    <p><strong>Subtotal: </strong>₹<%= order.pricing.subtotal.toFixed(2)
+                                                            %>
+                                                    </p>
+                                                    <p><strong>Total: </strong>₹<%= order.pricing.finalAmount.toFixed(2)
+                                                            %>
+                                                    </p>
+                                                </div>
 
-                    <div class="order-tracking">
-                        <h5>Order Tracking</h5>
-                        <p>
-                            <strong>Order Date:</strong> <%= order.createdAt.toLocaleDateString() %><br>
-                            <strong>Expected Delivery:</strong> <%= order.expectedDeliveryDate.toLocaleDateString() %>
-                        </p>
+                                                <div class="shipping-details">
+                                                    <h5 style="font-weight: bold;">Shipping Address </h5>
+                                                    <p>
+                                                        <%= order.shippingAddress.name %><br>
+                                                            <%= order.shippingAddress.landMark %>,
+                                                                <%= order.shippingAddress.city %>,
+                                                                    <%= order.shippingAddress.state %> -
+                                                                        <%= order.shippingAddress.pincode %><br>
+                                                                            Phone: <%= order.shippingAddress.phone %>
+                                                    </p>
+                                                </div>
+
+                                                <div class="payment-details">
+                                                    <h5 style="font-weight: bold;">Payment Details </h5>
+                                                    <p>
+                                                        <strong>Method:</strong>
+                                                        <%= order.payment.method %><br>
+                                                            <strong>Status:</strong>
+                                                            <%= order.payment.status %>
+                                                    </p>
+                                                </div>
+
+                                                <div class="order-tracking">
+                                                    <h5>Order Tracking</h5>
+                                                    <p>
+                                                        <strong>Order Date:</strong>
+                                                        <%= order.createdAt.toLocaleDateString() %><br>
+                                                            <strong>Expected Delivery:</strong>
+                                                            <%= order.expectedDeliveryDate.toLocaleDateString() %>
+                                                    </p>
+                                                </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
 
-     <!-- Cancellation Modal -->
-     <div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered cancel-modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="cancelOrderModalLabel">Cancel Order</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="cancelOrderForm">
-                        <div class="mb-3">
-                            <label for="cancelReasonTextarea" class="form-label">Reason for Cancellation</label>
-                            <textarea class="form-control" id="cancelReasonTextarea" rows="3" placeholder="Please provide a reason for cancelling the order" required></textarea>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-danger">Confirm Cancellation</button>
-                        </div>
-                    </form>
+        <!-- Cancellation Modal -->
+        <div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered cancel-modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cancelOrderModalLabel">Cancel Order</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="cancelOrderForm">
+                            <div class="mb-3">
+                                <label for="cancelReasonTextarea" class="form-label">Reason for Cancellation</label>
+                                <textarea class="form-control" id="cancelReasonTextarea" rows="3"
+                                    placeholder="Please provide a reason for cancelling the order" required></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-danger">Confirm Cancellation</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
+
+
+
     </div>
+    <%- include("../../views/partials/user/footer") %>
 
 
 
-</div>
-<%- include("../../views/partials/user/footer") %>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 
 
-    <script>
+        <!-- <script>
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Check if order is already cancelled
-    const orderStatus = '<%= order.orderStatus %>';
-    const cancelButton = document.querySelector('.cancel-btn');
+            document.addEventListener('DOMContentLoaded', function () {
+                // Check if order is already cancelled
+                const orderStatus = '<%= order.orderStatus %>';
+                const cancelButton = document.querySelector('.cancel-btn');
 
-    // If order is already cancelled, modify button and add event listener
-    if (orderStatus === 'Cancelled') {
-        cancelButton.disabled = true;
-        cancelButton.textContent = 'Order Cancelled';
-        cancelButton.classList.add('btn-secondary');
-        cancelButton.classList.remove('cancel-btn');
-
-        Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'info',
-            title: 'This order has already been cancelled',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-            didOpen: (toast) => {
-                toast.addEventListener('mouseenter', Swal.stopTimer)
-                toast.addEventListener('mouseleave', Swal.resumeTimer)
-            }
-        });
-    }
-
-    // Existing cancellation modal 
-    const cancelOrderForm = document.getElementById('cancelOrderForm');
-    cancelOrderForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const cancelReason = document.getElementById('cancelReasonTextarea').value.trim();
-
-        if (orderStatus === 'Cancelled') {
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'info',
-                title: 'This order has already been cancelled',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true
-            });
-            return;
-        }
-
-
-        fetch('/cancelOrder', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                orderId: '<%= order._id %>',
-                cancelReason: cancelReason
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                
-                const cancelModal = bootstrap.Modal.getInstance(document.getElementById('cancelOrderModal'));
-                cancelModal.hide();
-
-                
-                Swal.fire({
-                    title: 'Order Cancelled',
-                    text: 'Your order has been successfully cancelled.',
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                }).then(() => {
+                // If order is already cancelled, modify button and add event listener
+                if (orderStatus === 'Cancelled') {
                     cancelButton.disabled = true;
                     cancelButton.textContent = 'Order Cancelled';
                     cancelButton.classList.add('btn-secondary');
                     cancelButton.classList.remove('cancel-btn');
-                    window.location.reload(); 
-                    res.render("userProfile")
+
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'info',
+                        title: 'This order has already been cancelled',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                        }
+                    });
+                }
+
+                // Existing cancellation modal 
+                const cancelOrderForm = document.getElementById('cancelOrderForm');
+                cancelOrderForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const cancelReason = document.getElementById('cancelReasonTextarea').value.trim();
+
+                    if (orderStatus === 'Cancelled') {
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'info',
+                            title: 'This order has already been cancelled',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                        return;
+                    }
+
+
+                    fetch('/cancelOrder', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            orderId: '<%= order._id %>',
+                            cancelReason: cancelReason
+                        })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+
+                                const cancelModal = bootstrap.Modal.getInstance(document.getElementById('cancelOrderModal'));
+                                cancelModal.hide();
+
+
+                                Swal.fire({
+                                    title: 'Order Cancelled',
+                                    text: 'Your order has been successfully cancelled.',
+                                    icon: 'success',
+                                    confirmButtonText: 'OK'
+                                }).then(() => {
+                                    cancelButton.disabled = true;
+                                    cancelButton.textContent = 'Order Cancelled';
+                                    cancelButton.classList.add('btn-secondary');
+                                    cancelButton.classList.remove('cancel-btn');
+                                    window.location.reload();
+                                    res.render("userProfile")
+                                });
+                            } else {
+                                // Show error sweet alert
+                                Swal.fire({
+                                    title: 'Cancellation Failed',
+                                    text: data.message || 'Unable to cancel the order. Please try again.',
+                                    icon: 'error',
+                                    confirmButtonText: 'OK'
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'An unexpected error occurred. Please try again.',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        });
                 });
-            } else {
-                // Show error sweet alert
-                Swal.fire({
-                    title: 'Cancellation Failed',
-                    text: data.message || 'Unable to cancel the order. Please try again.',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire({
-                title: 'Error',
-                text: 'An unexpected error occurred. Please try again.',
-                icon: 'error',
-                confirmButtonText: 'OK'
             });
-        });
-    });
-});
 
-</script>
+        </script> -->
 
 
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const orderStatus = '<%= order.orderStatus %>';
+                const paymentStatus = '<%= order.payment.status %>';
+                const paymentMethod = '<%= order.payment.method %>';
+                const cancelButton = document.querySelector('.cancel-btn');
+
+                // Handle cancellation form submission
+                if (cancelButton) {
+                    const cancelOrderForm = document.getElementById('cancelOrderForm');
+                    cancelOrderForm.addEventListener('submit', function (e) {
+                        e.preventDefault();
+                        const cancelReason = document.getElementById('cancelReasonTextarea').value.trim();
+
+                        if (orderStatus === 'Cancelled') {
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                icon: 'info',
+                                title: 'This order has already been cancelled',
+                                showConfirmButton: false,
+                                timer: 3000,
+                                timerProgressBar: true
+                            });
+                            return;
+                        }
+
+                        fetch('/cancelOrder', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                orderId: '<%= order._id %>',
+                                cancelReason: cancelReason
+                            })
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    const cancelModal = bootstrap.Modal.getInstance(document.getElementById('cancelOrderModal'));
+                                    cancelModal.hide();
+
+                                    Swal.fire({
+                                        title: 'Order Cancelled',
+                                        text: 'Your order has been successfully cancelled.',
+                                        icon: 'success',
+                                        confirmButtonText: 'OK',
+                            
+                                    }).then(() => {
+                                        window.location.reload();
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: 'Cancellation Failed',
+                                        text: data.message || 'Unable to cancel the order. Please try again.',
+                                        icon: 'error',
+                                        confirmButtonText: 'OK'
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: 'An unexpected error occurred. Please try again.',
+                                    icon: 'error',
+                                    confirmButtonText: 'OK'
+                                });
+                            });
+                    });
+                }
+            });
 
 
 
 
+            async function retryPayment(orderId) {
+                try {
+                    const response = await fetch('/retry-payment', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ orderId })
+                    });
 
+                    const data = await response.json();
 
+                    if (data.success) {
+                        const rzp = new Razorpay({
+                            key: data.options.key,
+                            amount: data.options.amount,
+                            currency: data.options.currency,
+                            order_id: data.options.order_id,
+                            handler: async function (paymentResponse) {
+                                const verifyResponse = await fetch(`/verify-payment?orderId=${orderId}`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        razorpay_order_id: paymentResponse.razorpay_order_id,
+                                        razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                                        razorpay_signature: paymentResponse.razorpay_signature
+                                    })
+                                });
+                                const verifyData = await verifyResponse.json();
+                                if (verifyData.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Payment Successful!',
+                                        text: 'Your payment has been processed successfully.',
+                                        confirmButtonText: 'OK',
+                                         confirmButtonColor: '#28a745'
+                                    }).then(() => {
+                                        window.location.reload();
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Payment Verification Failed',
+                                        text: 'There was an issue verifying your payment. Please try again.',
+                                        confirmButtonText: 'OK'
+                                    });
+                                }
+                            },
+                            prefill: data.options.prefill,
+                            theme: data.options.theme
+                        });
 
+                        rzp.on('payment.failed', function (response) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Payment Failed',
+                                text: 'Your payment could not be processed. Please try again.',
+                                confirmButtonText: 'OK'
+                            });
+                        });
 
-
-
-
+                        rzp.open();
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Retry Failed',
+                            text: data.message || 'Unable to initiate payment retry. Please try again later.',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error in retryPayment:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Retry Error',
+                        text: 'Something went wrong while retrying payment.',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            }
+        </script>

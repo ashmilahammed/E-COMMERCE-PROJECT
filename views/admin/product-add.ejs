@@ -502,7 +502,7 @@
                     if (regularPrice && salePrice) {
                         const regPrice = parseFloat(regularPrice.value);
                         const salesPrice = parseFloat(salePrice.value);
-                        if (salesPrice >= regPrice) {
+                        if (salesPrice > regPrice) {
                             showError('salePrice', `Sale price must be less than regular price for variant ${i + 1}`);
                         }
                     }
