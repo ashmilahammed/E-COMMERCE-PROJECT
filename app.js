@@ -74,6 +74,9 @@ app.use((err, req, res, next) => {
 app.get("/hola",(req,res)=> {
     res.render("test")
 })
+app.get("/hola2",(req,res)=> {
+    res.render("test2")
+})
 
 
 

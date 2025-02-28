@@ -62,7 +62,9 @@ router.post("/removeProductOffer",adminAuth,productController.removeProductOffer
 router.get("/order-list",adminAuth,orderController.orderListPage);
 router.get("/orderList-details/:orderId",adminAuth,orderController.getOrderDetails);
 router.post("/update-order-status",adminAuth,orderController.updateOrderStatus);
-
+//return order
+router.get("/return-Requests",adminAuth,orderController.returnRequests);
+router.post("/process-return",adminAuth,orderController.returnProcess)
 
 //coupon management
 router.get("/coupons",adminAuth,couponController.getCouponPage);

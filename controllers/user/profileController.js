@@ -1,6 +1,7 @@
 const User = require("../../models/userSchema");
 const Address = require("../../models/addressSchema");
 const Order = require("../../models/orderSchema");
+const Wallet = require("../../models/walletSchema");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
 const env = require("dotenv").config();
@@ -186,6 +187,8 @@ const userProfile = async (req,res) => {
         const userId = req.session.user;
         const userData = await User.findById(userId);
         const addressData = await Address.findOne({userId : userId});
+
+        const wallet = await Wallet.findOne({ userId: userId})
         
         
         const orders = await Order.find({ userId: userId })
@@ -199,7 +202,9 @@ const userProfile = async (req,res) => {
         res.render("profile", {
             user: userData,
             userAddress: addressData,
-            orders: orders 
+            orders: orders ,
+            walletBalance: wallet?.balance ? wallet.balance.toFixed(2) : "0.00"
+
         });         
         
     } catch (error) {
@@ -605,6 +610,6 @@ module.exports = {
     editAddress,
     postEditAddress,
     deleteAddress,
-
     updateProfile
+
     }

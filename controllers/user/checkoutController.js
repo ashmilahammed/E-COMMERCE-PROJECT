@@ -11,6 +11,7 @@ const Razorpay = require("razorpay");
 const env = require("dotenv").config();
 const crypto = require("crypto");
 const { userAuth } = require("../../middlewares/auth");
+const { request } = require("http");
 
 const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
@@ -1086,6 +1087,104 @@ const removeCoupon = async (req, res) => {
 
 
 
+// const returnProduct = async (req,res) => {
+//     try {
+//         const { orderId, productId, reason } = req.body;
+
+//         if (!orderId || !productId || !reason) {
+//             return res.status(400).json({ success: false, message: "Missing required fields" });
+//         }
+
+//         const order = await Order.findById(orderId);
+//         if (!order) {
+//             return res.status(404).json({ success: false, message: "Order not found." });
+//         }
+
+//         const item = order.orderItems.find((i) => i.product.toString() === productId);
+//         if (!item) {
+//             return res.status(404).json({ success: false, message: "Product not found in order." });
+//         }
+
+//         // ✅ Check if the product is delivered before allowing return
+//         if (item.itemStatus !== "Delivered") {
+//             return res.status(400).json({ success: false, message: "Only delivered products can be returned." });
+//         }
+
+//         if (item.returnRequest?.requested) {
+//             return res.status(400).json({ success: false, message: "Return already requested for this product." });
+//         }
+
+//         // ✅ Set return request details
+//         item.returnRequest = {
+//             requested: true,
+//             status: "Pending",
+//             reason,
+//             requestDate: new Date(),
+//         };
+
+//         await order.save();
+
+//         res.json({ success: true, message: "Return request submitted successfully." });
+        
+//     } catch (error) {
+//         console.error("Error in return request:",error);
+//         res.status(500).json({success:false, message: "Internal Server error"})
+//     }
+// }
+
+const returnProduct = async (req, res) => {
+    try {
+        const { orderId, productId, variantSize, reason } = req.body;
+
+        if (!orderId || !productId || !variantSize || !reason) {
+            return res.status(400).json({ success: false, message: "Missing required fields" });
+        }
+
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.status(404).json({ success: false, message: "Order not found." });
+        }
+
+        // Find the specific product with the matching variant size
+        const item = order.orderItems.find(
+            (i) => i.product.toString() === productId && i.variant.size === parseInt(variantSize)
+        );
+
+        if (!item) {
+            return res.status(404).json({ success: false, message: "Variant not found in order." });
+        }
+
+        // ✅ Check if the product variant is delivered before allowing return
+        if (item.itemStatus !== "Delivered") {
+            return res.status(400).json({ success: false, message: "Only delivered products can be returned." });
+        }
+
+        if (item.returnRequest?.requested) {
+            return res.status(400).json({ success: false, message: "Return already requested for this variant." });
+        }
+
+        // ✅ Set return request details
+        item.returnRequest = {
+            requested: true,
+            status: "Pending",
+            reason,
+            requestDate: new Date(),
+        };
+
+        await order.save();
+
+        res.json({ success: true, message: "Return request submitted successfully." });
+
+    } catch (error) {
+        console.error("Error in return request:", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+
+
+
+
 
 module.exports = {
     checkoutPage,
@@ -1097,6 +1196,7 @@ module.exports = {
     cancelOrder,
     applyCoupon,
     removeCoupon,
+    returnProduct,
 
     verifyPayment,
     retryPayment

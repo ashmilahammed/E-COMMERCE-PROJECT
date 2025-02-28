@@ -1,0 +1,338 @@
+<%- include("../../views/partials/admin/header") %>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+    <style>
+        :root {
+            --sidebar-bg: #2d2d2d;
+            --header-bg: #3a3a3a;
+        }
+
+        .sidebar {
+            background-color: #f0f0f0;
+            min-height: 100vh;
+            width: 250px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 20px;
+        }
+
+
+
+        .table-header {
+            background-color: var(--header-bg);
+            color: white;
+        }
+
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 14px;
+        }
+
+        .status-pending {
+            background-color: #f8f9fa;
+            color: #6c757d;
+        }
+
+        .status-approved {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-rejected {
+            background-color: #ffebee;
+            color: #d32f2f;
+        }
+
+        .btn-approve {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-reject {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .pagination-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .rejected{
+            background-color: rgb(255, 57, 57);
+            color: white;
+            border-radius: 5px;
+            border: none;
+        }
+        .approved {
+            background-color: rgb(0, 150, 0);
+            color: rgb(255, 255, 255);
+            border-radius: 5px;
+            border: none;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+                min-height: auto;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+    <style>
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination a,
+        .pagination span {
+            padding: 8px 12px;
+            margin: 0 5px;
+            text-decoration: none;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            color: #ad5017;
+            cursor: pointer;
+        }
+
+        .pagination a:hover {
+            background-color: #daa675;
+        }
+
+        .pagination .active {
+            background-color: #d08420;
+            color: white;
+            border-color: black;
+        }
+
+        /* Disabled state for Previous and Next buttons */
+        .pagination .disabled {
+            pointer-events: none;
+            background-color: #e0e0e0;
+            color: #888;
+            border-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+
+
+
+
+    <div class="main-content">
+        <div class="container-fluid">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Return Request Management</h2>
+                <a href="/admin/order-list">
+                    <button class="btn btn-primary"> Back</button>
+                </a>
+            </div>
+
+
+            <!-- Pending Returns Section -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Returns History</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" >
+                            <thead class="table-header">
+                                <tr>
+                                    <th style="background-color: rgb(168, 208, 196);">Order #</th>
+                                    <th style="background-color: rgb(168, 208, 196);">Product</th>
+                                    <th style="background-color: rgb(168, 208, 196);">Reason</th>
+                                    <th style="background-color: rgb(168, 208, 196);">Requested At</th>
+                                    <th style="background-color: rgb(168, 208, 196);">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <% returnRequests.forEach(order=> { %>
+                                    <% order.orderItems.forEach(item=> { %>
+                                        <% if (item.returnRequest?.requested) { %>
+                                            <tr>
+                                                <td>
+                                                    <%= order._id %>
+                                                </td>
+                                                <td>
+                                                    <%= item.product ? item.product.productName : "Unknown Product" %>
+                                                        <br>
+                                                        <!-- <%= item.product && item.product.category ? item.product.category.name : "Unknown Category" %>
+                                                    <br> -->
+                                                        ₹<%= item.product && item.product.variants.length> 0 ?
+                                                            item.product.variants[0].salePrice : "Unknown Sale Price" %>
+                                                </td>
+
+                                                <td>
+                                                    <%= item.returnRequest.reason %>
+                                                </td>
+                                                <td>
+                                                    <%= item.returnRequest.requestDate ? new
+                                                        Date(item.returnRequest.requestDate).toLocaleDateString()
+                                                        : 'N/A' %>
+                                                </td>
+                                                <td>
+                                                    <% if (item.returnRequest.status==="Pending" ) { %>
+                                                        <button class="btn-approve"
+                                                            onclick="processReturn('<%= order._id %>', '<%= item.product._id %>', '<%= item.variant.size %>', 'approve')">
+                                                            Approve</button>
+                                                        <button class="btn-reject"
+                                                            onclick="processReturn('<%= order._id %>', '<%= item.product._id %>', '<%= item.variant.size %>', 'reject')">
+                                                            Reject</button>
+                                                        <% } else if (item.returnRequest.status==="Rejected" ) { %>
+                                                            <!-- <span class="text-danger"></span> -->
+                                                            <button class="rejected">Rejected</button>
+
+                                                            <p><strong>Reason:</strong> <%= item.returnRequest.comments %>
+                                                               
+                                                            </p>
+                                                            <% } else { %>
+                                                                <!-- <span class="text-success"></span> -->
+                                                                <button class="approved">Approved</button>
+                                                                <% } %>
+                                                </td>
+                                            </tr>
+                                            <% } %>
+                                                <% }); %>
+                                                    <% }); %>
+                            </tbody>
+
+
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- pagination  -->
+            <div class="pagination">
+                <% if (totalPages> 1) { %>
+                    <% if (currentPage> 1) { %>
+                        <a href="/admin/return-Requests?page=<%= currentPage - 1 %>" class="prev">Previous</a>
+                        <% } else { %>
+                            <span class="disabled">Previous</span>
+                            <% } %>
+
+                                <% for (let i=1; i <=totalPages; i++) { %>
+                                    <a href="/admin/return-Requests?page=<%= i %>"
+                                        class="<%= currentPage === i ? 'active' : '' %>">
+                                        <%= i %>
+                                    </a>
+                                    <% } %>
+
+                                        <% if (currentPage < totalPages) { %>
+                                            <a href="/admin/return-Requests?page=<%= currentPage + 1 %>"
+                                                class="next">Next</a>
+                                            <% } else { %>
+                                                <span class="disabled">Next</span>
+                                                <% } %>
+                                                    <% } %>
+            </div>
+
+
+
+        </div>
+    </div>
+    <br><br>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+    <script>
+
+        function processReturn(orderId, productId, variantSize, action) {
+            if (action === "approve") {
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You are about to approve this return request!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#28a745",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, Approve it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        sendReturnRequest(orderId, productId, variantSize, action, "");
+                    }
+                });
+            } else if (action === "reject") {
+
+                Swal.fire({
+                    title: "Reject Return Request",
+                    input: "textarea",
+                    inputLabel: "Reason for rejection",
+                    inputPlaceholder: "Enter your reason here...",
+                    inputAttributes: {
+                        "aria-label": "Enter your reason here"
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: "Reject",
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#6c757d",
+                    preConfirm: (comment) => {
+                        if (!comment) {
+                            Swal.showValidationMessage("You must provide a reason!");
+                        }
+                        return comment;
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        sendReturnRequest(orderId, productId, variantSize, action, result.value);
+                    }
+                });
+            }
+        }
+
+        //  return request decision 
+        function sendReturnRequest(orderId, productId, variantSize, action, comments) {
+            fetch("/admin/process-return", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ orderId, productId, variantSize, action, comments })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: "Success!",
+                            text: `Return request ${action} successfully`,
+                            icon: "success",
+
+                        }).then(() => location.reload());
+                    } else {
+                        Swal.fire("Error", "Failed to process return request", "error");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    Swal.fire("Error", "An error occurred", "error");
+                });
+        }
+
+    </script>
+
+
+    <%- include("../../views/partials/admin/footer") %>

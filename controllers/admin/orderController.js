@@ -13,153 +13,255 @@ const { v4: uuidv4 } = require('uuid');
 
 
 const orderListPage = async (req, res) => {
-    try {
-      const orders = await Order.find({}).sort({ createdAt: -1 });
+  try {
+    const orders = await Order.find({}).sort({ createdAt: -1 });
 
-      let itemsPerPage = 5;
-      let currentPage = parseInt(req.query.page) || 1;
-      let startIndex = (currentPage - 1) * itemsPerPage;
-      let endIndex = startIndex + itemsPerPage;
-      let totalPages = Math.ceil(orders.length / 3);
+    let itemsPerPage = 5;
+    let currentPage = parseInt(req.query.page) || 1;
+    let startIndex = (currentPage - 1) * itemsPerPage;
+    let endIndex = startIndex + itemsPerPage;
+    let totalPages = Math.ceil(orders.length / 3);
 
-      const currentOrder = orders.slice(startIndex, endIndex);
-      currentOrder.forEach(order => {
-        order.orderId = uuidv4();
-      });
-
-  
-      res.render("orderList", { orders: currentOrder, totalPages, currentPage });
-
-    } catch (error) {
-      res.redirect("/admin/pageError");
-    }
-  };
+    const currentOrder = orders.slice(startIndex, endIndex);
+    currentOrder.forEach(order => {
+      order.orderId = uuidv4();
+    });
 
 
+    res.render("orderList", { orders: currentOrder, totalPages, currentPage });
 
-
-  const getOrderDetails = async (req,res) => {
-    try {
-      const orderId = req.params.orderId;
-  
-      const order = await Order.findById(orderId)
-        .populate({
-          path: 'orderItems.product',
-          model: 'Product',
-          populate: { 
-            path: 'category', 
-            model: 'Category', 
-            select: 'name' 
-          }
-        })
-        .populate('shippingAddress');
-  
-      if (!order) {
-        return res.redirect('/admin/orderList');
-      }
-  
-      // Enrich order items with additional details
-      const enrichedOrderItems = order.orderItems.map(item => {
-        if (!item.product) {
-          return null;
-        }
-  
-        return {
-          ...item.toObject(),
-          productDetails: {
-            name: item.product.productName,
-            description: item.product.description,
-            category: item.product.category ? item.product.category.name : 'Uncategorized',
-            brand: item.product.brand || 'Unknown Brand',
-            images: item.product.productImage
-          }
-        };
-      }).filter(item => item !== null);
-  
-      
-      const orderData = {
-        ...order.toObject(),
-        orderItems: enrichedOrderItems
-      };
-  
-      res.render("orderList-details", { order: orderData });
-    } catch (error) {
-      console.error('Error fetching order details:', error);
-      res.redirect("/admin/pageError");
-    }
+  } catch (error) {
+    res.redirect("/admin/pageError");
   }
+};
+
+
+
+
+const getOrderDetails = async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+
+    const order = await Order.findById(orderId)
+      .populate({
+        path: 'orderItems.product',
+        model: 'Product',
+        populate: {
+          path: 'category',
+          model: 'Category',
+          select: 'name'
+        }
+      })
+      .populate('shippingAddress');
+
+    if (!order) {
+      return res.redirect('/admin/orderList');
+    }
+
+    // Enrich order items with additional details
+    const enrichedOrderItems = order.orderItems.map(item => {
+      if (!item.product) {
+        return null;
+      }
+
+      return {
+        ...item.toObject(),
+        productDetails: {
+          name: item.product.productName,
+          description: item.product.description,
+          category: item.product.category ? item.product.category.name : 'Uncategorized',
+          brand: item.product.brand || 'Unknown Brand',
+          images: item.product.productImage
+        }
+      };
+    }).filter(item => item !== null);
+
+
+    const orderData = {
+      ...order.toObject(),
+      orderItems: enrichedOrderItems
+    };
+
+    res.render("orderList-details", { order: orderData });
+  } catch (error) {
+    console.error('Error fetching order details:', error);
+    res.redirect("/admin/pageError");
+  }
+}
 
 
 
 
 const updateOrderStatus = async (req, res) => {
   try {
-      const { orderId, status } = req.body;
+    const { orderId, status } = req.body;
 
-      if (!orderId || !status) {
-          return res.status(400).json({ 
-              success: false, 
-              message: 'Order ID and status are required' 
-          });
-      }
-
-      const allowedStatuses = ["Pending", "Shipped", "Delivered", "Cancelled"];
-
-      if (!allowedStatuses.includes(status)) {
-          return res.status(400).json({ 
-              success: false, 
-              message: 'Invalid order status' 
-          });
-      }
-
-      const order = await Order.findById(orderId).populate('orderItems.product');
-
-      if (!order) {
-          return res.status(404).json({ 
-              success: false, 
-              message: 'Order not found' 
-          });
-      }
-
-      order.orderStatus = status;
-
-      if (status === 'Cancelled') {
-        order.cancelledBy = 'Admin';
-          for (const item of order.orderItems) {
-              const product = await Product.findById(item.product._id);
-              const variant = product.variants.find(v => v.size === item.variant.size);
-              
-              if (variant) {
-                  variant.quantity += item.variant.quantity; 
-                  await product.save(); 
-              }
-          }
-      }
-
-      await order.save(); 
-
-      // console.log(`Order ${orderId} status updated to ${status}`);
-
-      res.status(200).json({ 
-          success: true, 
-          message: 'Order status updated successfully',
-          updatedStatus: status 
+    if (!orderId || !status) {
+      return res.status(400).json({
+        success: false,
+        message: 'Order ID and status are required'
       });
+    }
+
+    const allowedStatuses = ["Pending", "Shipped", "Delivered", "Cancelled"];
+
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid order status'
+      });
+    }
+
+    const order = await Order.findById(orderId).populate('orderItems.product');
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'Order not found'
+      });
+    }
+
+    order.orderStatus = status;
+
+    order.orderItems.forEach(item => {
+      item.itemStatus = status;  // Update itemStatus to match order status
+    });
+
+    if (status === 'Cancelled') {
+      order.cancelledBy = 'Admin';
+      for (const item of order.orderItems) {
+        const product = await Product.findById(item.product._id);
+        const variant = product.variants.find(v => v.size === item.variant.size);
+
+        if (variant) {
+          variant.quantity += item.variant.quantity;
+          await product.save();
+        }
+      }
+    }
+
+    await order.save();
+
+    // console.log(`Order ${orderId} status updated to ${status}`);
+
+    res.status(200).json({
+      success: true,
+      message: 'Order status updated successfully',
+      updatedStatus: status
+    });
 
   } catch (error) {
-      console.error('Error updating order status:', error);
-      res.status(500).json({ 
-          success: false, 
-          message: 'Internal server error' 
-      });
+    console.error('Error updating order status:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
   }
 };
 
-  
 
-  module.exports = {
-    orderListPage,
-    getOrderDetails,
-    updateOrderStatus
+
+
+
+const returnRequests = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1; 
+    const limit = 4; 
+    const skip = (page - 1) * limit;
+
+    const totalRequests = await Order.countDocuments({ "orderItems.returnRequest.requested": true });
+
+    const returnRequests = await Order.find({ "orderItems.returnRequest.requested": true })
+      .populate({
+        path: "orderItems.product",
+        select: "productName brand category variants",
+        populate: {
+          path: "category",
+          select: "name",
+        },
+      })
+      .sort({ createdAt: -1 })
+      .skip(skip) 
+      .limit(limit); 
+
+    const totalPages = Math.ceil(totalRequests / limit); 
+
+    res.render("return-Requests", { returnRequests, currentPage: page, totalPages });
+
+  } catch (error) {
+    console.error("Error fetching return requests:", error);
+    res.status(500).send("Internal Server Error");
   }
-  
+};
+
+
+
+
+
+
+
+const returnProcess = async (req, res) => {
+  try {
+    const { orderId, productId, variantSize, action, comments } = req.body;
+
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    const item = order.orderItems.find(i => 
+      i.product.toString() === productId && i.variant.size.toString() === variantSize.toString()
+    );
+    
+
+
+    if (!item || !item.returnRequest?.requested) {
+      return res.status(400).json({ success: false, message: "Invalid return request" });
+    }
+
+    if (action === "approve") {
+      item.returnRequest.status = "Approved";
+      item.returnRequest.approvedAt = new Date();
+
+      // Restock the product quantity
+      const product = await Product.findById(productId);
+      if (!product) {
+        return res.status(404).json({ success: false, message: "Product not found" });
+      }
+
+      const variant = product.variants.find(v => v.size === item.variant.size);
+      if (variant) {
+        variant.quantity += item.variant.quantity; 
+        await product.save();
+      }
+
+    } else if (action === "reject") {
+      item.returnRequest.status = "Rejected";
+      item.returnRequest.rejectedAt = new Date();
+      item.returnRequest.comments = comments; 
+    }
+
+
+    await order.save();
+    res.json({ success: true, message: `Return request ${action}d successfully` });
+
+  } catch (error) {
+    console.error("Error processing return request:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+
+
+
+
+
+module.exports = {
+  orderListPage,
+  getOrderDetails,
+  updateOrderStatus,
+  returnRequests,
+  returnProcess
+}
+

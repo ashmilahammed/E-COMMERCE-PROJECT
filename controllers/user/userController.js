@@ -158,9 +158,6 @@ const signup = async (req, res) => {
             return res.json("email-error")
         }
 
-        //    console.log("Received OTP:", otp);
-        //    console.log("Session OTP:", req.session.userOtp);
-
         req.session.userOtp = otp;
 
         // Save OTP in database

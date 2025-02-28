@@ -8,6 +8,7 @@ const productController = require("../controllers/user/productController");
 const cartController = require("../controllers/user/cartController");
 const wishlistController = require("../controllers/user/wishlistController");
 const checkoutController = require('../controllers/user/checkoutController');
+const walletController = require("../controllers/user/walletController");
 const multer = require('multer');
 const upload = multer();
 
@@ -57,7 +58,6 @@ router.post("/change-password",userAuth,profileController.changePasswordValid);
 router.post("/verify-changepassword-otp",userAuth,profileController.verifyChangePassOtp);
 
 //Address management
-// router.get("/address",userAuth,profileController.address);
 router.get("/addAddress",userAuth,profileController.addAddress);
 router.post("/addAddress",userAuth,profileController.postAddAddress);
 router.get("/editAddress",userAuth,profileController.editAddress);
@@ -88,22 +88,13 @@ router.post("/cancelOrder",userAuth,checkoutController.cancelOrder)
 router.post("/applyCoupon",userAuth,checkoutController.applyCoupon);
 router.post("/removeCoupon",userAuth,checkoutController.removeCoupon);
 
+//return
+router.post("/returnProduct",userAuth,checkoutController.returnProduct)
+
 //razorpay
 router.post("/verify-payment",userAuth,checkoutController.verifyPayment);
 router.post("/retry-payment",userAuth,checkoutController.retryPayment)
 
-
-
-
-router.get('/order-success', async (req, res) => {
-    const { orderId } = req.query;
-    res.render('order-success', { orderId });
-});
-
-router.get('/order-failure', async (req, res) => {
-    const { orderId } = req.query;
-    res.render('order-failure', { orderId });
-});
 
 
 //wishlist management
@@ -113,6 +104,11 @@ router.post("/update-wishlist-size",userAuth,wishlistController.changeSize);
 router.post('/wishlist/remove',userAuth,wishlistController.removeFromWishlist);
 
 
+
+//wallet 
+router.post("/wallet/add",userAuth,walletController.walletAdd);
+// router.post("/wallet/history/:userId",userAuth,walletController.getWalletHistory)
+router.get("/wallet/history", userAuth, walletController.getWalletHistory);
 
 
 //contacts

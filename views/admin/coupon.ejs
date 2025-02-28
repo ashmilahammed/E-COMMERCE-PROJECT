@@ -86,13 +86,25 @@
                                         <td>
                                             <%= new Date(coupon.endDate).toLocaleDateString() %>
                                         </td>
-                                        <td>
+                                        <!-- <td>
                                             <% if (coupon.isActive) { %>
                                                 <span class="badge bg-success px-3 py-2">Active</span>
                                                 <% } else { %>
                                                     <span class="badge bg-danger px-3 py-2">Inactive</span>
                                                     <% } %>
+                                        </td> -->
+                                        <td>
+                                            <% 
+                                                const now = new Date(); 
+                                                const isExpired = coupon.endDate && new Date(coupon.endDate) < now;
+                                                if (coupon.isActive && !isExpired) { 
+                                            %>
+                                                <span class="badge bg-success px-3 py-2">Active</span>
+                                            <% } else { %>
+                                                <span class="badge bg-danger px-3 py-2">Inactive</span>
+                                            <% } %>
                                         </td>
+                                        
                                         <td>
                                             <button class="btn btn-sm btn-outline-primary edit-coupon"
                                                 data-coupon-id="<%= coupon._id %>" data-coupon-name="<%= coupon.name %>"

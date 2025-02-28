@@ -59,6 +59,7 @@ const orderSchema = new Schema({
                 enum: ["Processing", "Shipped", "Delivered", "Cancelled"],
                 default: "Processing",
             },
+
             returnRequest: {
                 requested: {
                     type: Boolean,
@@ -71,12 +72,15 @@ const orderSchema = new Schema({
                 },
                 reason: {
                     type: String,
+                    default:""
                 },
                 comments: {
                     type: String,
+                    default:""
                 },
                 requestDate: {
                     type: Date,
+                    default:null
                 },
             },
         },
