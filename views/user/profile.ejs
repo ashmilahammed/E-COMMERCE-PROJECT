@@ -464,10 +464,10 @@
 
         <!-- Wallet History Content -->
         <div id="wallet-history" class="content-section hidden">
-          <div class="bg-white shadow rounded-lg p-6">
+          <div class="bg-white shadow-lg rounded-xl p-6 border border-gray-200">
             <h2 class="text-2xl font-bold mb-4 text-gray-800">Wallet History</h2>
             <div class="overflow-x-auto">
-              <table class="min-w-full bg-white">
+              <table class="min-w-full bg-white rounded-lg overflow-hidden border border-gray-200">
                 <thead class="bg-gray-800 text-white">
                   <tr>
                     <th class="py-3 px-4 text-left">Date</th>
@@ -476,13 +476,27 @@
                     <th class="py-3 px-4 text-left">Amount</th>
                   </tr>
                 </thead>
-                <tbody id="transactionTableBody" class="text-gray-700">
+                <tbody id="transactionTableBody" class="text-gray-700 divide-y divide-gray-200">
                   <!-- Transactions will be populated dynamically -->
                 </tbody>
               </table>
             </div>
           </div>
         </div>
+
+        <style>
+          /* Style alternating rows */
+          #transactionTableBody tr:nth-child(even) {
+            background-color: #f9fafb;
+          }
+
+          /* Hover effect on rows */
+          #transactionTableBody tr:hover {
+            background-color: #edf2f7;
+            transition: background 0.2s ease-in-out;
+          }
+        </style>
+
 
 
 
@@ -724,133 +738,144 @@
 
 
 
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const userId = "UserId";
+  <script>
 
-    if (!userId) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "User not logged in!",
-      });
-      return;
-    }
+    document.addEventListener("DOMContentLoaded", () => {
+      const userId = "UserId";
 
-    loadWallet(userId);
-
-    // Add money form submission
-    document.getElementById("addMoneyForm").addEventListener("submit", async (event) => {
-      event.preventDefault();
-
-      const amount = parseFloat(document.getElementById("amount").value);
-
-      try {
-        const response = await fetch("/wallet/add", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ amount }),
+      if (!userId) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "User not logged in!",
         });
+        return;
+      }
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
+      loadWallet(userId);
+
+      // Add money form submission
+      document.getElementById("addMoneyForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const amount = parseFloat(document.getElementById("amount").value);
+
+        try {
+          const response = await fetch("/wallet/add", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ amount }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
+          }
+
+          const data = await response.json();
+
+          if (data.success) {
+
+            document.getElementById("walletBalance").textContent = data.balance.toFixed(2);
+
+
+            // const modalElement = document.getElementById("addMoneyModal");
+            // const modal = bootstrap.Modal.getInstance(modalElement);
+            // if (modal) modal.hide();
+            // Close the modal
+            const modalElement = document.getElementById("addMoneyModal");
+            const modal = new bootstrap.Modal(modalElement);
+            modal.hide();
+
+
+            document.getElementById("amount").value = "";
+
+            loadWallet(userId);
+
+            Swal.fire({
+              icon: "success",
+              title: "Success!",
+              text: "Money added successfully!",
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: "Failed",
+              text: data.message || "Unknown error",
+            });
+          }
+        } catch (error) {
+          console.error("Error adding money:", error.message);
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "An error occurred while adding money: " + error.message,
+          });
         }
+      });
+    });
 
+
+    // Load wallet balance and history
+    async function loadWallet(userId) {
+      try {
+        const response = await fetch("/wallet/history");
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
         const data = await response.json();
 
         if (data.success) {
 
           document.getElementById("walletBalance").textContent = data.balance.toFixed(2);
+          updateTransactionTable(data.transactions);
 
-
-          // const modalElement = document.getElementById("addMoneyModal");
-          // const modal = bootstrap.Modal.getInstance(modalElement);
-          // if (modal) modal.hide();
-          // Close the modal
-          const modalElement = document.getElementById("addMoneyModal");
-          const modal = new bootstrap.Modal(modalElement);
-          modal.hide();
-
-  
-          document.getElementById("amount").value = "";
-
-          loadWallet(userId);
-
-          Swal.fire({
-            icon: "success",
-            title: "Success!",
-            text: "Money added successfully!",
-            showConfirmButton: false,
-            timer: 1500,
-          });
         } else {
+
+          console.error("Failed to load wallet data:", data.message);
           Swal.fire({
-            icon: "error",
-            title: "Failed",
-            text: data.message || "Unknown error",
-          });
+                icon: "info",
+                title: "No Wallet Found",
+                text: "Your wallet has been initialized with ₹0 balance.",
+                showConfirmButton: false,
+                timer: 2000
+            });
+
+            document.getElementById("walletBalance").textContent = "0.00";
+            updateTransactionTable([]);
         }
       } catch (error) {
-        console.error("Error adding money:", error.message);
+        console.error("Error loading wallet:", error.message);
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: "An error occurred while adding money: " + error.message,
+          text: "An error occurred while loading wallet: " + error.message,
         });
       }
-    });
-  });
-
-  
-  // Load wallet balance and history
-  async function loadWallet(userId) {
-    try {
-      const response = await fetch("/wallet/history");
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const data = await response.json();
-
-      if (data.success) {
-        document.getElementById("walletBalance").textContent = data.balance.toFixed(2);
-        updateTransactionTable(data.transactions);
-      } else {
-        console.error("Failed to load wallet data:", data.message);
-        Swal.fire({
-          icon: "error",
-          title: "Failed",
-          text: data.message || "Unable to load wallet data",
-        });
-      }
-    } catch (error) {
-      console.error("Error loading wallet:", error.message);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "An error occurred while loading wallet: " + error.message,
-      });
     }
-  }
 
-  // Update transaction table
-  function updateTransactionTable(transactions) {
-    const tbody = document.getElementById("transactionTableBody");
-    tbody.innerHTML = ""; 
-    if (transactions.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="4" class="py-3 px-4 text-center">No transactions yet</td></tr>`;
-    } else {
-      transactions.forEach((tx) => {
-        tbody.innerHTML += `
+    // Update transaction table
+    function updateTransactionTable(transactions) {
+      const tbody = document.getElementById("transactionTableBody");
+      tbody.innerHTML = "";
+      if (transactions.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="py-3 px-4 text-center">No transactions yet</td></tr>`;
+      } else {
+        transactions.forEach((tx) => {
+          tbody.innerHTML += `
           <tr>
             <td class="py-3 px-4">${new Date(tx.date).toLocaleDateString()}</td>
-            <td class="py-3 px-4">${tx.type}</td>
+            <td class="py-3 px-4" style="color:rgb(242, 152, 17);">${tx.type}</td>
             <td class="py-3 px-4">${tx.description || "N/A"}</td>
             <td class="py-3 px-4">₹${tx.amount.toFixed(2)}</td>
           </tr>`;
-      });
+        });
+      }
     }
-  }
-</script>
+
+  </script>
 
   <%- include("../../views/partials/user/footer") %>
+

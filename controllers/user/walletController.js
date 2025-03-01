@@ -44,6 +44,37 @@ const walletAdd = async (req, res) => {
 
 
 
+const getWalletHistory = async (req, res) => {
+    try {
+      const userId = req.user.id; 
+  
+      const wallet = await Wallet.findOne({ userId }).select("balance transactions");
+      
+      if (!wallet) {
+        return res.status(200).json({
+            success: true,
+            balance: 0,
+            transactions: [],
+            message: "No wallet found, initializing...",
+        });
+    }
+  
+      const sortedTransactions = wallet.transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      res.status(200).json({
+        success: true,
+        balance: wallet.balance,
+        transactions: sortedTransactions,
+      });
+    } catch (error) {
+      console.error("Error fetching wallet history:", error);
+      res.status(500).json({ success: false, message: "Server error" });
+    }
+  };
+
+
+
+  
 
 // const getWalletHistory = async (req, res) => {
 //   try {
@@ -70,31 +101,6 @@ const walletAdd = async (req, res) => {
 
 // Get wallet history
 
-const getWalletHistory = async (req, res) => {
-    try {
-      const userId = req.user.id; // Use req.user.id instead of req.params.userId for consistency
-  
-      const wallet = await Wallet.findOne({ userId }).select("balance transactions");
-      
-      if (!wallet) {
-        return res.status(404).json({
-          success: false,
-          message: "Wallet not found",
-        });
-      }
-  
-      const sortedTransactions = wallet.transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-      res.status(200).json({
-        success: true,
-        balance: wallet.balance,
-        transactions: sortedTransactions,
-      });
-    } catch (error) {
-      console.error("Error fetching wallet history:", error);
-      res.status(500).json({ success: false, message: "Server error" });
-    }
-  };
 
 
 

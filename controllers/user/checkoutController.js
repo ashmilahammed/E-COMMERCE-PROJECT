@@ -4,6 +4,7 @@ const Order = require("../../models/orderSchema");
 const Product = require("../../models/productSchema");
 const Address = require("../../models/addressSchema");
 const Coupon = require("../../models/couponSchema");
+const Wallet = require("../../models/walletSchema");
 const mongodb = require("mongodb");
 const mongoose = require("mongoose");
 
@@ -907,20 +908,53 @@ const cancelOrder = async (req, res) => {
             });
         }
 
-
         order.orderStatus = 'Cancelled';
         order.cancelReason = cancelReason;
-
-
-        if ("Cancelled") {
-            order.cancelledBy = "User"
-        }
+        order.cancelledBy = "User";
+        order.cancelledAt = new Date();
 
         order.orderItems.forEach(item => {
             item.itemStatus = 'Cancelled';
         });
 
-        await order.save();
+
+        if (order.payment.method === "RAZORPAY") {
+            const refundAmount = Number(order.pricing.finalAmount);
+            if (isNaN(refundAmount)) {
+                throw new Error('Refund amount calculated as NaN');
+            }
+
+            let wallet = await Wallet.findOne({ userId: order.userId });
+
+            if (!wallet) {
+                wallet = new Wallet({
+                    userId: order.userId,
+                    balance: refundAmount,
+                    transactions: [{
+                        type: 'Refund',
+                        amount: refundAmount,
+                        orderId: orderId,
+                        status: 'Completed',
+                        description: `Refund for cancellation of Order #${orderId}`,
+                        date: new Date()
+                    }],
+                    lastUpdated: new Date()
+                });
+            } else {
+                wallet.balance = Number(wallet.balance) + refundAmount;
+                wallet.transactions.push({
+                    type: 'Refund',
+                    amount: refundAmount,
+                    orderId: orderId,
+                    status: 'Completed',
+                    description: `Refund for cancellation of Order #${orderId}`,
+                    date: new Date()
+                });
+                wallet.lastUpdated = new Date();
+            }
+
+            await wallet.save();
+        }
 
         // Restore product inventory
         for (const item of order.orderItems) {
@@ -938,19 +972,24 @@ const cancelOrder = async (req, res) => {
             }
         }
 
+        await order.save();
 
         res.json({
             success: true,
-            message: 'Order cancelled successfully'
+            message: order.payment.method === "RAZORPAY" 
+                ? 'Order cancelled and refunded successfully' 
+                : 'Order cancelled successfully (No refund for COD orders)'
         });
+
     } catch (error) {
         console.error('Order Cancellation Error:', error);
         res.status(500).json({
             success: false,
-            message: 'An error occurred while cancelling the order'
+            message: 'An error occurred while cancelling the order: ' + error.message
         });
     }
 };
+
 
 
 

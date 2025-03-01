@@ -2,6 +2,7 @@ const User = require("../../models/userSchema");
 const Product = require("../../models/productSchema");
 const Address = require("../../models/addressSchema");
 const Order = require("../../models/orderSchema");
+const Wallet = require("../../models/walletSchema")
 const mongodb = require("mongodb");
 const mongoose = require('mongoose')
 const env = require("dotenv").config();
@@ -165,8 +166,8 @@ const updateOrderStatus = async (req, res) => {
 
 const returnRequests = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1; 
-    const limit = 4; 
+    const page = parseInt(req.query.page) || 1;
+    const limit = 8;
     const skip = (page - 1) * limit;
 
     const totalRequests = await Order.countDocuments({ "orderItems.returnRequest.requested": true });
@@ -181,10 +182,10 @@ const returnRequests = async (req, res) => {
         },
       })
       .sort({ createdAt: -1 })
-      .skip(skip) 
-      .limit(limit); 
+      .skip(skip)
+      .limit(limit);
 
-    const totalPages = Math.ceil(totalRequests / limit); 
+    const totalPages = Math.ceil(totalRequests / limit);
 
     res.render("return-Requests", { returnRequests, currentPage: page, totalPages });
 
@@ -197,24 +198,19 @@ const returnRequests = async (req, res) => {
 
 
 
-
-
-
 const returnProcess = async (req, res) => {
   try {
+
     const { orderId, productId, variantSize, action, comments } = req.body;
 
-    const order = await Order.findById(orderId);
-
+    const order = await Order.findById(orderId).populate('userId');
     if (!order) {
       return res.status(404).json({ success: false, message: "Order not found" });
     }
 
-    const item = order.orderItems.find(i => 
+    const item = order.orderItems.find(i =>
       i.product.toString() === productId && i.variant.size.toString() === variantSize.toString()
     );
-    
-
 
     if (!item || !item.returnRequest?.requested) {
       return res.status(400).json({ success: false, message: "Invalid return request" });
@@ -224,7 +220,7 @@ const returnProcess = async (req, res) => {
       item.returnRequest.status = "Approved";
       item.returnRequest.approvedAt = new Date();
 
-      // Restock the product quantity
+      // Restock product quantity
       const product = await Product.findById(productId);
       if (!product) {
         return res.status(404).json({ success: false, message: "Product not found" });
@@ -232,25 +228,73 @@ const returnProcess = async (req, res) => {
 
       const variant = product.variants.find(v => v.size === item.variant.size);
       if (variant) {
-        variant.quantity += item.variant.quantity; 
+        variant.quantity += item.variant.quantity;
         await product.save();
       }
+
+      //  refund amount
+      const refundAmount = Number(item.price.salePrice) * item.variant.quantity;
+      if (isNaN(refundAmount) || refundAmount <= 0) {
+        console.error('Invalid refund amount:', {
+          salePrice: item.price.salePrice,
+          quantity: item.variant.quantity,
+          calculated: refundAmount
+        });
+        return res.status(500).json({
+          success: false,
+          message: 'Invalid refund amount calculated for return'
+        });
+      }
+
+
+      let wallet = await Wallet.findOne({ userId: order.userId });
+      if (!wallet) {
+        wallet = new Wallet({
+          userId: order.userId,
+          balance: refundAmount,
+          transactions: [{
+            type: 'Refund',
+            amount: refundAmount,
+            orderId: orderId,
+            status: 'Completed',
+            // description: `Refund for return of item in Order #${orderId}`,
+            description: `Refund for return of <b>${product.productName}</b>`,
+            date: new Date()
+          }],
+          lastUpdated: new Date()
+        });
+      } else {
+        wallet.balance = Number(wallet.balance) + refundAmount; 
+        wallet.transactions.push({
+          type: 'Refund',
+          amount: refundAmount,
+          orderId: orderId,
+          status: 'Completed',
+          // description: `Refund for return of item in Order #${orderId}`,
+          description: `Refund for return of <b>${product.productName}</b>`,
+          date: new Date()
+        });
+        wallet.lastUpdated = new Date();
+      }
+
+      await wallet.save();
 
     } else if (action === "reject") {
       item.returnRequest.status = "Rejected";
       item.returnRequest.rejectedAt = new Date();
-      item.returnRequest.comments = comments; 
+      item.returnRequest.comments = comments;
     }
 
-
     await order.save();
-    res.json({ success: true, message: `Return request ${action}d successfully` });
+    
+    res.json({ success: true, message: `Return request ${action} successfully` });
 
   } catch (error) {
     console.error("Error processing return request:", error);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
+    res.status(500).json({ success: false, message: "Internal Server Error: " + error.message });
   }
 };
+
 
 
 

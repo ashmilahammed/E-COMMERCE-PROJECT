@@ -71,10 +71,26 @@ const logout = async (req, res) => {
 }
 
 
+
+
+const getSalesReport = async (req,res) => {
+    try {
+
+        res.render("sales-report")
+        
+    } catch (error) {
+        
+    }
+}
+
+
+
 module.exports = {
     loadLogin,
     login,
     loadDashboard,
     pageError,
-    logout
+    logout,
+
+    getSalesReport
 }

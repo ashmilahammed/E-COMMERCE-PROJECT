@@ -72,7 +72,8 @@ router.post("/addCoupon",adminAuth,couponController.createCoupon);
 router.put("/editCoupon",adminAuth,couponController.editCoupon);
 router.delete("/deleteCoupon/:couponId",adminAuth,couponController.deleteCoupon)
 
-
+//sales-report management
+router.get("/sales-report",adminAuth,adminController.getSalesReport)
 
 
 

@@ -250,12 +250,14 @@
                                 </span>
                             </td>
                             <td>
-                                <% if (order.returnRequest) { %>
-                                    <span class="return-request-badge">
-                                        Return Requested
-                                    </span>
-                                    <% } %>
-                            </td>
+                                <% if (order.orderItems.some(item => item.returnRequest?.status === "Approved")) { %>
+                                  <span class="" style="color: rgb(255, 0, 0);background-color: #fff;">
+                                     Returned
+                                  </span>
+                                
+                                <% } %>
+                              </td>
+                              
                             <td>
                                 <div class="dropdown">
                                     <a href="#" class="text-decoration-none text-dark" data-bs-toggle="dropdown">
@@ -279,7 +281,7 @@
                                                     <hr class="dropdown-divider">
                                                 </li>
 
-                                                <% if (order.orderStatus !=='Cancelled' ) { %>
+                                                <!-- <% if (order.orderStatus !=='Cancelled' ) { %>
                                                     <li class="status-change-container">
                                                         <a class="dropdown-item change-status-trigger" href="#"
                                                             data-order-id="<%= order._id %>">
@@ -322,7 +324,52 @@
                                                     <% } else { %>
                                                         <li class="dropdown-item disabled">Status cannot be changed
                                                             (Cancelled)</li>
+                                                        <% } %> -->
+
+                                                        <% if (order.orderStatus !== 'Cancelled' && order.orderStatus !== 'Delivered') { %>
+                                                            <li class="status-change-container">
+                                                                <a class="dropdown-item change-status-trigger" href="#" data-order-id="<%= order._id %>">
+                                                                    <i class="bi bi-arrow-repeat me-2"></i> Change Status
+                                                                </a>
+                                                                <div class="status-change-dropdown" data-order-id="<%= order._id %>">
+                                                                    <div class="dropdown-header">
+                                                                        <h6>Change Order Status</h6>
+                                                                        <button type="button" class="btn-close" aria-label="Close"></button>
+                                                                    </div>
+                                                        
+                                                                    <% if (order.orderStatus === "Pending") { %>
+                                                                        <div class="status-option status-update" data-status="Shipped">
+                                                                            <span class="status-option-icon status-shipped-submenu"></span>
+                                                                            Shipped
+                                                                        </div>
+                                                                        <div class="status-option status-update" data-status="Delivered">
+                                                                            <span class="status-option-icon status-delivered-submenu"></span>
+                                                                            Delivered
+                                                                        </div>
+                                                                        <div class="status-option status-update" data-status="Cancelled">
+                                                                            <span class="status-option-icon status-cancelled-submenu"></span>
+                                                                            Cancelled
+                                                                        </div>
+                                                                    <% } else if (order.orderStatus === "Shipped") { %>
+                                                                        <div class="status-option status-update" data-status="Delivered">
+                                                                            <span class="status-option-icon status-delivered-submenu"></span>
+                                                                            Delivered
+                                                                        </div>
+                                                                        <div class="status-option status-update" data-status="Cancelled">
+                                                                            <span class="status-option-icon status-cancelled-submenu"></span>
+                                                                            Cancelled
+                                                                        </div>
+                                                                    <% } %>
+                                                                </div>
+                                                            </li>
+                                                        <% } else if (order.orderStatus === 'Delivered') { %>
+                                                            <li class="dropdown-item disabled">Status cannot be changed (Delivered)</li>
+                                                        <% } else { %>
+                                                            <li class="dropdown-item disabled">Status cannot be changed (Cancelled)</li>
                                                         <% } %>
+                                                        
+                                                        
+
                                     </ul>
                                 </div>
                             </td>
