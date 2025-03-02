@@ -24,9 +24,9 @@ const orderListPage = async (req, res) => {
     let totalPages = Math.ceil(orders.length / 3);
 
     const currentOrder = orders.slice(startIndex, endIndex);
-    currentOrder.forEach(order => {
-      order.orderId = uuidv4();
-    });
+    // currentOrder.forEach(order => {
+    //   order.orderId = uuidv4();
+    // });
 
 
     res.render("orderList", { orders: currentOrder, totalPages, currentPage });
@@ -125,7 +125,7 @@ const updateOrderStatus = async (req, res) => {
     order.orderStatus = status;
 
     order.orderItems.forEach(item => {
-      item.itemStatus = status;  // Update itemStatus to match order status
+      item.itemStatus = status;
     });
 
     if (status === 'Cancelled') {

@@ -266,9 +266,14 @@ const placeOrder = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Payment method is required' });
         }
 
+
         const cart = await Cart.findOne({ userId }).populate({
             path: 'items.productId',
-            select: 'productName productImage variants brand'
+            select: 'productName productImage variants brand category productOffer',
+            populate: {
+                path: 'category',
+                select: 'categoryOffer'
+            }
         });
 
         if (!cart || cart.items.length === 0) {
@@ -288,8 +293,18 @@ const placeOrder = async (req, res) => {
         const shippingAddress = address.address.find(addr => addr._id.toString() === selectedAddress);
 
 
+        let productOffersTotal = 0;
+
         const orderItems = cart.items.map(item => {
             const variant = item.productId.variants.find(v => v.size === item.size);
+
+            const productOffer = item.productId.productOffer || 0;
+            const categoryOffer = item.productId.category?.categoryOffer || 0;
+            const bestOffer = Math.max(productOffer, categoryOffer);
+
+            const discount = variant.regularPrice * (bestOffer / 100) * item.quantity;
+            productOffersTotal += discount;
+
             return {
                 product: item.productId._id,
                 variant: {
@@ -300,12 +315,13 @@ const placeOrder = async (req, res) => {
                 price: {
                     regularPrice: variant.regularPrice,
                     salePrice: variant.salePrice,
-                    productOffer: variant.productOffer || 0,
-                    offerType: variant.offerType || "No Offer"
+                    productOffer: bestOffer,
+                    offerType: bestOffer > 0 ? (productOffer >= categoryOffer ? "Product Offer" : "Category Offer") : "No Offer"
                 },
                 itemStatus: "Processing"
             };
         });
+
 
 
         const subtotal = cart.items.reduce((total, item) => {
@@ -353,20 +369,13 @@ const placeOrder = async (req, res) => {
             pricing: {
                 subtotal,
                 finalAmount,
-                productOffersTotal: 0,
+                productOffersTotal,
                 discount: discountAmount,
                 coupon: {
                     code: cart.couponCode || null,
                     discount: cart.discount || 0
                 }
             },
-            //  payment: {
-            //     method: normalizedPaymentMethod,
-            //     status: normalizedPaymentMethod === 'COD' ? 'Pending' : 'Completed',
-            //     paidAt: normalizedPaymentMethod === 'COD' ? null : new Date()
-            // },
-            // orderStatus: "Pending",
-            // expectedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
             payment: {
                 method: normalizedPaymentMethod
             },
@@ -441,26 +450,8 @@ const placeOrder = async (req, res) => {
                 success: true,
                 message: 'Order placed successfully',
                 orderId: order.orderId
-                // redirectUrl: '/order-success?orderId=' + order.orderId
             });
         }
-
-        // const order = new Order(orderData);
-        // await order.save();
-
-
-        // await Cart.findOneAndUpdate(
-        //     { userId },
-        //     { $set: {  items: [], discount: 0, couponCode: null, subtotal: 0, total: 0, cartTotal: 0 } },
-        //     { new: true }
-        // );
-
-
-        // res.json({
-        //     success: true,
-        //     message: 'Order placed successfully',
-        //     orderId: order.orderId
-        // });
 
     } catch (error) {
         console.error('Error placing order:', error);
@@ -935,7 +926,7 @@ const cancelOrder = async (req, res) => {
                         amount: refundAmount,
                         orderId: orderId,
                         status: 'Completed',
-                        description: `Refund for cancellation of Order #${orderId}`,
+                        description: `Refund for cancellation of Order `,
                         date: new Date()
                     }],
                     lastUpdated: new Date()
@@ -947,7 +938,7 @@ const cancelOrder = async (req, res) => {
                     amount: refundAmount,
                     orderId: orderId,
                     status: 'Completed',
-                    description: `Refund for cancellation of Order #${orderId}`,
+                    description: `Refund for cancellation of Order `,
                     date: new Date()
                 });
                 wallet.lastUpdated = new Date();

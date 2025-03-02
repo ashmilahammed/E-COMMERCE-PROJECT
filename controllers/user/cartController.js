@@ -36,6 +36,7 @@ const cartPage = async (req,res) => {
             user: userData,
             cart: cart
         });
+        
     } catch (error) {
         console.error("Error in cart page:", error);
         res.redirect("/pageNotFound")

@@ -73,7 +73,10 @@ router.put("/editCoupon",adminAuth,couponController.editCoupon);
 router.delete("/deleteCoupon/:couponId",adminAuth,couponController.deleteCoupon)
 
 //sales-report management
-router.get("/sales-report",adminAuth,adminController.getSalesReport)
+router.get("/sales-report",adminAuth,adminController.getSalesReport);
+
+router.get("/download-pdf",adminAuth,adminController.downloadPdf);
+router.get("/download-excel",adminAuth,adminController.downloadExcel);
 
 
 

@@ -1,6 +1,537 @@
 <%- include("../../views/partials/admin/header") %>
 
 
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
 
-<%- include("../../views/partials/admin/footer") %>
+    <style>
+        body {
+            /* font-family: Arial, sans-serif; */
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .filter-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-section label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .filter-section select,
+        .filter-section input[type="date"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            min-width: 150px;
+        }
+
+        .filter-section button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .filter-section .generate-btn {
+            /* background-color: #007bff; */
+            background: linear-gradient(to right, #398be1, #063f7b);
+            color: #fff;
+        }
+
+        .filter-section .generate-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .download-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-section .download-btn-pdf {
+            /* background-color: #dc3545; */
+            background: linear-gradient(to right, #ff3b3b, #b70404);
+            color: #fff;
+        }
+
+        .filter-section .download-btn-pdf:hover {
+            background-color: #b02a37;
+        }
+
+        .filter-section .download-btn-excel {
+            /* background-color: #28a745; */
+            background: linear-gradient(to right, #64d158, #268b07);
+            color: #fff;
+        }
+
+        .filter-section .download-btn-excel:hover {
+            background-color: #218838;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .report-table th,
+        .report-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .report-table th {
+            background-color: rgba(8, 129, 120, 0.2);
+            color: #4e4e4e;
+        }
+
+        .report-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .summary-section {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .summary-card {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px;
+            background: #f1f1f1;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .summary-card h3 {
+            margin: 0 0 10px;
+            color: #333;
+        }
+
+        .summary-card p {
+            font-size: 18px;
+            font-weight: bold;
+            color: #cd0000;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .filter-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-section select,
+            .filter-section input[type="date"] {
+                width: 100%;
+            }
+
+            .download-buttons {
+                justify-content: center;
+            }
+        }
+    </style>
+    <style>
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination {
+            list-style: none;
+            display: flex;
+            padding: 0;
+        }
+
+        .pagination .page-item {
+            margin: 0 5px;
+        }
+
+        .pagination .page-link {
+            color: #c58929;
+            background-color: #fff;
+            border: 1px solid #515151;
+            padding: 8px 12px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .pagination .page-link:hover {
+            background-color: #dfa13c;
+            color: white;
+        }
+
+        .pagination .active .page-link {
+            background-color: #dfa13c;
+            border-color: #0056b3;
+            color: white;
+        }
+
+        .pagination .page-item:first-child .page-link,
+        .pagination .page-item:last-child .page-link {
+            font-weight: bold;
+        }
+
+
+        .order-status {
+            padding: 3px 10px;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: normal;
+            display: inline-block;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .order-status.pending {
+            background: linear-gradient(to right, #ff9800, #f57c00);
+        }
+
+        .order-status.delivered {
+            background: linear-gradient(to right, #4caf50, #2e7d32);
+        }
+
+        .order-status.shipped {
+            background: linear-gradient(to right, #2196f3, #1976d2);
+        }
+
+        .order-status.cancelled {
+            background: linear-gradient(to right, #f44336, #d32f2f);
+        }
+
+        .order-status.returned {
+            background: linear-gradient(to right, #9c27b0, #7b1fa2);
+        }
+
+        .order-status.processing {
+            background: linear-gradient(to right, #ffeb3b, #fbc02d);
+            color: #333;
+        }
+
+    </style>
+
+
+
+    <div class="container">
+        <h1>Sales Report</h1>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="filter-group">
+                <label for="report-type">Report Type:</label>
+                <select id="report-type">
+                    <option value="all" <%=reportType==="all" ? "selected" : "" %>>All orders</option>
+                    <option value="daily" <%=reportType==="daily" ? "selected" : "" %>>Daily</option>
+                    <option value="weekly" <%=reportType==="weekly" ? "selected" : "" %>>Weekly</option>
+                    <option value="monthly" <%=reportType==="monthly" ? "selected" : "" %>>Monthly</option>
+                    <option value="yearly" <%=reportType==="yearly" ? "selected" : "" %>>Yearly</option>
+                    <option value="custom" <%=reportType==="custom" ? "selected" : "" %>>Custom Date Range</option>
+                </select>
+            </div>
+
+            <!-- Custom Date Filters (Hidden by Default) -->
+            <div id="custom-date-filters" style="display: none; flex-wrap: wrap; gap: 10px;">
+                <div class="filter-group">
+                    <label for="start-date">Start Date:</label>
+                    <input type="date" id="start-date" value="<%= startDate || '' %>">
+                </div>
+
+                <div class="filter-group">
+                    <label for="end-date">End Date:</label>
+                    <input type="date" id="end-date" value="<%= endDate || '' %>">
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <button class="generate-btn" onclick="generateReport()">Generate Report</button>
+                <div class="download-buttons" style="margin-left: 515px;">
+                    <button class="download-btn-pdf" onclick="downloadReport('pdf')">Download PDF</button>
+                    <button class="download-btn-excel" onclick="downloadReport('excel')">Download Excel</button>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Summary Section -->
+        <div class="summary-section">
+            <div class="summary-card">
+                <h3>Overall Sales Count</h3>
+                <p id="sales-count">0</p>
+            </div>
+            <div class="summary-card">
+                <h3>Overall Order Amount</h3>
+                <p id="order-amount">₹0.00</p>
+            </div>
+            <div class="summary-card">
+                <h3> Total Offer Discount</h3>
+                <p id="discount-amount">₹0.00</p>
+            </div>
+            <div class="summary-card">
+                <h3>Total Coupon Deduction</h3>
+                <p id="coupon-amount">₹0.00</p>
+            </div>
+        </div>
+
+        <br>
+
+        <!-- Sales Report Table -->
+        <table class="report-table">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>User Details</th>
+                    <th>Date</th>
+                    <th>Order Status</th>
+                    <th>Order Amount</th>
+                    <th>Coupon Discount</th>
+                    <th>Offer Discount</th>
+                </tr>
+            </thead>
+
+            <tbody id="report-data">
+                <% if (orders.length> 0) { %>
+                    <% orders.forEach((order)=> { %>
+                        <tr>
+                            <td>
+                                <%= order._id %>
+                            </td>
+                            <td>
+                                <%= order.userId ? order.userId.fullName + ' (' + order.userId.email + ')' : 'Guest' %>
+                            </td>
+                            <td>
+                                <%= new Date(order.createdAt).toLocaleDateString() %>
+                            </td>
+                            <td>
+                                <%= order.orderStatus %>
+                            </td>
+                            <td>₹<%= order.pricing.finalAmount.toFixed(2) %>
+                            </td>
+                            <td>₹<%= order.pricing.coupon.discount.toFixed(2) %>
+                            </td>
+                            <td>₹<%= order.pricing.productOffersTotal.toFixed(2) %>
+                            </td>
+
+                        </tr>
+                        <% }) %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="7" style="text-align: center;">No data available. Generate a report to
+                                        view details.</td>
+                                </tr>
+                                <% } %>
+            </tbody>
+
+        </table>
+
+
+
+        <!-- Pagination -->
+        <nav class="pagination-container">
+            <ul class="pagination">
+                <% if (currentPage> 1) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<%= currentPage - 1 %>">
+                            <i class="bi bi-chevron-left"></i> Prev
+                        </a>
+                    </li>
+                    <% } %>
+
+                        <% for(let i=1; i <=totalPages; i++) { %>
+                            <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                <a class="page-link" href="?page=<%= i %>">
+                                    <%= i %>
+                                </a>
+                            </li>
+                            <% } %>
+
+                                <% if (currentPage < totalPages) { %>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=<%= currentPage + 1 %>">
+                                            Next <i class="bi bi-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                    <% } %>
+            </ul>
+        </nav>
+
+
+    </div>
+
+
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("sales-count").textContent = "<%= totalOrders %>";
+            document.getElementById("order-amount").textContent = "₹<%= totalSales.toFixed(2) %>";
+            document.getElementById("discount-amount").textContent = "₹<%= totalDiscount.toFixed(2) %>";
+            document.getElementById("coupon-amount").textContent = "₹<%= totalCouponDiscount.toFixed(2) %>";
+
+            let orders = <%- JSON.stringify(orders) %>;
+            let tableBody = document.getElementById("report-data");
+            tableBody.innerHTML = "";
+
+            orders.forEach(order => {
+                
+                const statusClass = order.orderStatus.toLowerCase();
+                let row = `
+            <tr>
+                <td>${order.orderId}</td>
+                <td>${order.userId.fullName}</td>
+                <td>${new Date(order.createdAt).toLocaleDateString()}</td>
+                <td><span class="order-status ${statusClass}">${order.orderStatus}</td>
+                <td>₹${order.pricing.finalAmount.toFixed(2)}</td>
+                <td>₹${order.pricing.coupon.discount.toFixed(2)}</td>
+                <td>₹${order.pricing.productOffersTotal.toFixed(2)}</td>
+            </tr>
+        `;
+                tableBody.innerHTML += row;
+            });
+        });
+
+
+        // function downloadReport(type) {
+        //     if (type === "pdf") {
+        //         window.location.href = "/admin/download-pdf";
+        //     } else if (type === "excel") {
+        //         window.location.href = "/admin/download-excel"
+        //     }
+        // }
+        function downloadReport(type) {
+            const reportType = document.getElementById("report-type").value;
+            const startDate = document.getElementById("start-date").value;
+            const endDate = document.getElementById("end-date").value;
+
+            let url = `/admin/download-${type}?reportType=${reportType}`;
+
+            if (reportType === "custom") {
+                if (!startDate || !endDate) {
+                    showToast("Please select both start and end dates for custom filtering.");
+                    return;
+                }
+                url += `&startDate=${startDate}&endDate=${endDate}`;
+            }
+
+            window.location.href = url;
+        }
+
+
+
+
+
+        function generateReport() {
+            const reportType = document.getElementById("report-type").value;
+            const startDate = document.getElementById("start-date").value;
+            const endDate = document.getElementById("end-date").value;
+
+            let url = `/admin/sales-report?reportType=${reportType}`;
+
+            if (reportType === "custom") {
+                if (!startDate || !endDate) {
+                    showToast("Please select both start and end dates for custom filtering.");
+                    return;
+                }
+
+                if (new Date(startDate) > new Date(endDate)) {
+                    showToast("Start Date cannot be after End Date.");
+                    return;
+                }
+
+                url += `&startDate=${startDate}&endDate=${endDate}`;
+            }
+
+
+            window.location.href = url;
+
+            // showToast("Generating report...", "success");
+            // setTimeout(() => {
+            //     window.location.href = url;
+            // }, 1000); 
+        }
+
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const reportTypeSelect = document.getElementById("report-type");
+            const customDateFilters = document.getElementById("custom-date-filters");
+
+            function toggleCustomDateFilters() {
+                if (reportTypeSelect.value === "custom") {
+                    customDateFilters.style.display = "flex";
+                } else {
+                    customDateFilters.style.display = "none";
+                }
+            }
+
+            // Initial check (for preselected values)
+            toggleCustomDateFilters();
+            reportTypeSelect.addEventListener("change", toggleCustomDateFilters);
+        });
+
+
+
+        function showToast(message, type = "error") {
+            Toastify({
+                text: message,
+                duration: 1500,
+                close: true,
+                gravity: "top",
+                position: "center",
+                backgroundColor: type === "success" ? "#28a745" : "#dc3545",
+            }).showToast();
+        }
+
+    </script>
+
+
+
+
+
+
+    <%- include("../../views/partials/admin/footer") %>
