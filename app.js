@@ -69,14 +69,13 @@ app.use((err, req, res, next) => {
 
 
 
+app.use((req, res, next) => {
+    if (req.session.user) {
+        return res.status(404).render("page-404");
+    }
+    next();
+});
 
-
-app.get("/hola",(req,res)=> {
-    res.render("test")
-})
-app.get("/hola2",(req,res)=> {
-    res.render("test2")
-})
 
 
 

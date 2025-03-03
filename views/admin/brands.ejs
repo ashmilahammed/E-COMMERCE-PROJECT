@@ -209,9 +209,13 @@
                                     <button class="action-btn list-btn" data-brandid="<%= brand._id %>"
                                         onclick="unblockBrand('<%= brand._id %>')">Unblock</button>
                                     <% } %>
-                                        <a href="/admin/deleteBrand?brandId=<%= brand._id %>">
+
+                                        <!-- <a href="/admin/deleteBrand?brandId=<%= brand._id %>">
                                             <button class="action-btn edit-btn"
                                                 onclick="return confirmDelete()">Delete</button>
+                                        </a> -->
+                                        <a href="#" onclick="confirmDelete('<%= brand._id %>')">
+                                            <button class="action-btn edit-btn">Delete</button>
                                         </a>
                         </td>
                     </tr>
@@ -264,9 +268,26 @@
 
     <script>
 
-        function confirmDelete() {
-            return confirm("Are you sure you want to delete this brand?")
-
+        function confirmDelete(brandId) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `/admin/deleteBrand?brandId=${brandId}`;
+                    Swal.fire(
+                        "Deleted!",
+                        "The brand has been deleted.",
+                        "success",
+                        
+                    );
+                }
+            });
         }
 
 

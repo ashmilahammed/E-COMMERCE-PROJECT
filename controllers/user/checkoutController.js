@@ -592,7 +592,7 @@ const retryPayment = async (req, res) => {
                 },
                 theme: { color: "#3399cc" }
             },
-            orderId: orderId // Include orderId for frontend use
+            orderId: orderId
         });
     } catch (error) {
         console.error('Retry payment error:', error);
@@ -724,80 +724,6 @@ const deleteAddress = async (req, res) => {
 
 
 
-// const getOrderDetails = async (req, res) => {
-//     try {
-//         const userId = req.session.user;
-//         const userData = await User.findById(userId);
-//         const orderId = req.params.orderId;
-
-//         if (!userId) {
-//             return res.redirect("/login");
-//         }
-
-//         if (!orderId) {
-//             req.flash('error', 'Order ID is required');
-//             return res.redirect("/userProfile");
-//         }
-
-//         const order = await Order.findOne({
-//             $or: [
-//                 { _id: orderId, userId:userId },
-//                 { orderId : orderId ,userId : userId },
-//             ]
-//         })
-//             .populate({
-//                 path: 'orderItems.product',
-//                 model: 'Product',
-//                 populate: {
-//                     path: 'category',
-//                     model: 'Category',
-//                     select: 'name'
-//                 }
-//             });
-
-//         if (!order) {
-//             req.flash('error', 'Order not found');
-//             return res.redirect("/userProfile");
-//         }
-
-//         // Enrich order items with additional details
-//         const enrichedOrderItems = order.orderItems.map(item => {
-
-//             if (!item.product) {
-//                 return null;
-//             }
-
-//             return {
-//                 ...item.toObject(),
-//                 productDetails: {
-//                     name: item.product.productName,
-//                     description: item.product.description,
-//                     category: item.product.category ? item.product.category.name : 'Uncategorized',
-//                     brand: item.product.brand || 'Unknown Brand',
-//                     images: item.product.productImage
-//                 }
-//             };
-//         }).filter(item => item !== null);
-
-//         // Prepare the order object for rendering
-//         const orderData = {
-//             ...order.toObject(),
-//             orderItems: enrichedOrderItems
-//         };
-
-
-//         res.render("order-details", {
-//             order: orderData,
-//             user: userData
-//         });
-
-//     } catch (error) {
-//         console.error("Error fetching order details:", error);
-//         req.flash('error', 'An error occurred while fetching order details');
-//         res.redirect("/userProfile");
-//     }
-// };
-
 const getOrderDetails = async (req, res) => {
     try {
         const userId = req.session.user;
@@ -878,6 +804,7 @@ const getOrderDetails = async (req, res) => {
         res.redirect("/userProfile");
     }
 };
+
 
 
 
@@ -1083,7 +1010,7 @@ const removeCoupon = async (req, res) => {
             return res.status(400).json({ success: false, message: "Cart is empty." });
         }
 
-        // Calculate original total without discount
+ 
         const originalTotal = cart.items.reduce((total, item) => {
             const variant = item.productId.variants.find((v) => v.size === item.size);
             return total + (variant ? variant.salePrice * item.quantity : 0);
@@ -1117,50 +1044,6 @@ const removeCoupon = async (req, res) => {
 
 
 
-// const returnProduct = async (req,res) => {
-//     try {
-//         const { orderId, productId, reason } = req.body;
-
-//         if (!orderId || !productId || !reason) {
-//             return res.status(400).json({ success: false, message: "Missing required fields" });
-//         }
-
-//         const order = await Order.findById(orderId);
-//         if (!order) {
-//             return res.status(404).json({ success: false, message: "Order not found." });
-//         }
-
-//         const item = order.orderItems.find((i) => i.product.toString() === productId);
-//         if (!item) {
-//             return res.status(404).json({ success: false, message: "Product not found in order." });
-//         }
-
-//         // ✅ Check if the product is delivered before allowing return
-//         if (item.itemStatus !== "Delivered") {
-//             return res.status(400).json({ success: false, message: "Only delivered products can be returned." });
-//         }
-
-//         if (item.returnRequest?.requested) {
-//             return res.status(400).json({ success: false, message: "Return already requested for this product." });
-//         }
-
-//         // ✅ Set return request details
-//         item.returnRequest = {
-//             requested: true,
-//             status: "Pending",
-//             reason,
-//             requestDate: new Date(),
-//         };
-
-//         await order.save();
-
-//         res.json({ success: true, message: "Return request submitted successfully." });
-        
-//     } catch (error) {
-//         console.error("Error in return request:",error);
-//         res.status(500).json({success:false, message: "Internal Server error"})
-//     }
-// }
 
 const returnProduct = async (req, res) => {
     try {
@@ -1184,7 +1067,6 @@ const returnProduct = async (req, res) => {
             return res.status(404).json({ success: false, message: "Variant not found in order." });
         }
 
-        // ✅ Check if the product variant is delivered before allowing return
         if (item.itemStatus !== "Delivered") {
             return res.status(400).json({ success: false, message: "Only delivered products can be returned." });
         }
@@ -1193,7 +1075,7 @@ const returnProduct = async (req, res) => {
             return res.status(400).json({ success: false, message: "Return already requested for this variant." });
         }
 
-        // ✅ Set return request details
+
         item.returnRequest = {
             requested: true,
             status: "Pending",

@@ -337,6 +337,7 @@
             <tbody id="report-data">
                 <% if (orders.length> 0) { %>
                     <% orders.forEach((order)=> { %>
+
                         <tr>
                             <td>
                                 <%= order._id %>
@@ -358,17 +359,18 @@
                             </td>
 
                         </tr>
+
+
                         <% }) %>
-                            <% } else { %>
+                    <% } else { %>
                                 <tr>
                                     <td colspan="7" style="text-align: center;">No data available. Generate a report to
                                         view details.</td>
                                 </tr>
-                                <% } %>
+                             <% } %>
             </tbody>
 
         </table>
-
 
 
         <!-- Pagination -->

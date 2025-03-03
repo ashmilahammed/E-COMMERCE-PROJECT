@@ -2,6 +2,7 @@ const User = require("../../models/userSchema");
 const Category = require("../../models/categorySchema");
 const Product = require("../../models/productSchema");
 const Brand = require("../../models/brandSchema");
+const Otp = require("../../models/otpSchema");
 const env = require("dotenv").config();
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
@@ -51,9 +52,9 @@ async function sendVerificationEmail(email, otp) {
 const pageNotFound = async (req, res) => {
     try {
         const userId = req.session.user;
-        const userData = await User.findById({userId})
+        const userData = await User.findById({ userId })
 
-        res.render("page-404",{
+        res.render("page-404", {
             user: userData
         })
 
@@ -77,11 +78,11 @@ const loadHomepage = async (req, res) => {
             .sort({ createdOn: -1 })
             .limit(8);
 
-       
+
         productData = productData.map(product => {
             const formattedProduct = product.toObject();
 
-    
+
             if (formattedProduct.variants && formattedProduct.variants.length > 0) {
                 formattedProduct.availableSizes = [...new Set(
                     formattedProduct.variants
@@ -100,7 +101,7 @@ const loadHomepage = async (req, res) => {
             return formattedProduct;
         });
 
-       
+
         productData = productData.filter(product =>
             product.variants &&
             product.variants.some(variant => variant.quantity > 0)
@@ -158,11 +159,10 @@ const signup = async (req, res) => {
             return res.json("email-error")
         }
 
+        // Store OTP in the database
+        // await Otp.create({ email, otp });
+
         req.session.userOtp = otp;
-
-        // Save OTP in database
-        // await Otp.create({ email, otp, createdAt: new Date() });
-
         req.session.userData = { fullName, phone, email, password };
 
         res.render("verify-otp");
@@ -197,7 +197,7 @@ const verifyOtp = async (req, res) => {
 
 
         if (req.session.userOtp && otp.toString() === req.session.userOtp.toString()) {
-           
+
             const user = req.session.userData
             const passwordHash = await securePassword(user.password);
 
@@ -341,39 +341,39 @@ const loadShoppingpage = async (req, res) => {
 
         switch (sortOption) {
             case 'priceAsc':
-                sortCriteria = {'variants.salePrice': 1};
+                sortCriteria = { 'variants.salePrice': 1 };
                 break;
             case 'priceDesc':
-                sortCriteria = {'variants.salePrice': -1};
+                sortCriteria = { 'variants.salePrice': -1 };
                 break;
             case 'nameAsc':
-                sortCriteria = {productName: 1};
+                sortCriteria = { productName: 1 };
                 break;
             case 'nameDesc':
-                sortCriteria = {productName: -1};
+                sortCriteria = { productName: -1 };
                 break;
             case 'newArrivals':
             default:
-                sortCriteria = {createdAt: -1};
+                sortCriteria = { createdAt: -1 };
                 break;
         }
 
-      
+
         const filters = {
             isBlocked: false,
             'variants.quantity': { $gt: 0 }
         };
 
-    
+
         if (req.query.search) {
             filters.productName = { $regex: req.query.search, $options: 'i' };
         }
 
 
-         const selectedCategory = req.query.category || null;
-         if (selectedCategory) {
-             filters.category = selectedCategory;
-         }
+        const selectedCategory = req.query.category || null;
+        if (selectedCategory) {
+            filters.category = selectedCategory;
+        }
 
 
         if (req.query.brand) {
@@ -400,11 +400,11 @@ const loadShoppingpage = async (req, res) => {
             .skip(skip)
             .limit(limit);
 
-       
+
         products = products.map(product => {
             const formattedProduct = product.toObject();
 
-          
+
             if (formattedProduct.variants && formattedProduct.variants.length > 0) {
                 formattedProduct.availableSizes = [...new Set(
                     formattedProduct.variants
@@ -412,7 +412,7 @@ const loadShoppingpage = async (req, res) => {
                         .map(v => v.size)
                 )].sort((a, b) => a - b);
 
-               
+
                 const activeVariant = formattedProduct.variants.find(v => v.quantity > 0);
                 if (activeVariant) {
                     formattedProduct.regularPrice = activeVariant.regularPrice;
@@ -423,7 +423,7 @@ const loadShoppingpage = async (req, res) => {
             return formattedProduct;
         });
 
-   
+
         const totalProducts = await Product.countDocuments(filters);
         const totalPages = Math.ceil(totalProducts / limit);
         // const brands = await Product.distinct("brand", { isBlocked: false });

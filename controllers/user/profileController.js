@@ -163,13 +163,23 @@ const postNewPassword = async (req,res) => {
 
         const {newPass1, newPass2} = req.body;
         const email = req.session.email;
+
         if(newPass1 === newPass2) {
             const passwordHash = await securePassword(newPass1);
             await User.updateOne(
                 {email:email},
                 {$set: {password: passwordHash}}
-            )
-            res.redirect("/login");
+            );
+            
+            // res.redirect("/login");
+
+              req.session.destroy((err) => {
+                if (err) {
+                    console.error("Session destroy error:", err);
+                    return res.redirect("/pageNotFound");
+                }
+                return res.redirect("/login"); 
+            });
 
         }else {
             res.render("reset-password",{message: 'Passwords do not match'});
@@ -371,6 +381,7 @@ const verifyChangePassOtp = async (req,res) => {
         const enteredOtp = req.body.otp;
         if(enteredOtp === req.session.userOtp) {
 
+            req.session.otpVerified = true; 
             res.json({success: true, redirectUrl:"/reset-password"})
         }else {
             res.json({success: false, message:"OTP not matching"})

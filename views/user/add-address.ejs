@@ -171,7 +171,7 @@
             }
         });
 
-        
+
 
         function validateForm() {
             let isValid = true;
@@ -226,13 +226,25 @@
 
             if (phone === altPhone) errorMessages.push("Phone number and alternate phone number should be different.");
 
-            // If there are errors, show them all in one SweetAlert popup
+      
+            
             if (errorMessages.length > 0) {
+                let messageToShow;
+
+                if (errorMessages.length === 1) {
+                    messageToShow = errorMessages[0];
+                } else if (errorMessages.length <= 3) {
+                    messageToShow = "<ul style='text-align: left;'>" + errorMessages.map(msg => `<li>${msg}</li>`).join('') + "</ul>";
+                } else {
+                    messageToShow = "Please fill all fields correctly."; 
+                }
+
                 Swal.fire({
-                    title: 'Validation Errors',
-                    html: "<ul style='text-align: left;'>" + errorMessages.map(msg => `<li>${msg}</li>`).join('') + "</ul>",
+                    title: 'Validation Error',
+                    html: messageToShow,
                     icon: 'error'
                 });
+
                 isValid = false;
             }
 

@@ -93,6 +93,73 @@ const getOrderDetails = async (req, res) => {
 
 
 
+// const updateOrderStatus = async (req, res) => {
+//   try {
+//     const { orderId, status } = req.body;
+
+//     if (!orderId || !status) {
+//       return res.status(400).json({
+//         success: false,
+//         message: 'Order ID and status are required'
+//       });
+//     }
+
+//     const allowedStatuses = ["Pending", "Shipped", "Delivered", "Cancelled"];
+
+//     if (!allowedStatuses.includes(status)) {
+//       return res.status(400).json({
+//         success: false,
+//         message: 'Invalid order status'
+//       });
+//     }
+
+//     const order = await Order.findById(orderId).populate('orderItems.product');
+
+//     if (!order) {
+//       return res.status(404).json({
+//         success: false,
+//         message: 'Order not found'
+//       });
+//     }
+
+//     order.orderStatus = status;
+
+//     order.orderItems.forEach(item => {
+//       item.itemStatus = status;
+//     });
+
+//     if (status === 'Cancelled') {
+//       order.cancelledBy = 'Admin';
+//       for (const item of order.orderItems) {
+//         const product = await Product.findById(item.product._id);
+//         const variant = product.variants.find(v => v.size === item.variant.size);
+
+//         if (variant) {
+//           variant.quantity += item.variant.quantity;
+//           await product.save();
+//         }
+//       }
+//     }
+
+//     await order.save();
+
+//     // console.log(`Order ${orderId} status updated to ${status}`);
+
+//     res.status(200).json({
+//       success: true,
+//       message: 'Order status updated successfully',
+//       updatedStatus: status
+//     });
+
+//   } catch (error) {
+//     console.error('Error updating order status:', error);
+//     res.status(500).json({
+//       success: false,
+//       message: 'Internal server error'
+//     });
+//   }
+// };
+
 const updateOrderStatus = async (req, res) => {
   try {
     const { orderId, status } = req.body;
@@ -130,6 +197,48 @@ const updateOrderStatus = async (req, res) => {
 
     if (status === 'Cancelled') {
       order.cancelledBy = 'Admin';
+      order.cancelledAt = new Date();
+
+      // Handle refund for Razorpay payments
+      if (order.payment.method === "RAZORPAY") {
+        const refundAmount = Number(order.pricing.finalAmount);
+        if (isNaN(refundAmount)) {
+          throw new Error('Refund amount calculated as NaN');
+        }
+
+        let wallet = await Wallet.findOne({ userId: order.userId });
+
+        if (!wallet) {
+          wallet = new Wallet({
+            userId: order.userId,
+            balance: refundAmount,
+            transactions: [{
+              type: 'Refund',
+              amount: refundAmount,
+              orderId: orderId,
+              status: 'Completed',
+              description: `Refund for admin cancellation of Order ${orderId}`,
+              date: new Date()
+            }],
+            lastUpdated: new Date()
+          });
+        } else {
+          wallet.balance = Number(wallet.balance) + refundAmount;
+          wallet.transactions.push({
+            type: 'Refund',
+            amount: refundAmount,
+            orderId: orderId,
+            status: 'Completed',
+            description: `Refund for admin cancellation of Order`,
+            date: new Date()
+          });
+          wallet.lastUpdated = new Date();
+        }
+
+        await wallet.save();
+      }
+
+      // Restore product inventory
       for (const item of order.orderItems) {
         const product = await Product.findById(item.product._id);
         const variant = product.variants.find(v => v.size === item.variant.size);
@@ -143,11 +252,11 @@ const updateOrderStatus = async (req, res) => {
 
     await order.save();
 
-    // console.log(`Order ${orderId} status updated to ${status}`);
-
     res.status(200).json({
       success: true,
-      message: 'Order status updated successfully',
+      message: status === 'Cancelled' && order.payment.method === "RAZORPAY"
+        ? 'Order cancelled and refunded successfully'
+        : 'Order status updated successfully',
       updatedStatus: status
     });
 
@@ -155,11 +264,10 @@ const updateOrderStatus = async (req, res) => {
     console.error('Error updating order status:', error);
     res.status(500).json({
       success: false,
-      message: 'Internal server error'
+      message: 'Internal server error: ' + error.message
     });
   }
 };
-
 
 
 
@@ -264,7 +372,7 @@ const returnProcess = async (req, res) => {
           lastUpdated: new Date()
         });
       } else {
-        wallet.balance = Number(wallet.balance) + refundAmount; 
+        wallet.balance = Number(wallet.balance) + refundAmount;
         wallet.transactions.push({
           type: 'Refund',
           amount: refundAmount,
@@ -286,7 +394,7 @@ const returnProcess = async (req, res) => {
     }
 
     await order.save();
-    
+
     res.json({ success: true, message: `Return request ${action} successfully` });
 
   } catch (error) {

@@ -90,7 +90,9 @@ const getSalesReport = async (req, res) => {
         const startDate = req.query.startDate;
         const endDate = req.query.endDate;
 
-        let filter = {}; 
+   
+        // let filter = { orderStatus: "Delivered"}; 
+        let filter = { orderStatus: {$in: ["Delivered","Cancelled"]} }
 
         const today = new Date();
         if (reportType === "daily") {

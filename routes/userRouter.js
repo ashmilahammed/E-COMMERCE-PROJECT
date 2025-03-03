@@ -104,7 +104,6 @@ router.post("/update-wishlist-size",userAuth,wishlistController.changeSize);
 router.post('/wishlist/remove',userAuth,wishlistController.removeFromWishlist);
 
 
-
 //wallet 
 router.post("/wallet/add",userAuth,walletController.walletAdd);
 // router.post("/wallet/history/:userId",userAuth,walletController.getWalletHistory)
