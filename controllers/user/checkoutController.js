@@ -48,7 +48,7 @@ const checkoutPage = async (req, res) => {
 
         cart.tax = cart.subtotal * 0.0;
         cart.discount = cart.discount ? cart.discount : 0;
-        cart.shipping = cart.subtotal > 1000 ? 0 : 50;
+        cart.shipping = cart.subtotal > 5000 ? 0 : 50;
         cart.total = cart.subtotal + cart.tax + cart.shipping - cart.discount;
 
         const userAddresses = await Address.find({ userId: userId });
@@ -332,7 +332,7 @@ const placeOrder = async (req, res) => {
 
         const discountAmount = cart.discount || 0;
         const tax = subtotal * 0.0;
-        const shipping = subtotal > 1000 ? 0 : 50;
+        const shipping = subtotal > 5000 ? 0 : 50;
         const finalAmount = subtotal - discountAmount + tax + shipping;
 
 
@@ -445,6 +445,15 @@ const placeOrder = async (req, res) => {
                 { userId },
                 { $set: { items: [], discount: 0, couponCode: null, subtotal: 0, total: 0 } }
             );
+
+
+            if(paymentMethod.toUpperCase()=== "COD" && finalAmount > 5000 ){
+                res.status(400).json({
+                    success:false,
+                    message: "Cash on delivery is not available for order about 1000"
+                })
+            }
+
 
             res.json({
                 success: true,

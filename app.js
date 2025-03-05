@@ -8,6 +8,7 @@ const db = require("./config/db");
 const userRouter = require("./routes/userRouter")
 const adminRouter = require("./routes/adminRouter");
 const flash = require('connect-flash');
+const { applyCoupon } = require("./controllers/user/checkoutController");
 db();
  
   
@@ -78,6 +79,9 @@ app.use((req, res, next) => {
 
 
 
+app.get("/hola2",(req,res)=>{
+    res.render("test2")
+})
 
 
 

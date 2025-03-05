@@ -691,9 +691,6 @@
                                             <span>₹<%= cart.shipping.toFixed(2) %></span>
                                         </div>
 
-                                        <!-- <li class="d-flex justify-content-between mb-2 text-success">
-                                            Discount <span>-₹0</span>
-                                        </li> -->
                                         <div class="d-flex justify-content-between mb-2 text-success">
                                             <span>Discount</span>
                                             <span id="discountAmount">- ₹0.00</span>
@@ -725,6 +722,7 @@
                                         <i class="fas fa-credit-card me-2"></i>Select Payment Method
                                     </h6>
                                     <div class="payment-method">
+
                                         <div class="form-check mb-3">
                                             <input class="form-check-input" type="radio" name="paymentMethod"
                                                 value="cod" id="cod" checked>
@@ -733,15 +731,17 @@
                                                 <span>Cash on Delivery</span>
                                                 <span class="badge bg-success ms-2">No additional charges</span>
                                             </label>
+                                            <small id="codWarning" class="text-danger d-none">COD is not available for
+                                                orders above ₹5000.</small>
                                         </div>
 
-                                        <!-- <div class="form-check mb-3">
+                                        <div class="form-check mb-3">
                                             <input class="form-check-input" type="radio" value="wallet"
                                                 name="paymentMethod" id="wallet">
                                             <label class="form-check-label" for="wallet">
                                                 <i class="fas fa-wallet me-2"></i>Wallet
                                             </label>
-                                        </div> -->
+                                        </div>
 
                                         <div class="form-check mb-3">
                                             <input class="form-check-input" type="radio" value="razorpay"
@@ -1313,46 +1313,46 @@
                             const rzp = new Razorpay(options);
                             rzp.on('payment.failed', function (response) {
 
-                            console.log('Payment failed, redirecting to order details with orderId:', customOrderId);
-                            window.location.href = `/order-details/${customOrderId}`;
-                        });
-                        rzp.open();
+                                console.log('Payment failed, redirecting to order details with orderId:', customOrderId);
+                                window.location.href = `/order-details/${customOrderId}`;
+                            });
+                            rzp.open();
 
+                        } else {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Order Placed Successfully!',
+                                text: 'Thank you for your purchase.',
+                                showCancelButton: true,
+                                confirmButtonText: 'View Orders',
+                                cancelButtonText: 'Continue Shopping',
+
+                                customClass: {
+                                    popup: 'custom-popup-success',
+                                    title: 'custom-title-success',
+                                    content: 'custom-content-success',
+                                    confirmButton: 'custom-button-success',
+                                    cancelButton: 'custom-cancel-button-success',
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = '/userProfile';
+                                } else {
+                                    window.location.href = '/shop';
+                                }
+                            });
+                        }
                     } else {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Order Placed Successfully!',
-                            text: 'Thank you for your purchase.',
-                            showCancelButton: true,
-                            confirmButtonText: 'View Orders',
-                            cancelButtonText: 'Continue Shopping',
-
-                            customClass: {
-                                popup: 'custom-popup-success',
-                                title: 'custom-title-success',
-                                content: 'custom-content-success',
-                                confirmButton: 'custom-button-success',
-                                cancelButton: 'custom-cancel-button-success',
-                            }
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.href = '/userProfile';
-                            } else {
-                                window.location.href = '/shop';
-                            }
-                        });
+                        throw new Error(response.message || 'Failed to place order');
                     }
-                } else {
-                    throw new Error(response.message || 'Failed to place order');
+                } catch (error) {
+                    console.error('Error in confirmOrder:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Order Failed',
+                        text: error.message || 'Something went wrong'
+                    });
                 }
-            } catch (error) {
-                console.error('Error in confirmOrder:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Order Failed',
-                    text: error.message || 'Something went wrong'
-                });
-            }
 
             }
 
@@ -1491,6 +1491,22 @@
                 });
             });
 
+        </script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const totalAmount = parseFloat(document.getElementById("totalAmount").innerText.replace("₹", "").trim());
+                const codOption = document.getElementById("cod");
+                const codWarning = document.getElementById("codWarning");
+
+                if (totalAmount > 5000) {
+                    codOption.disabled = true;
+                    codWarning.classList.remove("d-none"); // Show the warning message
+                } else {
+                    codOption.disabled = false;
+                    codWarning.classList.add("d-none"); // Hide the warning message
+                }
+            });
         </script>
 
 
