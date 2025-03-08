@@ -284,7 +284,7 @@
                         "Deleted!",
                         "The brand has been deleted.",
                         "success",
-                        
+
                     );
                 }
             });
@@ -375,101 +375,137 @@
             document.querySelectorAll(".error-message").forEach(el => el.innerHTML = "");
         }
 
-
-
-        ////////
+ 
+        
+        /////
         async function blockBrand(brandId) {
-            try {
-                console.log("Blocking brandId:", brandId);
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You are about to block this brand!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, Block",
+                cancelButtonText: "Cancel"
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        let response = await fetch("/admin/blockBrand", {
+                            method: "POST",
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ brandId })
+                        });
 
-                let response = await fetch("/admin/blockBrand", {
-                    method: "POST",
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ brandId })
-                });
+                        let result = await response.json();
+                        console.log("Server Response:", result);
 
-                let result = await response.json();
-                console.log("Server Response:", result);
+                        if (result.success) {
+                            Toastify({
+                                text: "Brand has been blocked!",
+                                duration: 1500,
+                                gravity: "top",
+                                position: "right",
+                                backgroundColor: "red",
+                                close: true
+                            }).showToast();
 
-                if (result.success) {
-                    Toastify({
-                        text: "Brand has been blocked!",
-                        duration: 1500,
-                        gravity: "top",
-                        position: "right",
-                        backgroundColor: "red",
-                        close: true
-                    }).showToast();
+                            let button = document.querySelector(`button[data-brandid="${brandId}"]`);
+                            if (button) {
+                                button.textContent = "Unblock";
+                                button.classList.remove("unlist-btn");
+                                button.classList.add("list-btn");
+                                button.setAttribute("onclick", `unblockBrand('${brandId}')`);
+                            }
 
-                    let button = document.querySelector(`button[data-brandid="${brandId}"]`);
-                    if (button) {
-                        button.textContent = "Unblock";
-                        button.classList.remove("unlist-btn");
-                        button.classList.add("list-btn");
-                        button.setAttribute("onclick", `unblockBrand('${brandId}')`);
+                            let badge = button.closest('tr').querySelector('.badge');
+                            if (badge) {
+                                badge.textContent = "Blocked";
+                                badge.classList.remove("list-btn");
+                                badge.classList.add("unlist-btn");
+                            }
+                        } else {
+                            Toastify({
+                                text: "Failed to block brand.",
+                                duration: 3000,
+                                gravity: "top",
+                                position: "right",
+                                backgroundColor: "orange",
+                                close: true
+                            }).showToast();
+                        }
+                    } catch (error) {
+                        console.error("Error:", error);
                     }
-
-                    let badge = button.closest('tr').querySelector('.badge');
-                    if (badge) {
-                        badge.textContent = "Blocked";
-                        badge.classList.remove("list-btn");
-                        badge.classList.add("unlist-btn");
-                    }
-
-                } else {
-                    console.error("Error:", result.message);
                 }
-            } catch (error) {
-                console.error("Error:", error);
-            }
+            });
         }
 
-        //////////
+        /////
         async function unblockBrand(brandId) {
-            try {
-                console.log("Unblocking brandId:", brandId);
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You are about to unblock this brand!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#28a745",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, Unblock",
+                cancelButtonText: "Cancel"
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        console.log("Unblocking brandId:", brandId);
 
-                let response = await fetch("/admin/unblockBrand", {
-                    method: "POST",
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ brandId })
-                });
+                        let response = await fetch("/admin/unblockBrand", {
+                            method: "POST",
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ brandId })
+                        });
 
-                let result = await response.json();
-                console.log("Server Response:", result);
+                        let result = await response.json();
+                        console.log("Server Response:", result);
 
-                if (result.success) {
-                    Toastify({
-                        text: "Brand has been Unblocked!",
-                        duration: 1500,
-                        gravity: "top",
-                        position: "right",
-                        backgroundColor: "green",
-                        close: true
-                    }).showToast();
+                        if (result.success) {
+                            Toastify({
+                                text: "Brand has been Unblocked!",
+                                duration: 1500,
+                                gravity: "top",
+                                position: "right",
+                                backgroundColor: "green",
+                                close: true
+                            }).showToast();
 
-                    let button = document.querySelector(`button[data-brandid="${brandId}"]`);
-                    if (button) {
-                        button.textContent = "Block";
-                        button.classList.remove("list-btn");
-                        button.classList.add("unlist-btn");
-                        button.setAttribute("onclick", `blockBrand('${brandId}')`);
+                            let button = document.querySelector(`button[data-brandid="${brandId}"]`);
+                            if (button) {
+                                button.textContent = "Block";
+                                button.classList.remove("list-btn");
+                                button.classList.add("unlist-btn");
+                                button.setAttribute("onclick", `blockBrand('${brandId}')`);
+                            }
+
+                            let badge = button.closest('tr').querySelector('.badge');
+                            if (badge) {
+                                badge.textContent = "Active";
+                                badge.classList.remove("unlist-btn");
+                                badge.classList.add("list-btn");
+                            }
+                        } else {
+                            Toastify({
+                                text: "Failed to unblock brand.",
+                                duration: 3000,
+                                gravity: "top",
+                                position: "right",
+                                backgroundColor: "orange",
+                                close: true
+                            }).showToast();
+                        }
+                    } catch (error) {
+                        console.error("Error:", error);
                     }
-
-                    let badge = button.closest('tr').querySelector('.badge');
-                    if (badge) {
-                        badge.textContent = "Active";
-                        badge.classList.remove("unlist-btn");
-                        badge.classList.add("list-btn");
-                    }
-                } else {
-                    console.error("Error:", result.message);
                 }
-            } catch (error) {
-                console.error("Error:", error);
-            }
+            });
         }
-
 
 
 

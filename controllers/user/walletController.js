@@ -103,9 +103,24 @@ const getWalletHistory = async (req, res) => {
 
 
 
+const getWalletBalance =  async (req, res) => {
+    try {
+        const userId = req.session.user;
+        const wallet = await Wallet.findOne({ userId });
+        res.json({ success: true, balance: wallet?.balance ? wallet.balance.toFixed(2) : "0.00" });
+    } catch (error) {
+        console.error("Error fetching wallet balance:", error);
+        res.json({ success: false, balance: "0.00" });
+    }
+};
+
+
+
+
 
 
 module.exports = {
     walletAdd,
-    getWalletHistory
+    getWalletHistory,
+    getWalletBalance
 }

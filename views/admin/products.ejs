@@ -216,116 +216,138 @@
     <br>
 
     <script>
-
+        
         async function blockProduct(productId) {
-            try {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You are about to block this product!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, Block",
+                cancelButtonText: "Cancel"
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        let response = await fetch("/admin/blockProduct", {
+                            method: "POST",
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ productId })
+                        });
 
-                let response = await fetch("/admin/blockProduct", {
-                    method: "POST",
-                    headers: { 'content-Type': 'application/json' },
-                    body: JSON.stringify({ productId })
-                })
+                        let result = await response.json();
+                        if (result.success) {
+                            Toastify({
+                                text: "Product has been blocked!",
+                                duration: 1500,
+                                gravity: "top",
+                                position: "right",
+                                backgroundColor: "red",
+                                close: true
+                            }).showToast();
 
-                let result = await response.json();
-                if (result.success) {
-                    Toastify({
-                        text: "Product has been blocked!",
-                        duration: 1500,
-                        gravity: "top",
-                        position: "right",
-                        backgroundColor: "red",
-                        close: true
-                    }).showToast();
-
-
-                    let button = document.querySelector(`button[data-productid="${productId}"]`);
-                    if (button) {
-                        button.textContent = "Unblock";
-                        button.classList.remove("block-btn");
-                        button.classList.add("unblock-btn");
-                        button.setAttribute("onclick", `unblockProduct('${productId}')`);
+                            let button = document.querySelector(`button[data-productid="${productId}"]`);
+                            if (button) {
+                                button.textContent = "Unblock";
+                                button.classList.remove("block-btn");
+                                button.classList.add("unblock-btn");
+                                button.setAttribute("onclick", `unblockProduct('${productId}')`);
+                            }
+                        } else {
+                            Toastify({
+                                text: "Failed to block product.",
+                                duration: 3000,
+                                gravity: "top",
+                                position: "right",
+                                backgroundColor: "orange",
+                                close: true
+                            }).showToast();
+                        }
+                    } catch (error) {
+                        console.error("Error:", error);
+                        Toastify({
+                            text: "Something went wrong!",
+                            duration: 3000,
+                            gravity: "top",
+                            position: "right",
+                            backgroundColor: "gray",
+                            close: true
+                        }).showToast();
                     }
-                } else {
-                    Toastify({
-                        text: "Failed to block product.",
-                        duration: 3000,
-                        gravity: "top",
-                        position: "right",
-                        backgroundColor: "orange",
-                        close: true
-                    }).showToast();
                 }
-
-            } catch (error) {
-                console.error("Error:", error);
-                Toastify({
-                    text: "Something went wrong!",
-                    duration: 3000,
-                    gravity: "top",
-                    position: "right",
-                    backgroundColor: "gray",
-                    close: true
-                }).showToast();
-
-            }
+            });
         }
+
 
 
 
         async function unblockProduct(productId) {
-            try {
-                let response = await fetch('/admin/unblockProduct', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ productId })
-                });
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You are about to unblock this product!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#28a745",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, Unblock",
+                cancelButtonText: "Cancel"
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        let response = await fetch("/admin/unblockProduct", {
+                            method: "POST",
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ productId })
+                        });
 
-                let result = await response.json();
-                if (result.success) {
-                    Toastify({
-                        text: "Product has been unblocked!",
-                        duration: 1500,
-                        gravity: "top",
-                        position: "right",
-                        backgroundColor: "green",
-                        close: true
-                    }).showToast();
+                        let result = await response.json();
+                        if (result.success) {
+                            Toastify({
+                                text: "Product has been unblocked!",
+                                duration: 1500,
+                                gravity: "top",
+                                position: "right",
+                                backgroundColor: "green",
+                                close: true
+                            }).showToast();
 
-
-                    let button = document.querySelector(`button[data-productid="${productId}"]`);
-                    if (button) {
-                        button.textContent = "Block";
-                        button.classList.remove("unblock-btn");
-                        button.classList.add("block-btn");
-                        button.setAttribute("onclick", `blockProduct('${productId}')`);
+                            let button = document.querySelector(`button[data-productid="${productId}"]`);
+                            if (button) {
+                                button.textContent = "Block";
+                                button.classList.remove("unblock-btn");
+                                button.classList.add("block-btn");
+                                button.setAttribute("onclick", `blockProduct('${productId}')`);
+                            }
+                        } else {
+                            Toastify({
+                                text: "Failed to unblock product.",
+                                duration: 1500,
+                                gravity: "top",
+                                position: "right",
+                                backgroundColor: "orange",
+                                close: true
+                            }).showToast();
+                        }
+                    } catch (error) {
+                        console.error("Error:", error);
+                        Toastify({
+                            text: "Something went wrong!",
+                            duration: 3000,
+                            gravity: "top",
+                            position: "right",
+                            backgroundColor: "gray",
+                            close: true
+                        }).showToast();
                     }
-                } else {
-                    Toastify({
-                        text: "Failed to unblock product.",
-                        duration: 1500,
-                        gravity: "top",
-                        position: "right",
-                        backgroundColor: "orange",
-                        close: true
-                    }).showToast();
                 }
-            } catch (error) {
-                console.error("Error:", error);
-                Toastify({
-                    text: "Something went wrong!",
-                    duration: 3000,
-                    gravity: "top",
-                    position: "right",
-                    backgroundColor: "gray",
-                    close: true
-                }).showToast();
-            }
+            });
         }
 
 
 
 
-        //search
+
         document.addEventListener('DOMContentLoaded', () => {
             const searchInput = document.getElementById('searchInput');
             const searchBtn = document.getElementById('searchBtn');

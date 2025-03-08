@@ -434,12 +434,12 @@ async function changeQuantity(productId, size, change) {
             const pricePerItem = parseFloat(itemRow.getAttribute('data-price'));
             const totalPriceElement = itemRow.querySelector('.cart__price');
             const newTotalPrice = (pricePerItem * newQuantity).toFixed(2);
-            totalPriceElement.textContent = `₹.${newTotalPrice}`;
+            totalPriceElement.textContent = `₹ ${newTotalPrice}`;
 
             // Update cart total
             const cartTotalElement = document.querySelector('.cart__total span');
             if (cartTotalElement) {
-                cartTotalElement.textContent = `₹.${data.cartTotal.toFixed(2)}`;
+                cartTotalElement.textContent = `₹ ${data.cartTotal.toFixed(2)}`;
             }
 
             showToast('Quantity updated successfully', 'success');

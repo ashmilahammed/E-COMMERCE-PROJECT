@@ -1,7 +1,11 @@
 <%- include("../../views/partials/admin/header") %>
 
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
+    <!-- Cropper.js CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <!-- Cropper.js JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
@@ -250,32 +254,35 @@
             </div>
         </div>
     </section>
-    <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
+
+
 
 
     <script>
 
-
-        // function validateAndSubmit() {
-        //     if (validateForm()) {
-        //         // Show loading state
-        //         Swal.fire({
-        //             title: 'Publishing...',
-        //             text: 'Please wait while we process your submission',
-        //             allowOutsideClick: false,
-        //             didOpen: () => {
-        //                 Swal.showLoading();
-        //             }
-        //         });
-
-        //         // Submit the form
-        //         document.querySelector('form').submit();
-        //     }
-        // }
-
         async function validateAndSubmit() {
-            if (validateForm()) {
-                // Show loading state
+
+            // form validation first to display all error messages
+            const isFormValid = validateForm();
+
+
+            const input1 = document.getElementById('input1');
+            const input2 = document.getElementById('input2');
+            const input3 = document.getElementById('input3');
+
+            const imagesUploaded = input1.files[0] && input2.files[0] && input3.files[0];
+
+            if (!imagesUploaded) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Images Required',
+                    text: 'Please upload all three product images before publishing.',
+                });
+                return;
+            }
+
+
+            if (isFormValid && imagesUploaded) {
                 Swal.fire({
                     title: 'Publishing...',
                     text: 'Please wait while we process your submission',
@@ -302,10 +309,10 @@
                             icon: 'success',
                             title: 'Product Added!',
                             text: result.message,
-                            timer: 1000, 
-                            showConfirmButton: false, 
+                            timer: 1000,
+                            showConfirmButton: false,
                         }).then(() => {
-                            window.location.href = "/admin/addProducts";
+                            window.location.href = "/admin/Products";
                         });
                     } else {
                         Swal.fire({
@@ -441,16 +448,20 @@
         }
 
 
-
+        //validation
         function validateForm() {
             let isValid = true;
 
+            // Clear all previous error messages
+            const errorElements = document.querySelectorAll('.error-message');
+            errorElements.forEach(element => {
+                element.textContent = '';
+            });
 
             function getInputValue(id) {
                 const element = document.getElementById(id);
                 return element ? element.value.trim() : '';
             }
-
 
             function showError(id, message) {
                 const errorElement = document.getElementById(id + '-error');
@@ -509,14 +520,18 @@
                 }
             }
 
-
             const input1 = document.getElementById('input1');
-            if (!input1 || (!input1.files[0] && !document.getElementById('imgView1').src)) {
-                showError('image', 'At least one product image is required');
+            const input2 = document.getElementById('input2');
+            const input3 = document.getElementById('input3');
+
+            if (!input1 || !input1.files[0] || !input2 || !input2.files[0] || !input3 || !input3.files[0]) {
+                isValid = false;
             }
 
             return isValid;
         }
+
+
 
 
         function addVariant() {
@@ -565,7 +580,13 @@
                     });
                 });
             } else {
-                alert('At least one variant is required');
+                Swal.fire({
+                    icon: "warning",
+                    title: "Warning",
+                    text: "At least one variant is required!",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK"
+                });
             }
         }
 
@@ -574,6 +595,5 @@
     </script>
 
 
-    <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
 
     <%- include("../../views/partials/admin/footer") %>

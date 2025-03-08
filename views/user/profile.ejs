@@ -779,11 +779,10 @@
             document.getElementById("walletBalance").textContent = data.balance.toFixed(2);
 
 
-            // const modalElement = document.getElementById("addMoneyModal");
-            // const modal = bootstrap.Modal.getInstance(modalElement);
-            // if (modal) modal.hide();
             // Close the modal
             const modalElement = document.getElementById("addMoneyModal");
+            // const modal = bootstrap.Modal.getInstance(modalElement);
+            // if (modal) modal.hide();
             const modal = new bootstrap.Modal(modalElement);
             modal.hide();
 
@@ -836,15 +835,15 @@
 
           console.error("Failed to load wallet data:", data.message);
           Swal.fire({
-                icon: "info",
-                title: "No Wallet Found",
-                text: "Your wallet has been initialized with ₹0 balance.",
-                showConfirmButton: false,
-                timer: 2000
-            });
+            icon: "info",
+            title: "No Wallet Found",
+            text: "Your wallet has been initialized with ₹0 balance.",
+            showConfirmButton: false,
+            timer: 2000
+          });
 
-            document.getElementById("walletBalance").textContent = "0.00";
-            updateTransactionTable([]);
+          document.getElementById("walletBalance").textContent = "0.00";
+          updateTransactionTable([]);
         }
       } catch (error) {
         console.error("Error loading wallet:", error.message);
@@ -878,4 +877,3 @@
   </script>
 
   <%- include("../../views/partials/user/footer") %>
-

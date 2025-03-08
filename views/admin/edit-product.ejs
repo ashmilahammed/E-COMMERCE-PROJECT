@@ -1,10 +1,16 @@
 <%- include("../../views/partials/admin/header") %>
 
-    <head>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    </head>
+
+    <!-- Font Awesome (for icons) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- Cropper.js CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <!-- Cropper.js JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
     <style>
         .error-message {
             color: red;
@@ -105,10 +111,10 @@
                 <div class="content-header">
                     <a href="/admin/products">
                         <button onclick="checkImagesAndGoBack()"
-                        style="border-radius: 10px;border-color:white;height: 30px;background-color: #ff9028;color: white;"
-                        type="button">
-                        Back to Products
-                    </button>
+                            style="border-radius: 10px;border-color:white;height: 30px;background-color: #ff9028;color: white;"
+                            type="button">
+                            Back to Products
+                        </button>
                     </a>
                     <h2 class="content-title">Edit Product</h2>
                 </div>
@@ -121,8 +127,8 @@
                             onsubmit="return validateForm()">
                             <div class="mb-4">
                                 <label for="product_name" class="form-label">Product Name</label>
-                                <input type="text" placeholder="Type here" name="productName" class="form-control border"
-                                    id="product_name" value="<%= product.productName %>">
+                                <input type="text" placeholder="Type here" name="productName"
+                                    class="form-control border" id="product_name" value="<%= product.productName %>">
                                 <div id="productName-error" class="error-message"></div>
                             </div>
 
@@ -130,11 +136,11 @@
                                 <label class="form-label">Brand</label>
                                 <select class="form-select border" name="brand">
                                     <% for(let i=0; i<brand.length; i++) { %>
-                                        <option value="<%= brand[i].brandName %>" 
-                                            <%= brand[i].brandName === product.brand ? 'selected' : '' %>>
+                                        <option value="<%= brand[i].brandName %>" <%=brand[i].brandName===product.brand
+                                            ? 'selected' : '' %>>
                                             <%= brand[i].brandName %>
                                         </option>
-                                    <% } %>
+                                        <% } %>
                                 </select>
                                 <div id="brand-error" class="error-message"></div>
                             </div>
@@ -151,10 +157,10 @@
                                 <select class="form-select border" name="category">
                                     <% for(let i=0; i<category.length; i++) { %>
                                         <option value="<%= category[i].name %>"
-                                            <%= category[i].name === product.category.name ? 'selected' : '' %>>
+                                            <%=category[i].name===product.category.name ? 'selected' : '' %>>
                                             <%= category[i].name %>
                                         </option>
-                                    <% } %>
+                                        <% } %>
                                 </select>
                                 <div id="category-error" class="error-message"></div>
                             </div>
@@ -162,45 +168,52 @@
                             <div id="variant-container" class="card mb-4">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h4 class="mb-0">Product Variants</h4>
-                                    <button type="button" class="btn btn-primary" onclick="addVariant()">Add Variant</button>
+                                    <button type="button" class="btn btn-primary" onclick="addVariant()">Add
+                                        Variant</button>
                                 </div>
                                 <div class="card-body">
-                                    <% if (product.variants && product.variants.length > 0) { %>
-                                        <% product.variants.forEach((variant, index) => { %>
+                                    <% if (product.variants && product.variants.length> 0) { %>
+                                        <% product.variants.forEach((variant, index)=> { %>
                                             <div class="variant mb-4 p-3 border rounded">
                                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                                    <h5 class="mb-0">Variant <%= index + 1 %></h5>
-                                                    <% if (index > 0) { %>
-                                                        <button type="button" class="btn btn-danger btn-sm" onclick="removeVariant(this)">Remove</button>
-                                                    <% } %>
+                                                    <h5 class="mb-0">Variant <%= index + 1 %>
+                                                    </h5>
+                                                    <% if (index> 0) { %>
+                                                        <button type="button" class="btn btn-danger btn-sm"
+                                                            onclick="removeVariant(this)">Remove</button>
+                                                        <% } %>
                                                 </div>
 
                                                 <div class="row">
                                                     <div class="col-md-6 mb-3">
                                                         <label class="form-label">Size:</label>
-                                                        <input type="number" name="variants[<%= index %>][size]" 
-                                                            class="form-control border" value="<%= variant.size %>" required>
+                                                        <input type="number" name="variants[<%= index %>][size]"
+                                                            class="form-control border" value="<%= variant.size %>"
+                                                            required>
                                                         <div class="error-message"></div>
                                                     </div>
 
                                                     <div class="col-md-6 mb-3">
                                                         <label class="form-label">Regular Price:</label>
-                                                        <input type="number" name="variants[<%= index %>][regularPrice]" 
-                                                            class="form-control border" value="<%= variant.regularPrice %>" required>
+                                                        <input type="number" name="variants[<%= index %>][regularPrice]"
+                                                            class="form-control border"
+                                                            value="<%= variant.regularPrice %>" required>
                                                         <div class="error-message"></div>
                                                     </div>
 
                                                     <div class="col-md-6 mb-3">
                                                         <label class="form-label">Sale Price:</label>
-                                                        <input type="number" name="variants[<%= index %>][salePrice]" 
-                                                            class="form-control border" value="<%= variant.salePrice %>" required>
+                                                        <input type="number" name="variants[<%= index %>][salePrice]"
+                                                            class="form-control border" value="<%= variant.salePrice %>"
+                                                            required>
                                                         <div class="error-message"></div>
                                                     </div>
 
                                                     <div class="col-md-6 mb-3">
                                                         <label class="form-label">Quantity:</label>
-                                                        <input type="number" name="variants[<%= index %>][quantity]" 
-                                                            class="form-control border" value="<%= variant.quantity %>" required>
+                                                        <input type="number" name="variants[<%= index %>][quantity]"
+                                                            class="form-control border" value="<%= variant.quantity %>"
+                                                            required>
                                                         <div class="error-message"></div>
                                                     </div>
 
@@ -215,36 +228,40 @@
                                                     </div> -->
                                                 </div>
                                             </div>
-                                        <% }); %>
-                                    <% } else { %>
-                                        <div class="variant mb-4 p-3 border rounded">
-                                            <h5 class="mb-0">Variant 1</h5>
-                                            <div class="row">
-                                                <div class="col-md-6 mb-3">
-                                                    <label class="form-label">Size:</label>
-                                                    <input type="number" name="variants[0][size]" class="form-control border" required>
-                                                    <div class="error-message"></div>
-                                                </div>
+                                            <% }); %>
+                                                <% } else { %>
+                                                    <div class="variant mb-4 p-3 border rounded">
+                                                        <h5 class="mb-0">Variant 1</h5>
+                                                        <div class="row">
+                                                            <div class="col-md-6 mb-3">
+                                                                <label class="form-label">Size:</label>
+                                                                <input type="number" name="variants[0][size]"
+                                                                    class="form-control border" required>
+                                                                <div class="error-message"></div>
+                                                            </div>
 
-                                                <div class="col-md-6 mb-3">
-                                                    <label class="form-label">Regular Price:</label>
-                                                    <input type="number" name="variants[0][regularPrice]" class="form-control border" required>
-                                                    <div class="error-message"></div>
-                                                </div>
+                                                            <div class="col-md-6 mb-3">
+                                                                <label class="form-label">Regular Price:</label>
+                                                                <input type="number" name="variants[0][regularPrice]"
+                                                                    class="form-control border" required>
+                                                                <div class="error-message"></div>
+                                                            </div>
 
-                                                <div class="col-md-6 mb-3">
-                                                    <label class="form-label">Sale Price:</label>
-                                                    <input type="number" name="variants[0][salePrice]" class="form-control border" required>
-                                                    <div class="error-message"></div>
-                                                </div>
+                                                            <div class="col-md-6 mb-3">
+                                                                <label class="form-label">Sale Price:</label>
+                                                                <input type="number" name="variants[0][salePrice]"
+                                                                    class="form-control border" required>
+                                                                <div class="error-message"></div>
+                                                            </div>
 
-                                                <div class="col-md-6 mb-3">
-                                                    <label class="form-label">Quantity:</label>
-                                                    <input type="number" name="variants[0][quantity]" class="form-control border" value="1" required>
-                                                    <div class="error-message"></div>
-                                                </div>
+                                                            <div class="col-md-6 mb-3">
+                                                                <label class="form-label">Quantity:</label>
+                                                                <input type="number" name="variants[0][quantity]"
+                                                                    class="form-control border" value="1" required>
+                                                                <div class="error-message"></div>
+                                                            </div>
 
-                                                <!-- <div class="col-md-6">
+                                                            <!-- <div class="col-md-6">
                                                     <label class="form-label">Status:</label>
                                                     <select name="variants[0][status]" class="form-select border" required>
                                                         <option value="Available">Available</option>
@@ -253,9 +270,9 @@
                                                     </select>
                                                     <div class="error-message"></div>
                                                 </div> -->
-                                            </div>
-                                        </div>
-                                    <% } %>
+                                                        </div>
+                                                    </div>
+                                                    <% } %>
                                 </div>
                             </div>
 
@@ -351,7 +368,8 @@
             </div>
         </div>
     </section>
-    <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
+
+
 
     <script>
         function validateAndSubmit() {
@@ -407,7 +425,7 @@
 
             setTimeout(() => {
                 document.forms[0].submit();
-            }, 200);  
+            }, 200);
         }
 
         function viewImage1(event) {
@@ -515,8 +533,9 @@
             }
         }
 
+
         function deleteSingleImage(imageName, productId) {
-            console.log('Deleting image:', { imageName, productId }); // Debug log
+            console.log('Deleting image:', { imageName, productId }); 
 
             Swal.fire({
                 title: 'Are you sure?',
@@ -599,10 +618,10 @@
             const variantContainer = document.getElementById('variant-container').getElementsByClassName('card-body')[0];
             const variants = variantContainer.getElementsByClassName('variant');
             const newIndex = variants.length;
-            
+
             const newVariant = document.createElement('div');
             newVariant.className = 'variant mb-4 p-3 border rounded';
-            
+
             newVariant.innerHTML = `
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="mb-0">Variant ${newIndex + 1}</h5>
@@ -636,7 +655,7 @@
                     
                 </div>
             `;
-            
+
             variantContainer.appendChild(newVariant);
         }
 
@@ -652,7 +671,7 @@
                     if (heading) {
                         heading.textContent = `Variant ${index + 1}`;
                     }
-                    
+
                     // Update input names
                     v.querySelectorAll('input, select').forEach(input => {
                         const name = input.getAttribute('name');
@@ -668,7 +687,7 @@
 
         function validateForm() {
             let isValid = true;
-            
+
             // Helper function to safely get input value
             function getInputValue(id) {
                 const element = document.getElementById(id);
@@ -743,7 +762,6 @@
             return isValid;
         }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
 
 
 

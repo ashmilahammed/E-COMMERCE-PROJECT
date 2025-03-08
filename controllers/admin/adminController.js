@@ -1,6 +1,8 @@
 const User = require("../../models/userSchema");
 const Order = require("../../models/orderSchema");
 const Product = require("../../models/productSchema");
+const Category = require("../../models/categorySchema");
+const Brand = require("../../models/brandSchema");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
@@ -56,7 +58,7 @@ const login = async (req, res) => {
 
 const loadDashboard = async (req, res) => {
     try {
-        res.render("dashboard", { admin: req.session.admin }); 
+        res.render("dashboard", { admin: req.session.admin });
     } catch (error) {
         console.error("Error loading dashboard:", error);
         res.redirect("/admin/pageError");
@@ -90,9 +92,9 @@ const getSalesReport = async (req, res) => {
         const startDate = req.query.startDate;
         const endDate = req.query.endDate;
 
-   
+
         // let filter = { orderStatus: "Delivered"}; 
-        let filter = { orderStatus: {$in: ["Delivered","Cancelled"]} }
+        let filter = { orderStatus: { $in: ["Delivered", "Cancelled"] } }
 
         const today = new Date();
         if (reportType === "daily") {
@@ -150,9 +152,9 @@ const getSalesReport = async (req, res) => {
 
         res.render("sales-report", {
             orders,
-            totalSales,  
-            totalDiscount, 
-            totalCouponDiscount, 
+            totalSales,
+            totalDiscount,
+            totalCouponDiscount,
             totalOrders,
             currentPage: page,
             totalPages,
@@ -166,7 +168,7 @@ const getSalesReport = async (req, res) => {
         res.status(500).send("Server error");
     }
 };
- 
+
 
 
 
@@ -250,7 +252,7 @@ const downloadPdf = async (req, res) => {
             .text(`Total Coupon Discount: ₹${totalCouponDiscount.toFixed(2)}`);
         doc.moveDown(1);
 
-  
+
         const table = {
             headers: [
                 { label: "Order ID", width: 90, align: "center" },
@@ -258,12 +260,12 @@ const downloadPdf = async (req, res) => {
                 { label: "Date", width: 70, align: "center" },
                 { label: "Status", width: 60, align: "center" },
                 { label: "Total", width: 60, align: "right" },
-                { label: "Coupon Disc.", width: 80, align: "right" }, 
-                { label: "Offer Disc.", width: 80, align: "right" }  
+                { label: "Coupon Disc.", width: 80, align: "right" },
+                { label: "Offer Disc.", width: 80, align: "right" }
             ],
             rows: orders.map(order => [
-                order.orderId, 
-                order.userId ? order.userId.fullName : "Guest", 
+                order.orderId,
+                order.userId ? order.userId.fullName : "Guest",
                 new Date(order.createdAt).toLocaleDateString(),
                 order.orderStatus,
                 `₹${order.pricing.finalAmount.toFixed(2)}`,
@@ -273,13 +275,13 @@ const downloadPdf = async (req, res) => {
         };
 
         await doc.table(table, {
-            width: 530, 
+            width: 530,
             columnSpacing: 5,
-            padding: 5, 
-            prepareHeader: () => doc.font("Helvetica-Bold").fontSize(8), 
+            padding: 5,
+            prepareHeader: () => doc.font("Helvetica-Bold").fontSize(8),
             prepareRow: (row, indexColumn, indexRow, rectRow) => {
-                doc.font("Helvetica").fontSize(8); 
-                return { height: 20 }; 
+                doc.font("Helvetica").fontSize(8);
+                return { height: 20 };
             }
         });
 
@@ -310,7 +312,7 @@ const downloadExcel = async (req, res) => {
         const { reportType, startDate, endDate } = req.query;
 
         let filter = {};
-        
+
         if (reportType && reportType !== "all") {
             const now = new Date();
             if (reportType === "daily") {
@@ -342,7 +344,7 @@ const downloadExcel = async (req, res) => {
             { header: "Status", key: "status", width: 15 },
             { header: "Total", key: "total", width: 15 },
             { header: "Offer Discount", key: "offerDiscount", width: 15 },
-            { header: "Coupon Discount", key: "couponDiscount", width: 15 } 
+            { header: "Coupon Discount", key: "couponDiscount", width: 15 }
         ];
 
         orders.forEach(order => {
@@ -385,6 +387,253 @@ const downloadExcel = async (req, res) => {
 
 
 
+// Updated getDateFilter function to include date grouping info
+const getDateFilter = (filter) => {
+    const now = new Date();
+    let startDate;
+    let groupBy;
+
+    if (filter === "weekly") {
+        startDate = new Date();
+        startDate.setDate(startDate.getDate() - 7);
+        groupBy = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }; 
+    } else if (filter === "monthly") {
+        startDate = new Date();
+        startDate.setMonth(startDate.getMonth() - 1);
+        groupBy = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }; 
+    } else if (filter === "yearly") {
+        startDate = new Date();
+        startDate.setFullYear(startDate.getFullYear() - 1);
+        groupBy = { $dateToString: { format: "%Y-%m", date: "$createdAt" } }; 
+    } else {
+        return { filter: {}, groupBy: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } } };
+    }
+
+    return { 
+        filter: { createdAt: { $gte: startDate, $lte: new Date() } },
+        groupBy: groupBy 
+    };
+};
+
+
+const getDashboardData = async (req, res) => {
+    try {
+        const { filter: dateFilter, groupBy } = getDateFilter(req.query.filter);
+
+        const totalProducts = await Product.countDocuments();
+        const totalUsers = await User.countDocuments();
+        const totalCategories = await Category.countDocuments();
+
+        // Get revenue over time
+        const revenueOverTime = await Order.aggregate([
+            { $match: dateFilter },
+            { 
+                $group: { 
+                    _id: groupBy,
+                    revenue: { $sum: { $ifNull: ["$pricing.finalAmount", 0] } },
+                    count: { $sum: 1 }
+                } 
+            },
+            { $sort: { _id: 1 } }
+        ]);
+
+        // Format data for frontend
+        const labels = revenueOverTime.map(item => item._id);
+        const revenueData = revenueOverTime.map(item => item.revenue);
+        const orderData = revenueOverTime.map(item => item.count);
+        
+
+        const totalRevenue = revenueData.reduce((sum, val) => sum + val, 0);
+        const totalOrders = orderData.reduce((sum, val) => sum + val, 0);
+
+
+        // Category Performance
+        const categoryPerformance = await Order.aggregate([
+            { $match: dateFilter },
+            { $unwind: "$orderItems" },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "orderItems.product",
+                    foreignField: "_id",
+                    as: "productInfo"
+                }
+            },
+            { $unwind: "$productInfo" },
+            {
+                $group: {
+                    _id: "$productInfo.category",
+                    totalSales: { $sum: { $ifNull: ["$orderItems.variant.quantity", 0] } }
+                }
+            },
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "categoryInfo"
+                }
+            },
+            { $unwind: "$categoryInfo" },
+            { $project: { category: "$categoryInfo.name", totalSales: 1 } }
+        ]);
+
+        // Brand Performance
+        const brandPerformance = await Order.aggregate([
+            { $match: dateFilter },
+            { $unwind: "$orderItems" },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "orderItems.product",
+                    foreignField: "_id",
+                    as: "productInfo"
+                }
+            },
+            { $unwind: "$productInfo" },
+            {
+                $group: {
+                    _id: "$productInfo.brand",
+                    totalSales: { $sum: { $ifNull: ["$orderItems.variant.quantity", 0] } }
+                }
+            },
+            { $project: { brand: "$_id", totalSales: 1 } }
+        ]);
+
+        res.json({
+            revenue: totalRevenue,
+            totalOrders,
+            totalProducts,  
+            totalUsers,     
+            totalCategories,
+            timeSeriesData: {
+                labels,
+                revenueData,
+                orderData
+            },
+            categoryPerformance,
+            brandPerformance
+        });
+    } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+
+
+const getBestSellingData = async (req, res) => {
+    try {
+
+        const filter = req.query.filter || "weekly";
+        const { filter: dateFilter } = getDateFilter(filter);
+
+        const bestSellingProducts = await Order.aggregate([
+            { $match: dateFilter },
+            { $unwind: "$orderItems" },
+            {
+                $group: {
+                    _id: "$orderItems.product",
+                    totalSales: { $sum: { $ifNull: ["$orderItems.variant.quantity", 0] } }
+                }
+            },
+            { $sort: { totalSales: -1 } },
+            { $limit: 10 },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "productInfo"
+                }
+            },
+            { $unwind: "$productInfo" },
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "productInfo.category",
+                    foreignField: "_id",
+                    as: "categoryInfo"
+                }
+            },
+            { $unwind: "$categoryInfo" },
+            {
+                $project: {
+                    productName: "$productInfo.productName",
+                    totalSales: 1,
+                    category: "$categoryInfo.name" 
+                }
+            }
+        ]);
+        
+
+        const bestSellingCategories = await Order.aggregate([
+            { $match: dateFilter },
+            { $unwind: "$orderItems" },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "orderItems.product",
+                    foreignField: "_id",
+                    as: "productInfo"
+                }
+            },
+            { $unwind: "$productInfo" },
+            {
+                $group: {
+                    _id: "$productInfo.category",
+                    totalSales: { $sum: { $ifNull: ["$orderItems.variant.quantity", 0] } }
+                }
+            },
+            { $sort: { totalSales: -1 } },
+            { $limit: 10 },
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "categoryInfo"
+                }
+            },
+            { $unwind: "$categoryInfo" },
+            { $project: { category: "$categoryInfo.name", totalSales: 1 } }
+        ]);
+
+
+        const bestSellingBrands = await Order.aggregate([
+            { $match: dateFilter },
+            { $unwind: "$orderItems" },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "orderItems.product",
+                    foreignField: "_id",
+                    as: "productInfo"
+                }
+            },
+            { $unwind: "$productInfo" },
+            {
+                $group: {
+                    _id: "$productInfo.brand",
+                    totalSales: { $sum: { $ifNull: ["$orderItems.variant.quantity", 0] } }
+                }
+            },
+            { $sort: { totalSales: -1 } },
+            { $limit: 10 },
+            { $project: { brand: "$_id", totalSales: 1 } }
+        ]);
+
+        res.json({ bestSellingProducts, bestSellingCategories, bestSellingBrands });
+    } catch (error) {
+        console.error("Error fetching best-selling data:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+
+
+
+
 module.exports = {
     loadLogin,
     login,
@@ -395,4 +644,7 @@ module.exports = {
     getSalesReport,
     downloadPdf,
     downloadExcel,
+
+    getDashboardData,
+    getBestSellingData
 }

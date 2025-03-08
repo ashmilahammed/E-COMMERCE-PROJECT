@@ -79,5 +79,9 @@ router.get("/download-pdf",adminAuth,adminController.downloadPdf);
 router.get("/download-excel",adminAuth,adminController.downloadExcel);
 
 
+//  dashboard data
+router.get("/dashboard-data", adminAuth, adminController.getDashboardData);
+router.get("/best-selling", adminAuth, adminController.getBestSellingData);
+
 
 module.exports = router;

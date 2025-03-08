@@ -189,8 +189,9 @@
                                                     <strong>Return Rejected</strong> <br> reason:<%=
                                                         item.returnRequest.comments %></span>
                                                 <% } else { %>
-                                                    <button type="button" class="btn btn-info" disabled>Return
-                                                        Requested</button>
+                                                    <button type="button" class="btn btn-info" style="background-color: rgb(183, 0, 0);color: white;"
+                                                     disabled>
+                                                     Return Requested</button>
                                                     <% } %>
                                                         <% } %>
                             </div>
@@ -210,7 +211,12 @@
                                     Cancelled</button>
 
                                 <% } else if (order.orderStatus==='Delivered' ) { %>
-                                    <p class="text-success fw-bold">Your Products have Delivered!</p>
+                                    <!-- <p class="text-success fw-bold">Your Products have Delivered!</p> -->
+                                    <button type="button" class="btn" 
+                                    style="font-size: 15px; background-color:rgb(170, 105, 0) ;color: white; padding: 3px 8px;"
+                                    onclick="downloadInvoice('<%= order._id %>')">
+                                    Download Invoice
+                                </button>
 
                                     <% } else if (order.payment.method==='RAZORPAY' && order.payment.status==='Pending'
                                         ) { %>
@@ -655,4 +661,13 @@
             });
         }
     }
+
+
+
+
+
+    function downloadInvoice(orderId) {
+    window.location.href = `/invoice/${orderId}`;
+}
+
 </script>

@@ -93,73 +93,6 @@ const getOrderDetails = async (req, res) => {
 
 
 
-// const updateOrderStatus = async (req, res) => {
-//   try {
-//     const { orderId, status } = req.body;
-
-//     if (!orderId || !status) {
-//       return res.status(400).json({
-//         success: false,
-//         message: 'Order ID and status are required'
-//       });
-//     }
-
-//     const allowedStatuses = ["Pending", "Shipped", "Delivered", "Cancelled"];
-
-//     if (!allowedStatuses.includes(status)) {
-//       return res.status(400).json({
-//         success: false,
-//         message: 'Invalid order status'
-//       });
-//     }
-
-//     const order = await Order.findById(orderId).populate('orderItems.product');
-
-//     if (!order) {
-//       return res.status(404).json({
-//         success: false,
-//         message: 'Order not found'
-//       });
-//     }
-
-//     order.orderStatus = status;
-
-//     order.orderItems.forEach(item => {
-//       item.itemStatus = status;
-//     });
-
-//     if (status === 'Cancelled') {
-//       order.cancelledBy = 'Admin';
-//       for (const item of order.orderItems) {
-//         const product = await Product.findById(item.product._id);
-//         const variant = product.variants.find(v => v.size === item.variant.size);
-
-//         if (variant) {
-//           variant.quantity += item.variant.quantity;
-//           await product.save();
-//         }
-//       }
-//     }
-
-//     await order.save();
-
-//     // console.log(`Order ${orderId} status updated to ${status}`);
-
-//     res.status(200).json({
-//       success: true,
-//       message: 'Order status updated successfully',
-//       updatedStatus: status
-//     });
-
-//   } catch (error) {
-//     console.error('Error updating order status:', error);
-//     res.status(500).json({
-//       success: false,
-//       message: 'Internal server error'
-//     });
-//   }
-// };
-
 const updateOrderStatus = async (req, res) => {
   try {
     const { orderId, status } = req.body;
@@ -195,9 +128,15 @@ const updateOrderStatus = async (req, res) => {
       item.itemStatus = status;
     });
 
+    if (status === "Delivered" && order.payment.method === "COD") {
+      order.payment.status = "Completed";
+      order.payment.paidAt = new Date();
+    }
+
     if (status === 'Cancelled') {
       order.cancelledBy = 'Admin';
       order.cancelledAt = new Date();
+
 
       // Handle refund for Razorpay payments
       if (order.payment.method === "RAZORPAY") {
@@ -217,7 +156,7 @@ const updateOrderStatus = async (req, res) => {
               amount: refundAmount,
               orderId: orderId,
               status: 'Completed',
-              description: `Refund for admin cancellation of Order ${orderId}`,
+              description: `Refund for admin cancellation of Order`,
               date: new Date()
             }],
             lastUpdated: new Date()

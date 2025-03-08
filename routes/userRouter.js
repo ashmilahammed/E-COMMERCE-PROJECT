@@ -9,6 +9,7 @@ const cartController = require("../controllers/user/cartController");
 const wishlistController = require("../controllers/user/wishlistController");
 const checkoutController = require('../controllers/user/checkoutController');
 const walletController = require("../controllers/user/walletController");
+const invoiceController = require("../controllers/user/invoiceController");
 const multer = require('multer');
 const upload = multer();
 
@@ -77,16 +78,16 @@ router.post("/cart/remove-item",userAuth,cartController.removeItem);
 //checkout management
 router.get('/checkout',userAuth,checkoutController.checkoutPage);
 router.post('/checkout',userAuth,checkoutController.placeOrder);
-// router.post('/checkout',upload.none(),userAuth,checkoutController.placeOrder);
 router.post('/add-address',userAuth,checkoutController.addAddress);
 router.post('/checkout/editAddress',userAuth,checkoutController.editAddress);
 
-//Order management
-// router.get("/orderDetails",userAuth,checkoutController.getOrderDetails);   
+//Order management 
 router.get("/order-details/:orderId", userAuth, checkoutController.getOrderDetails);
 router.post("/cancelOrder",userAuth,checkoutController.cancelOrder)
 router.post("/applyCoupon",userAuth,checkoutController.applyCoupon);
 router.post("/removeCoupon",userAuth,checkoutController.removeCoupon);
+
+router.get("get-wallet-balance",userAuth,walletController.getWalletBalance)
 
 //return
 router.post("/returnProduct",userAuth,checkoutController.returnProduct)
@@ -106,8 +107,10 @@ router.post('/wishlist/remove',userAuth,wishlistController.removeFromWishlist);
 
 //wallet 
 router.post("/wallet/add",userAuth,walletController.walletAdd);
-// router.post("/wallet/history/:userId",userAuth,walletController.getWalletHistory)
 router.get("/wallet/history", userAuth, walletController.getWalletHistory);
+
+//invoice
+router.get("/invoice/:id",userAuth,invoiceController.generateInvoice)
 
 
 //contacts

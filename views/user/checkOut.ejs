@@ -729,19 +729,21 @@
                                             <label class="form-check-label d-flex align-items-center" for="cod">
                                                 <i class="fas fa-money-bill-wave me-2"></i>
                                                 <span>Cash on Delivery</span>
-                                                <span class="badge bg-success ms-2">No additional charges</span>
+                                                <!-- <span class="badge bg-success ms-2">No additional charges</span> -->
                                             </label>
                                             <small id="codWarning" class="text-danger d-none">COD is not available for
-                                                orders above ₹5000.</small>
+                                                orders above 5000.</small>
                                         </div>
 
                                         <div class="form-check mb-3">
                                             <input class="form-check-input" type="radio" value="wallet"
                                                 name="paymentMethod" id="wallet">
                                             <label class="form-check-label" for="wallet">
-                                                <i class="fas fa-wallet me-2"></i>Wallet
+                                                <i class="fas fa-wallet me-2"></i> Wallet
+                                                <span class="text-success fw-bold">(₹<%= walletBalance %>)</span>
                                             </label>
                                         </div>
+
 
                                         <div class="form-check mb-3">
                                             <input class="form-check-input" type="radio" value="razorpay"
@@ -836,9 +838,11 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <!-- <button type="button" class="btn btn-primary" onclick="addNewAddress(event)">Save Address</button> -->
+                    <!-- <button type="button" class="btn btn-primary"
+                        onclick="if(validateAddressForm()) addNewAddress(event)">Save Address</button> -->
                     <button type="button" class="btn btn-primary"
-                        onclick="if(validateAddressForm()) addNewAddress(event)">Save Address</button>
+                        onclick="if(validateAddressForm('addAddressForm')) addNewAddress(event)">Save Address</button>
+
                 </div>
             </div>
         </div>
@@ -920,17 +924,74 @@
 
 
 
-            function validateAddressForm() {
-                const form = document.getElementById('addAddressForm');
+            // function validateAddressForm() {
+            //     const form = document.getElementById('addAddressForm');
 
-                const addressType = form.querySelector('#addressType').value.trim();
-                const name = form.querySelector('#name').value.trim();
-                const city = form.querySelector('#city').value.trim();
-                const landMark = form.querySelector('#landMark').value.trim();
-                const state = form.querySelector('#state').value.trim();
-                const pincode = form.querySelector('#pincode').value.trim();
-                const phone = form.querySelector('#phone').value.trim();
-                const altPhone = form.querySelector('#altPhone').value.trim();
+            //     const addressType = form.querySelector('#addressType').value.trim();
+            //     const name = form.querySelector('#name').value.trim();
+            //     const city = form.querySelector('#city').value.trim();
+            //     const landMark = form.querySelector('#landMark').value.trim();
+            //     const state = form.querySelector('#state').value.trim();
+            //     const pincode = form.querySelector('#pincode').value.trim();
+            //     const phone = form.querySelector('#phone').value.trim();
+            //     const altPhone = form.querySelector('#altPhone').value.trim();
+
+            //     const namePattern = /^[A-Za-z\s]+$/;
+            //     const pincodePattern = /^\d{6}$/;
+            //     const phonePattern = /^\d{10}$/;
+
+            //     let isValid = true;
+            //     let errorMessage = "";
+
+            //     if (!namePattern.test(name)) {
+            //         errorMessage = "Name should contain alphabets only.";
+            //         isValid = false;
+            //     } else if (!namePattern.test(city)) {
+            //         errorMessage = "City should contain alphabets only.";
+            //         isValid = false;
+            //     } else if (!namePattern.test(landMark)) {
+            //         errorMessage = "Landmark should contain alphabets only.";
+            //         isValid = false;
+            //     } else if (!namePattern.test(state)) {
+            //         errorMessage = "State should contain alphabets only.";
+            //         isValid = false;
+            //     } else if (!pincodePattern.test(pincode)) {
+            //         errorMessage = "Pincode should be a 6-digit number.";
+            //         isValid = false;
+            //     } else if (!phonePattern.test(phone)) {
+            //         errorMessage = "Phone number should be a 10-digit number.";
+            //         isValid = false;
+            //     } else if (!phonePattern.test(altPhone)) {
+            //         errorMessage = "Alternate phone number should be a 10-digit number.";
+            //         isValid = false;
+            //     } else if (phone === altPhone) {
+            //         errorMessage = "Phone number and alternate phone number should be different.";
+            //         isValid = false;
+            //     }
+
+            //     if (!isValid) {
+            //         Swal.fire({
+            //             icon: 'error',
+            //             title: 'Validation Error',
+            //             text: errorMessage
+            //         });
+            //         return false;
+            //     }
+
+            //     return true;
+            // }
+
+            function validateAddressForm(formId) {
+                const form = document.getElementById(formId);
+
+                const addressType = form.querySelector('[name="addressType"]').value.trim();
+                const name = form.querySelector('[name="name"]').value.trim();
+                const city = form.querySelector('[name="city"]').value.trim();
+                const landMark = form.querySelector('[name="landMark"]').value.trim();
+                const state = form.querySelector('[name="state"]').value.trim();
+                const pincode = form.querySelector('[name="pincode"]').value.trim();
+                const phone = form.querySelector('[name="phone"]').value.trim();
+                const altPhone = form.querySelector('[name="altPhone"]').value.trim();
 
                 const namePattern = /^[A-Za-z\s]+$/;
                 const pincodePattern = /^\d{6}$/;
@@ -939,7 +1000,10 @@
                 let isValid = true;
                 let errorMessage = "";
 
-                if (!namePattern.test(name)) {
+                if (!addressType) {
+                    errorMessage = "Address Type is required.";
+                    isValid = false;
+                } else if (!namePattern.test(name)) {
                     errorMessage = "Name should contain alphabets only.";
                     isValid = false;
                 } else if (!namePattern.test(city)) {
@@ -976,46 +1040,6 @@
 
                 return true;
             }
-
-
-            // function validateAddressForm() {
-            //     const form = document.getElementById('addAddressForm');
-
-            //     // Input fields and validation rules
-            //     const fields = [
-            //         { id: 'name', pattern: /^[A-Za-z\s]+$/, message: 'Name should contain alphabets only.' },
-            //         { id: 'city', pattern: /^[A-Za-z\s]+$/, message: 'City should contain alphabets only.' },
-            //         { id: 'landMark', pattern: /^[A-Za-z\s]+$/, message: 'Landmark should contain alphabets only.' },
-            //         { id: 'state', pattern: /^[A-Za-z\s]+$/, message: 'State should contain alphabets only.' },
-            //         { id: 'pincode', pattern: /^\d{6}$/, message: 'Pincode should be a 6-digit number.' },
-            //         { id: 'phone', pattern: /^\d{10}$/, message: 'Phone number should be a 10-digit number.' },
-            //         { id: 'altPhone', pattern: /^\d{10}$/, message: 'Alternate phone number should be a 10-digit number.' }
-            //     ];
-
-            //     let isValid = true;
-
-            //     // Clear previous error messages
-            //     form.querySelectorAll('.error-message').forEach(error => error.textContent = "");
-
-            //     // Validate fields
-            //     fields.forEach(field => {
-            //         const input = form.querySelector(`#${field.id}`);
-            //         if (!field.pattern.test(input.value.trim())) {
-            //             input.nextElementSibling.textContent = field.message;
-            //             isValid = false;
-            //         }
-            //     });
-
-            //     // Validate phone & alternate phone
-            //     const phone = form.querySelector('#phone').value.trim();
-            //     const altPhone = form.querySelector('#altPhone').value.trim();
-            //     if (phone === altPhone) {
-            //         form.querySelector('#altPhone').nextElementSibling.textContent = "Phone number and alternate phone number should be different.";
-            //         isValid = false;
-            //     }
-
-            //     return isValid;
-            // }
 
 
 
@@ -1070,6 +1094,7 @@
             }
 
 
+
             function openAddressEditModal(address) {
                 const modal = new bootstrap.Modal(document.getElementById('editAddressModal'));
 
@@ -1089,6 +1114,11 @@
             // editAddress 
             async function editAddress(event) {
                 event.preventDefault();
+
+                if (!validateAddressForm('editAddressForm')) {
+                    return;
+                }
+
                 const formData = new FormData(document.getElementById('editAddressForm'));
                 const data = Object.fromEntries(formData.entries());
 
@@ -1111,7 +1141,6 @@
 
                     const result = await response.json();
                     if (result.success) {
-                        // closeEditAddressModal();
                         Swal.fire({
                             icon: 'success',
                             title: 'Success!',
@@ -1135,6 +1164,8 @@
                     });
                 }
             }
+
+
 
 
 
@@ -1226,6 +1257,37 @@
                             text: 'Please select a payment method to continue'
                         });
                         return;
+                    }
+
+                    // Check Wallet Balance
+                    if (selectedPaymentMethod === "wallet") {
+                        const walletResponse = await fetch('/wallet/history', {
+                            method: 'GET',
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+
+                        const walletData = await walletResponse.json();
+                        if (!walletData.success) {
+                            Swal.fire({ icon: 'error', title: 'Wallet Error', text: 'Unable to fetch wallet details' });
+                            return;
+                        }
+
+                        const walletBalance = walletData.balance;
+
+                        // const finalAmount = parseFloat(document.getElementById('totalAmount').textContent.replace(/[^0-9.]/g, '')) || 0;
+                        const finalAmountElement = document.getElementById('totalAmount');
+                        if (!finalAmountElement) {
+                            console.error("Error: #totalAmount element not found in DOM.");
+                            Swal.fire({ icon: 'error', title: 'Error', text: 'Total amount not found' });
+                            return;
+                        }
+                        const finalAmount = parseFloat(finalAmountElement.textContent.replace(/[^0-9.]/g, '')) || 0;
+
+
+                        if (walletBalance < finalAmount) {
+                            Swal.fire({ icon: 'error', title: 'Insufficient Balance', text: 'Not enough money in wallet' });
+                            return;
+                        }
                     }
 
 
@@ -1355,7 +1417,6 @@
                 }
 
             }
-
 
 
 
@@ -1507,7 +1568,29 @@
                     codWarning.classList.add("d-none"); // Hide the warning message
                 }
             });
+
         </script>
 
 
         <div id="toastContainer"></div>
+
+
+
+
+        <script>
+            async function updateWalletBalance() {
+                try {
+                    const response = await fetch('/get-wallet-balance'); 
+                    const data = await response.json();
+                    if (data.success) {
+                        document.getElementById("walletBalance").textContent = data.balance;
+                        document.querySelector("#wallet + label span").textContent = `(₹${data.balance})`;
+                    }
+                } catch (error) {
+                    console.error("Error fetching wallet balance:", error);
+                }
+            }
+
+            // Call function when page loads
+            document.addEventListener("DOMContentLoaded", updateWalletBalance);
+        </script>

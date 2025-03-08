@@ -27,61 +27,7 @@ const getProductAddPage = async (req, res) => {
 }
 
 
-// const addProducts = async (req, res) => {
-//     try {
-//         const products = req.body;
-//         const productExists = await Product.findOne({
-//             productName: products.productName,
-//         });
 
-//         if (!productExists) {
-//             const images = [];
-
-//             if (req.files && req.files.length > 0) {
-//                 for (let i = 0; i < req.files.length; i++) {
-//                     const originalImagepath = req.files[i].path;
-
-//                     const resizedImagePath = path.join("public", "uploads", "product-images", req.files[i].filename);
-//                     await sharp(originalImagepath).resize({ width: 440, height: 440 }).toFile(resizedImagePath);
-//                     images.push(req.files[i].filename);
-//                 }
-//             }
-
-//             const categoryId = await Category.findOne({ name: products.category });
-
-//             if (!categoryId) {
-//                 return res.status(400).json("Invalid Category name");
-//             }
-
-//             // Extract variants from the request body
-//             const variants = products.variants.map(variant => ({
-//                 size: variant.size,
-//                 regularPrice: variant.regularPrice,
-//                 salePrice: variant.salePrice,
-//                 quantity: variant.quantity,
-//                 status: variant.status
-//             }));
-
-//             const newProduct = new Product({
-//                 productName: products.productName,
-//                 description: products.description,
-//                 brand: products.brand,
-//                 category: categoryId._id,
-//                 productImage: images,
-//                 status: "Available",
-//                 variants: variants, 
-//             });
-
-//             await newProduct.save();
-//             return res.redirect("/admin/addProducts");
-//         } else {
-//             return res.status(400).json("Product already exists. Please try with another name.");
-//         }
-//     } catch (error) {
-//         console.log(error);
-//         res.status(500).json("Server Error");
-//     }
-// }
 
 const addProducts = async (req, res) => {
     try {
