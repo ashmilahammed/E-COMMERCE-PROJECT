@@ -1,0 +1,98 @@
+
+<%- include("../../views/partials/admin/header") %>
+
+
+<style>
+    .container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+    }
+
+    .section {
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #f9f9f9;
+        border-radius: 5px;
+    }
+
+    h3 {
+        color: #ff4747;
+    }
+
+    .detail-row {
+        margin: 10px 0;
+    }
+
+    .label {
+        font-weight: bold;
+        display: inline-block;
+        width: 150px;
+    }
+</style>
+
+
+
+<div class="container">
+
+
+    <div class="section">
+        <h3>User Details</h3>
+        <div class="detail-row">
+            <span class="label">Username:</span>
+            <%= user.fullName %>
+        </div>
+        <div class="detail-row">
+            <span class="label">Email:</span>
+            <%= user.email %>
+        </div>
+        <div class="detail-row">
+            <span class="label">Phone:</span>
+            <%= user.phone %>
+        </div>
+    </div>
+
+
+    <div class="section">
+        <h3>Transaction Details</h3>
+
+        <div class="detail-row">
+            <span class="label">Transaction ID:</span>
+            <%= transaction._id %>
+        </div>
+        <div class="detail-row">
+            <span class="label">Date:</span>
+            <%= new Date(transaction.date).toLocaleString() %>
+        </div>
+        <div class="detail-row">
+            <span class="label">Type:</span>
+            <%= transaction.type %>
+        </div>
+        <div class="detail-row">
+            <span class="label">Amount:</span>
+            <%= transaction.amount.toFixed(2) %>
+        </div>
+        <div class="detail-row">
+            <span class="label">Status:</span>
+            <%= transaction.status %>
+        </div>
+        <% if (transaction.description) { %>
+            <div class="detail-row">
+                <span class="label">Description:</span>
+                <%= transaction.description %>
+            </div>
+            <% } %>
+    </div>
+
+    
+
+
+            <a href="/admin/wallet-transactions"
+                style="display: inline-block; margin-top: 20px; color: #007bff; text-decoration: none;">
+                Back to Transactions
+            </a>
+</div>
+
+
+
+<%- include("../../views/partials/admin/footer") %>

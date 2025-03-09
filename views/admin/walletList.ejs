@@ -1,0 +1,146 @@
+<%- include("../../views/partials/admin/header") %>
+
+
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: rgba(8, 129, 120, 0.2);
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            gap: 5px;
+        }
+
+        .pagination a,
+        .pagination span {
+            padding: 8px 12px;
+            text-decoration: none;
+            font-weight: bold;
+            color: #ad5017;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            transition: background 0.3s ease;
+        }
+
+        .pagination a:hover {
+            background-color: #daa675;
+        }
+
+        .pagination .active {
+            background-color: #d08420;
+            color: white;
+            border-color: black;
+            pointer-events: none;
+        }
+
+        .pagination span {
+            padding: 8px;
+            font-weight: bold;
+            color: #777;
+        }
+    </style>
+
+
+    <h2>Wallet Transactions</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Transaction ID</th>
+                <th>Date</th>
+                <th>User</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% transactions.forEach(t=> { %>
+                <tr>
+                    <td>
+                        <%= t.transactionId %>
+                    </td>
+                    <td>
+                        <%= new Date(t.date).toLocaleString() %>
+                    </td>
+                    <td>
+                        <%= t.user.fullName %>
+                    </td>
+                    <td style="font-weight: bold; color: #ad5017;">
+                        <%= t.type %>
+                    </td>
+                    <td>
+                        <%= t.amount.toFixed(2) %>
+                    </td>
+                    <td>
+                        <a href="/admin/wallet-transaction/<%= t.transactionId %>">View Details</a>
+                    </td>
+                </tr>
+                <% }) %>
+        </tbody>
+    </table>
+
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <% if (currentPage> 1) { %>
+            <a href="/admin/wallet-transactions?page=<%= currentPage - 1 %>">Prev</a>
+            <% } %>
+
+                <% let startPage=Math.max(1, currentPage - 2); %>
+                    <% let endPage=Math.min(totalPages, currentPage + 2); %>
+
+                        <% if (startPage> 1) { %>
+                            <a href="/admin/wallet-transactions?page=1">1</a>
+                            <% if (startPage> 2) { %>
+                                <span>...</span>
+                                <% } %>
+                                    <% } %>
+
+                                        <% for (let i=startPage; i <=endPage; i++) { %>
+                                            <a href="/admin/wallet-transactions?page=<%= i %>"
+                                                class="<%= currentPage === i ? 'active' : '' %>">
+                                                <%= i %>
+                                            </a>
+                                            <% } %>
+
+                                                <% if (endPage < totalPages) { %>
+                                                    <% if (endPage < totalPages - 1) { %>
+                                                        <span>...</span>
+                                                        <% } %>
+                                                            <a href="/admin/wallet-transactions?page=<%= totalPages %>">
+                                                                <%= totalPages %>
+                                                            </a>
+                                                            <% } %>
+
+                                                                <% if (currentPage < totalPages) { %>
+                                                                    <a
+                                                                        href="/admin/wallet-transactions?page=<%= currentPage + 1 %>">Next</a>
+                                                                    <% } %>
+    </div>
+
+
+    <br><br>
+
+    <%- include("../../views/partials/admin/footer") %>

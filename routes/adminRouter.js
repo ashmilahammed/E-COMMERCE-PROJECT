@@ -7,6 +7,7 @@ const brandController = require("../controllers/admin/brandController");
 const productController = require("../controllers/admin/productController");
 const orderController = require("../controllers/admin/orderController");
 const couponController = require("../controllers/admin/couponController");
+const walletController = require("../controllers/admin/walletController");
 const {userAuth,adminAuth} = require("../middlewares/auth");
 const multer = require("multer");
 const storage = require("../helpers/multer");
@@ -82,6 +83,13 @@ router.get("/download-excel",adminAuth,adminController.downloadExcel);
 //  dashboard data
 router.get("/dashboard-data", adminAuth, adminController.getDashboardData);
 router.get("/best-selling", adminAuth, adminController.getBestSellingData);
+
+
+//wallet management
+router.get("/wallet-transactions",adminAuth, walletController.getWalletTransactions)
+router.get('/wallet-transaction/:transactionId',adminAuth, walletController.getTransactionDetails);
+
+
 
 
 module.exports = router;

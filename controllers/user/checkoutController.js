@@ -843,7 +843,7 @@ const getOrderDetails = async (req, res) => {
 
         res.render("order-details", {
             order: orderData,
-            user: userData
+            user: userData,
         });
     } catch (error) {
         console.error("Error fetching order details:", error);
@@ -851,7 +851,6 @@ const getOrderDetails = async (req, res) => {
         res.redirect("/userProfile");
     }
 };
-
 
 
 
@@ -882,42 +881,34 @@ const cancelOrder = async (req, res) => {
             item.itemStatus = 'Cancelled';
         });
 
+        const refundAmount = Number(order.pricing.finalAmount);
+        if (isNaN(refundAmount)) {
+            throw new Error('Refund amount calculated as NaN');
+        }
 
-        if (order.payment.method === "RAZORPAY") {
-            const refundAmount = Number(order.pricing.finalAmount);
-            if (isNaN(refundAmount)) {
-                throw new Error('Refund amount calculated as NaN');
-            }
+        let wallet = await Wallet.findOne({ userId: order.userId });
 
-            let wallet = await Wallet.findOne({ userId: order.userId });
+        if (!wallet) {
+            wallet = new Wallet({
+                userId: order.userId,
+                balance: 0,
+                transactions: [],
+                lastUpdated: new Date()
+            });
+        }
 
-            if (!wallet) {
-                wallet = new Wallet({
-                    userId: order.userId,
-                    balance: refundAmount,
-                    transactions: [{
-                        type: 'Refund',
-                        amount: refundAmount,
-                        orderId: orderId,
-                        status: 'Completed',
-                        description: `Refund for cancellation of Order By you `,
-                        date: new Date()
-                    }],
-                    lastUpdated: new Date()
-                });
-            } else {
-                wallet.balance = Number(wallet.balance) + refundAmount;
-                wallet.transactions.push({
-                    type: 'Refund',
-                    amount: refundAmount,
-                    orderId: orderId,
-                    status: 'Completed',
-                    description: `Refund for cancellation of Order `,
-                    date: new Date()
-                });
-                wallet.lastUpdated = new Date();
-            }
-
+        // Refund for Razorpay & Wallet Payments
+        if (order.payment.method === "RAZORPAY" || order.payment.method === "WALLET") {
+            wallet.balance += refundAmount;
+            wallet.transactions.push({
+                type: 'Refund',
+                amount: refundAmount,
+                orderId: orderId,
+                status: 'Completed',
+                description: `Refund for cancellation of Order by you`,
+                date: new Date()
+            });
+            wallet.lastUpdated = new Date();
             await wallet.save();
         }
 
@@ -941,7 +932,7 @@ const cancelOrder = async (req, res) => {
 
         res.json({
             success: true,
-            message: order.payment.method === "RAZORPAY"
+            message: (order.payment.method === "RAZORPAY" || order.payment.method === "WALLET")
                 ? 'Order cancelled and refunded successfully'
                 : 'Order cancelled successfully (No refund for COD orders)'
         });
@@ -954,7 +945,6 @@ const cancelOrder = async (req, res) => {
         });
     }
 };
-
 
 
 
