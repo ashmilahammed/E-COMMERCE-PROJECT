@@ -213,6 +213,72 @@
     </style>
 
 
+    <style>
+        /* Toast Container */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Toast Message */
+        .toast-message {
+            padding: 12px 18px;
+            border-radius: 3px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            min-width: 250px;
+            max-width: 350px;
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Success Toast */
+        .toast-message.success {
+            background-color: #28a745;
+        }
+
+        /* Error Toast */
+        .toast-message.error {
+            background-color: #dc3545;
+        }
+
+        /* Warning Toast */
+        .toast-message.warning {
+            background-color: #ffc107;
+            color: #333;
+        }
+
+        /* Fade Out Animation */
+        .toast-message.fade-out {
+            opacity: 0;
+        }
+
+
+        .size-badges {
+            margin: 10px 0;
+        }
+
+        .size-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            margin: 0 2px;
+            background: #f5f5f5;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+
+
     <body>
 
         <!-- Breadcrumb Section Begin -->
@@ -522,21 +588,23 @@
                                 <div class="col-lg-4 col-md-6 col-sm-6">
                                     <div class="product__item">
 
-                                        <div class="product__item__pic set-bg" data-setbg="" style="position: relative;">
+                                        <div class="product__item__pic set-bg" data-setbg=""
+                                            style="position: relative;">
 
                                             <!-- Offer Badges Positioned on Image -->
                                             <% if (products[i].productOffer || products[i].category?.categoryOffer) { %>
                                                 <div class="offer-badge-container">
 
-                                                    <% const productOffer=products[i].productOffer || 0; 
-                                                       const categoryOffer=products[i].category?.categoryOffer || 0;
-                                                       const bestOffer=Math.max(productOffer, categoryOffer); %>
+                                                    <% const productOffer=products[i].productOffer || 0; const
+                                                        categoryOffer=products[i].category?.categoryOffer || 0; const
+                                                        bestOffer=Math.max(productOffer, categoryOffer); %>
 
-                                                        <span class="offer-badge best-offer">Best Offer: <%= bestOffer %>% OFF</span>
+                                                        <span class="offer-badge best-offer">Best Offer: <%= bestOffer
+                                                                %>% OFF</span>
                                                 </div>
                                                 <% } %>
 
-  
+
                                                     <a href="/productDetails?id=<%= products[i]._id %>">
 
                                                         <img src="/uploads/re-image/<%= products[i].productImage[0] %>"
@@ -585,11 +653,12 @@
                                                         <i class="fa fa-star-o"></i>
                                                     </div>
 
-                                                    <p>price:<strong>₹<%= products[i].salePrice.toLocaleString('en-IN')   %>
+                                                    <p>price:<strong>₹<%= products[i].salePrice.toLocaleString('en-IN')
+                                                                %>
 
                                                         </strong> <span class="text-muted"><strike>₹<%=
                                                                     products[i].regularPrice.toLocaleString('en-IN') %>
-                                                            </strike></span></p>                                                     
+                                                            </strike></span></p>
 
 
                                                     <a href="#" class="add-cart">+ Add To Cart</a>
@@ -708,6 +777,7 @@
 
 
 
+
         function showToast(message, type) {
             const toastContainer = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -724,73 +794,9 @@
             }, 1500);
         }
 
+
     </script>
 
-
-    <style>
-        /* Toast Container */
-        #toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        /* Toast Message */
-        .toast-message {
-            padding: 12px 18px;
-            border-radius: 3px;
-            font-size: 14px;
-            font-weight: bold;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            min-width: 250px;
-            max-width: 350px;
-            opacity: 1;
-            transition: opacity 0.5s ease-in-out;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Success Toast */
-        .toast-message.success {
-            background-color: #28a745;
-        }
-
-        /* Error Toast */
-        .toast-message.error {
-            background-color: #dc3545;
-        }
-
-        /* Warning Toast */
-        .toast-message.warning {
-            background-color: #ffc107;
-            color: #333;
-        }
-
-        /* Fade Out Animation */
-        .toast-message.fade-out {
-            opacity: 0;
-        }
-
-
-        .size-badges {
-            margin: 10px 0;
-        }
-
-        .size-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            margin: 0 2px;
-            background: #f5f5f5;
-            border-radius: 12px;
-            font-size: 12px;
-            color: #666;
-        }
-    </style>
 
     <!-- Toast Container -->
     <div id="toast-container"></div>

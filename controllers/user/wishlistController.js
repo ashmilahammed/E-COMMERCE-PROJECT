@@ -1,6 +1,7 @@
 const User = require("../../models/userSchema");
 const Product = require("../../models/productSchema");
 const Wishlist = require("../../models/wishlistSchema");
+const product = require("../../models/productSchema");
 const mongoose = require('mongoose');
 
 
@@ -78,7 +79,7 @@ const addToWishlist = async (req, res) => {
         }
 
         const userId = req.session.user;
-        const { productId, size } = req.body;
+        const { productId, size } = req.body; 
 
         if (!size || isNaN(size)) {
             return res.status(400).json({
@@ -87,6 +88,16 @@ const addToWishlist = async (req, res) => {
             });
         }
 
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.status(404).json({ success: false, message: 'Product not found'});
+        }
+
+        if (product.isBlocked) {
+            return res.status(403).json({ success: false, message: 'This product is currently blocked and cannot be added to wishlist'});
+        }
+
+        
         let wishlist = await Wishlist.findOne({ UserId: userId });
 
         if (!wishlist) {

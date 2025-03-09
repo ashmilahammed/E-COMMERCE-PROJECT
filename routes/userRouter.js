@@ -74,12 +74,14 @@ router.get("/cart",userAuth,cartController.cartPage);
 router.post("/cart/add",userAuth,cartController.addToCart);
 router.post("/cart/update-quantity",userAuth,cartController.updateQuantity);
 router.post("/cart/remove-item",userAuth,cartController.removeItem);
+router.get("/checkout-check",userAuth,checkoutController.checkProducts);
 
 //checkout management
 router.get('/checkout',userAuth,checkoutController.checkoutPage);
 router.post('/checkout',userAuth,checkoutController.placeOrder);
 router.post('/add-address',userAuth,checkoutController.addAddress);
 router.post('/checkout/editAddress',userAuth,checkoutController.editAddress);
+
 
 //Order management 
 router.get("/order-details/:orderId", userAuth, checkoutController.getOrderDetails);

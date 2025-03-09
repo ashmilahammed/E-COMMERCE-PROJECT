@@ -39,6 +39,17 @@ const checkoutPage = async (req, res) => {
             return res.redirect("/cart");
         }
 
+         // blocked products
+         const blockedProducts = cart.items.filter(item => item.productId.isBlocked);
+
+         if (blockedProducts.length > 0) {
+             return res.status(403).json({ 
+                 success: false, 
+                 message: "Some products in your cart are blocked and cannot be purchased." 
+             });
+         }
+
+
         cart.subtotal = cart.items.reduce((total, item) => {
             // variant matching the cart item's size
             const variant = item.productId.variants.find(v => v.size === item.size);
@@ -75,6 +86,62 @@ const checkoutPage = async (req, res) => {
         res.redirect("/pageNotFound");
     }
 };
+
+
+
+
+const checkProducts =  async (req, res) => {
+    try {
+        const userId = req.session.user;
+        if (!userId) {
+            return res.json({ success: false, message: "user not found." });
+        }
+
+        const cart = await Cart.findOne({ userId }).populate('items.productId');
+
+        if (!cart || cart.items.length === 0) {
+            return res.json({ success: false, message: "Your cart is empty." });
+        }
+
+        const blockedProducts = cart.items.filter(item => item.productId.isBlocked);
+
+        if (blockedProducts.length > 0) {
+            return res.json({ success: false, message: "Some products in your cart are blocked and cannot be purchased." });
+        }
+
+        // product stock
+        const outOfStockProducts = [];
+
+        cart.items.forEach(item => {
+            const product = item.productId;
+
+            if (!product.variants || product.variants.length === 0) {
+                outOfStockProducts.push(product.productName);
+                return;
+            }
+
+            const selectedVariant = product.variants.find(variant => variant.size === item.size);
+            
+            if (!selectedVariant || selectedVariant.quantity < item.quantity) {
+                outOfStockProducts.push(product.productName);
+            }
+        });
+
+        if (outOfStockProducts.length > 0) {
+            return res.json({ 
+                success: false, 
+                message: `Some products in your cart are out of stock: ${outOfStockProducts.join(', ')}. Please update your cart.` 
+            });
+        }
+
+        return res.json({ success: true });
+
+    } catch (error) {
+        console.error("Error checking cart:", error);
+        res.json({ success: false, message: "Something went wrong. Please try again later." });
+    }
+};
+
 
 
 
@@ -339,6 +406,7 @@ const placeOrder = async (req, res) => {
         if (!cart || cart.items.length === 0) {
             return res.status(400).json({ success: false, message: 'Cart is empty' });
         }
+
 
 
         const address = await Address.findOne({ userId, 'address._id': selectedAddress });
@@ -1137,6 +1205,7 @@ const returnProduct = async (req, res) => {
 
 module.exports = {
     checkoutPage,
+    checkProducts,
     placeOrder,
     addAddress,
     editAddress,

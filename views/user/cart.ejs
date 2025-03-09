@@ -1,171 +1,238 @@
 <%- include("../../views/partials/user/header") %>
-<style>
-    /* Quantity Control Styling */
-    .quantity-controls {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid #e1e1e1;
-        border-radius: 15px;
-        overflow: hidden;
-        height: 25px;
-        max-width: 100px;
-        margin: 0 auto;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        transition: all 0.3s ease;
-    }
 
-    .quantity-btn {
-        background-color: transparent;
-        border: none;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        font-size: 12px;
-        color: #333;
-        font-weight: bold;
-    }
-
-    .quantity-btn:hover {
-        background-color: #d3d3d3;
-    }
-
-    .quantity-btn:active {
-        background-color: #ff0a0a;
-    }
-
-    .quantity-input {
-        width: 40px;
-        text-align: center;
-        border: none;
-        font-size: 15px;
-        font-weight: bold;
-        color: #333;
-        background-color: transparent;
-        outline: none;
-        padding: 0;
-        margin: 0 5px;
-    }
-
-    .quantity-controls:hover {
-        border-color: #999;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
+    <style>
+        /* Quantity Control Styling */
         .quantity-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e1e1e1;
+            border-radius: 15px;
+            overflow: hidden;
+            height: 25px;
             max-width: 100px;
-            height: 35px;
+            margin: 0 auto;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
         }
 
         .quantity-btn {
-            width: 35px;
-            height: 35px;
-            font-size: 16px;
+            background-color: transparent;
+            border: none;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 12px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .quantity-btn:hover {
+            background-color: #d3d3d3;
+        }
+
+        .quantity-btn:active {
+            background-color: #ff0a0a;
         }
 
         .quantity-input {
-            width: 30px;
-            font-size: 14px;
+            width: 40px;
+            text-align: center;
+            border: none;
+            font-size: 15px;
+            font-weight: bold;
+            color: #333;
+            background-color: transparent;
+            outline: none;
+            padding: 0;
+            margin: 0 5px;
         }
-    }
 
-    /* Cart Item Hover Effects */
-    .cart-item-row {
-        transition: all 0.3s ease;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
+        .quantity-controls:hover {
+            border-color: #999;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
 
-    .cart-item-row:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-    }
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .quantity-controls {
+                max-width: 100px;
+                height: 35px;
+            }
 
-    .cart-item-row:hover .product__cart__item__pic img {
-        transform: scale(1.1);
-    }
+            .quantity-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+            }
 
-    .product__cart__item__pic {
-        overflow: hidden;
-        transition: transform 0.3s ease;
-    }
+            .quantity-input {
+                width: 30px;
+                font-size: 14px;
+            }
+        }
 
-    .product__cart__item__pic img {
-        transition: transform 0.3s ease;
-    }
+        /* Cart Item Hover Effects */
+        .cart-item-row {
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
 
-    .cart__close .fa-close {
-        transition: color 0.3s ease, transform 0.3s ease;
-    }
+        .cart-item-row:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
 
-    .cart-item-row:hover .cart__close .fa-close {
-        color: #e53637;
-        transform: scale(1.1);
-    }
+        .cart-item-row:hover .product__cart__item__pic img {
+            transform: scale(1.1);
+        }
 
-    .cart-item-row:hover .product__cart__item__text h6 {
-        color: #e53637;
-    }
+        .product__cart__item__pic {
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
 
-    #toast-container {
-        position: fixed;
-        top: 10px;
-        right: 10px;
-        z-index: 1000;
-    }
+        .product__cart__item__pic img {
+            transition: transform 0.3s ease;
+        }
 
-    .toast-message {
-        background-color: #fff;
-        border-radius: 5px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-        padding: 10px;
-        margin-bottom: 10px;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
+        .cart__close .fa-close {
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
 
-    .toast-message.show {
-        opacity: 1;
-    }
+        .cart-item-row:hover .cart__close .fa-close {
+            color: #e53637;
+            transform: scale(1.1);
+        }
 
-    .toast-message.success {
-        background-color: #dff0d8;
-        border-color: #d6e9c6;
-        color: #3c763d;
-    }
+        .cart-item-row:hover .product__cart__item__text h6 {
+            color: #e53637;
+        }
 
-    .toast-message.error {
-        background-color: #f2dede;
-        border-color: #ebccd1;
-        color: #a94442;
-    }
+        #toast-container {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+        }
 
-    .toast-message.confirm {
-        display: flex;
-        flex-direction: column;
-        background-color: #f8f9fa;
-        color: #333;
-        border: 1px solid #ddd;
-        padding: 15px;
-        min-width: 250px;
-        text-align: center;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
+        .toast-message {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            margin-bottom: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
 
-    .toast-message.confirm button {
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
+        .toast-message.show {
+            opacity: 1;
+        }
 
-    .toast-message.confirm button:hover {
-        opacity: 0.9;
-    }
-</style>
+        .toast-message.success {
+            background-color: #dff0d8;
+            border-color: #d6e9c6;
+            color: #3c763d;
+        }
+
+        .toast-message.error {
+            background-color: #f2dede;
+            border-color: #ebccd1;
+            color: #a94442;
+        }
+
+        .toast-message.confirm {
+            display: flex;
+            flex-direction: column;
+            background-color: #f8f9fa;
+            color: #333;
+            border: 1px solid #ddd;
+            padding: 15px;
+            min-width: 250px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .toast-message.confirm button {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .toast-message.confirm button:hover {
+            opacity: 0.9;
+        }
+    </style>
+    <style>
+        #toast-container {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            width: 100%;
+        }
+
+
+        .toast-message {
+            max-width: 400px;
+            word-wrap: break-word;
+            text-align: center;
+            border-radius: 2px;
+            font-size: 15px;
+            font-weight: bold;
+            padding: 10px 14px;
+        }
+
+
+        /* Show Animation */
+        .toast-message.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Toast Types */
+        .toast-message.success {
+            background-color: #36b03a;
+            color: white;
+        }
+
+        .toast-message.error {
+            background-color: #e80f00;
+            color: white;
+        }
+
+        .toast-message.warning {
+            background-color: #FF9800;
+        }
+
+        .toast-message.info {
+            background-color: #2196F3;
+        }
+
+        /* Close Button */
+        .toast-message::after {
+            /* content: '×'; */
+            position: absolute;
+            top: 5px;
+            right: 12px;
+            font-size: 18px;
+            cursor: pointer;
+            opacity: 0.8;
+        }
+
+        .toast-message::after:hover {
+            opacity: 1;
+        }
+    </style>
 
 
     <!-- Breadcrumb Section Begin -->
@@ -204,68 +271,76 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <% if (cart && cart.items && cart.items.length > 0) { %>
-                                    <% cart.items.forEach(item => { %>
+                                <% if (cart && cart.items && cart.items.length> 0) { %>
+                                    <% cart.items.forEach(item=> { %>
                                         <tr data-product-id="<%= item.productId._id %>" data-size="<%= item.size %>"
-                                            data-price="<%= item.price %>"
-                                            data-total-price="<%= item.totalPrice %>"
-                                            data-quantity="<%= item.quantity %>"
-                                            class="cart-item-row">
+                                            data-price="<%= item.price %>" data-total-price="<%= item.totalPrice %>"
+                                            data-quantity="<%= item.quantity %>" class="cart-item-row">
                                             <td class="product__cart__item" style="width: 250px; padding: 10px;">
-                                                
-                                                <div class="product__cart__item__pic" style="width: 80px; height: 80px; float: left; margin-right: 15px; overflow: hidden;">
+
+                                                <div class="product__cart__item__pic"
+                                                    style="width: 80px; height: 80px; float: left; margin-right: 15px; overflow: hidden;">
                                                     <a href="/productDetails?id=<%= item.productId._id %>">
-                                                        <img src="/uploads/re-image/<%= item.productId.productImage[0] %>" 
-                                                             alt="<%= item.productId.productName %>"
-                                                             style="width: 100%; height: 100%; object-fit: cover;">
+                                                        <img src="/uploads/re-image/<%= item.productId.productImage[0] %>"
+                                                            alt="<%= item.productId.productName %>"
+                                                            style="width: 100%; height: 100%; object-fit: cover;">
                                                     </a>
                                                 </div>
 
-                                                <div class="product__cart__item__text" style="overflow: hidden; padding-top: 10px;">
-                                                    <h6 style="margin-bottom: 5px; font-size: 14px; word-wrap: break-word;color: rgb(63, 63, 63);">
+                                                <div class="product__cart__item__text"
+                                                    style="overflow: hidden; padding-top: 10px;">
+                                                    <h6
+                                                        style="margin-bottom: 5px; font-size: 14px; word-wrap: break-word;color: rgb(63, 63, 63);">
                                                         <%= item.productId.productName %>
                                                     </h6>
                                                     <br>
-                                                    <h5 style="font-size: 15px;font-weight: bold; color: #2d2d2d;">₹<%= item.price %></h5>
+                                                    <h5 style="font-size: 15px;font-weight: bold; color: #2d2d2d;">₹<%=
+                                                            item.price %>
+                                                    </h5>
                                                 </div>
                                             </td>
 
-                                            <td class="cart__size" style="width: 100px; text-align: center; vertical-align: middle; padding: 10px;">
+                                            <td class="cart__size"
+                                                style="width: 100px; text-align: center; vertical-align: middle; padding: 10px;">
                                                 <%= item.size %>
                                             </td>
-                                    
 
-                                            <td class="quantity__item" style="width: 150px; text-align: center; vertical-align: middle; padding: 10px;">
+
+                                            <td class="quantity__item"
+                                                style="width: 150px; text-align: center; vertical-align: middle; padding: 10px;">
                                                 <div class="quantity-controls">
-                                                    <button class="quantity-btn" onclick="changeQuantity('<%= item.productId._id %>', '<%= item.size %>', -1)">
+                                                    <button class="quantity-btn"
+                                                        onclick="changeQuantity('<%= item.productId._id %>', '<%= item.size %>', -1)">
                                                         <i class="fa fa-minus"></i>
                                                     </button>
-                                                    <input type="text" 
-                                                           class="quantity-input" 
-                                                           value="<%= item.quantity %>" 
-                                                           data-product-id="<%= item.productId._id %>"
-                                                           data-size="<%= item.size %>"
-                                                           readonly>
-                                                    <button class="quantity-btn" onclick="changeQuantity('<%= item.productId._id %>', '<%= item.size %>', 1)">
+                                                    <input type="text" class="quantity-input"
+                                                        value="<%= item.quantity %>"
+                                                        data-product-id="<%= item.productId._id %>"
+                                                        data-size="<%= item.size %>" readonly>
+                                                    <button class="quantity-btn"
+                                                        onclick="changeQuantity('<%= item.productId._id %>', '<%= item.size %>', 1)">
                                                         <i class="fa fa-plus"></i>
                                                     </button>
                                                 </div>
                                             </td>
 
-                                            <td class="cart__price" style="width: 120px; text-align: right; vertical-align: middle; padding: 10px;font-size: medium;">
+                                            <td class="cart__price"
+                                                style="width: 120px; text-align: right; vertical-align: middle; padding: 10px;font-size: medium;">
                                                 ₹ <%= item.totalPrice %>
                                             </td>
 
-                                            <td class="cart__close" style="width: 50px; text-align: center; vertical-align: middle; padding: 10px;">
-                                                <i class="fa fa-close" onclick="removeItem('<%= item.productId._id %>', '<%= item.size %>')"></i>
+                                            <td class="cart__close"
+                                                style="width: 50px; text-align: center; vertical-align: middle; padding: 10px;">
+                                                <i class="fa fa-close"
+                                                    onclick="removeItem('<%= item.productId._id %>', '<%= item.size %>')"></i>
                                             </td>
                                         </tr>
-                                    <% }); %>
-                                <% } else { %>
-                                    <tr>
-                                        <td colspan="5" class="text-center">Your cart is empty</td>
-                                    </tr>
-                                <% } %>
+                                        <% }); %>
+                                            <% } else { %>
+                                                <tr>
+                                                    <td colspan="5" class="text-center">Your cart is empty</td>
+                                                </tr>
+                                                <% } %>
                             </tbody>
                         </table>
                     </div>
@@ -300,14 +375,16 @@
                         <h6>Cart total</h6>
                         <ul>
 
-                            <li>Total <span>₹ <%= cart && cart.items && cart.items.length > 0 ? cart.cartTotal : 0 %></span></li>
-                            
+                            <li>Total <span>₹ <%= cart && cart.items && cart.items.length> 0 ? cart.cartTotal : 0
+                                        %></span></li>
+
                         </ul>
-                        <% if (cart && cart.items && cart.items.length > 0) { %>
-                            <a href="/checkout" class="primary-btn">Proceed to checkout</a>
-                        <% } %>
+                        <% if (cart && cart.items && cart.items.length> 0) { %>
+                            <!-- <a href="/checkout" class="primary-btn">Proceed to checkout</a> -->
+                            <button id="checkout-button" class="primary-btn">Proceed to Checkout</button>
+                            <% } %>
                     </div>
-                    
+
 
                 </div>
             </div>
@@ -315,145 +392,145 @@
     </section>
     <!-- Shopping Cart Section End -->
 
-    
-<script>
-    
-async function updateQuantity(productId, size, quantity) {
-    try {
-        const response = await fetch('/cart/update-quantity', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                productId,
-                size: parseInt(size),
-                quantity: parseInt(quantity)
-            })
-        });
 
-        const data = await response.json();
-        if (data.success) {
-            location.reload(); // Refresh to show updated cart
-        } else {
-            alert(data.message || 'Error updating quantity');
+    <script>
+
+        async function updateQuantity(productId, size, quantity) {
+            try {
+                const response = await fetch('/cart/update-quantity', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        productId,
+                        size: parseInt(size),
+                        quantity: parseInt(quantity)
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    location.reload(); // Refresh to show updated cart
+                } else {
+                    alert(data.message || 'Error updating quantity');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error updating quantity');
+            }
         }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Error updating quantity');
-    }
-}
 
-async function removeItem(productId, size) {
-    try {
-        // Create a confirmation toast
-        const toastContainer = document.getElementById('toast-container') || createToastContainer();
-        const confirmToast = document.createElement('div');
-        confirmToast.classList.add('toast-message', 'confirm', 'show');
-        confirmToast.innerHTML = `
+        async function removeItem(productId, size) {
+            try {
+                // Create a confirmation toast
+                const toastContainer = document.getElementById('toast-container') || createToastContainer();
+                const confirmToast = document.createElement('div');
+                confirmToast.classList.add('toast-message', 'confirm', 'show');
+                confirmToast.innerHTML = `
             Are you sure you want to remove this item?
             <div style="display: flex; justify-content: space-between; margin-top: 10px;">
                 <button id="confirmRemove" style="background-color: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 3px; margin-right: 10px;">Yes</button>
                 <button id="cancelRemove" style="background-color: #ff483a; color: white; border: none; padding: 5px 10px; border-radius: 3px;">No</button>
             </div>
         `;
-        toastContainer.appendChild(confirmToast);
+                toastContainer.appendChild(confirmToast);
 
-        // Add event listeners to buttons
-        const confirmButton = confirmToast.querySelector('#confirmRemove');
-        const cancelButton = confirmToast.querySelector('#cancelRemove');
+                // Add event listeners to buttons
+                const confirmButton = confirmToast.querySelector('#confirmRemove');
+                const cancelButton = confirmToast.querySelector('#cancelRemove');
 
-        // Wrap the confirmation in a Promise
-        const confirmed = await new Promise(resolve => {
-            confirmButton.addEventListener('click', () => resolve(true));
-            cancelButton.addEventListener('click', () => resolve(false));
-        });
+                // Wrap the confirmation in a Promise
+                const confirmed = await new Promise(resolve => {
+                    confirmButton.addEventListener('click', () => resolve(true));
+                    cancelButton.addEventListener('click', () => resolve(false));
+                });
 
-        // Remove the confirmation toast
-        toastContainer.removeChild(confirmToast);
+                // Remove the confirmation toast
+                toastContainer.removeChild(confirmToast);
 
-        // If not confirmed, exit
-        if (!confirmed) {
-            return;
+                // If not confirmed, exit
+                if (!confirmed) {
+                    return;
+                }
+
+                const response = await fetch('/cart/remove-item', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        productId,
+                        size: parseInt(size)
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    location.reload(); // Refresh to show updated cart
+                } else {
+                    showToast(data.message || 'Error removing item', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error removing item', 'error');
+            }
         }
 
-        const response = await fetch('/cart/remove-item', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                productId,
-                size: parseInt(size)
-            })
-        });
+        async function changeQuantity(productId, size, change) {
+            const quantityInput = document.querySelector(`input[data-product-id="${productId}"][data-size="${size}"]`);
+            const currentQuantity = parseInt(quantityInput.value);
+            const newQuantity = currentQuantity + change;
 
-        const data = await response.json();
-        if (data.success) {
-            location.reload(); // Refresh to show updated cart
-        } else {
-            showToast(data.message || 'Error removing item', 'error');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        showToast('Error removing item', 'error');
-    }
-}
-
-async function changeQuantity(productId, size, change) {
-    const quantityInput = document.querySelector(`input[data-product-id="${productId}"][data-size="${size}"]`);
-    const currentQuantity = parseInt(quantityInput.value);
-    const newQuantity = currentQuantity + change;
-
-    if (newQuantity < 1) {
-        showToast('Quantity cannot be less than 1', 'error');
-        return;
-    }
-
-    try {
-        const response = await fetch('/cart/update-quantity', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                productId: productId,
-                size: size,
-                quantity: newQuantity
-            })
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            // Update quantity input
-            quantityInput.value = newQuantity;
-
-            // Update total price for this item
-            const itemRow = quantityInput.closest('.cart-item-row');
-            const pricePerItem = parseFloat(itemRow.getAttribute('data-price'));
-            const totalPriceElement = itemRow.querySelector('.cart__price');
-            const newTotalPrice = (pricePerItem * newQuantity).toFixed(2);
-            totalPriceElement.textContent = `₹ ${newTotalPrice}`;
-
-            // Update cart total
-            const cartTotalElement = document.querySelector('.cart__total span');
-            if (cartTotalElement) {
-                cartTotalElement.textContent = `₹ ${data.cartTotal.toFixed(2)}`;
+            if (newQuantity < 1) {
+                showToast('Quantity cannot be less than 1', 'error');
+                return;
             }
 
-            showToast('Quantity updated successfully', 'success');
-        } else {
-            showToast(data.message || 'Failed to update quantity', 'error');
+            try {
+                const response = await fetch('/cart/update-quantity', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        productId: productId,
+                        size: size,
+                        quantity: newQuantity
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update quantity input
+                    quantityInput.value = newQuantity;
+
+                    // Update total price for this item
+                    const itemRow = quantityInput.closest('.cart-item-row');
+                    const pricePerItem = parseFloat(itemRow.getAttribute('data-price'));
+                    const totalPriceElement = itemRow.querySelector('.cart__price');
+                    const newTotalPrice = (pricePerItem * newQuantity).toFixed(2);
+                    totalPriceElement.textContent = `₹ ${newTotalPrice}`;
+
+                    // Update cart total
+                    const cartTotalElement = document.querySelector('.cart__total span');
+                    if (cartTotalElement) {
+                        cartTotalElement.textContent = `₹ ${data.cartTotal.toFixed(2)}`;
+                    }
+
+                    showToast('Quantity updated successfully', 'success');
+                } else {
+                    showToast(data.message || 'Failed to update quantity', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating quantity:', error);
+                showToast('An error occurred while updating quantity', 'error');
+            }
         }
-    } catch (error) {
-        console.error('Error updating quantity:', error);
-        showToast('An error occurred while updating quantity', 'error');
-    }
-}
 
 
-function showToast(message, type = 'success') {
+        function showToast(message, type = 'success') {
             const toastContainer = document.getElementById('toast-container') || createToastContainer();
             const toast = document.createElement('div');
             toast.classList.add('toast-message', type, 'show');
@@ -474,68 +551,57 @@ function showToast(message, type = 'success') {
             return container;
         }
 
-        
 
-</script>
 
-<style>
-    /* Toast Container */
-#toast-container {
-    position: fixed;
-    top: 30px;
-    right: 560px;
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    gap: 10px; 
-}
 
-.toast-message {
-    padding: 14px 20px;
-    color: white;
-    font-size: 15px;
-    font-weight: bold;
-    border-radius: 2px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-    display: inline-block;
-    opacity: 0;
-    transform: translateX(100%);
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-    position: relative;
-    padding: 10px 14px;  
-}
 
-/* Show Animation */
-.toast-message.show {
-    opacity: 1;
-    transform: translateX(0);
-}
+        async function proceedToCheckout() {
+            try {
+                const response = await fetch('/checkout-check', { 
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
 
-/* Toast Types */
-.toast-message.success { 
-    background-color: #36b03a; 
-    color: white;
-}  
-.toast-message.error {
-    background-color: #ff483a;
-    color: white;
-}  
-.toast-message.warning { background-color: #FF9800; }  
-.toast-message.info { background-color: #2196F3; }
-/* Close Button */
-.toast-message::after {
-    /* content: '×'; */
-    position: absolute;
-    top: 5px;
-    right: 12px;
-    font-size: 18px;
-    cursor: pointer;
-    opacity: 0.8;
-}
-.toast-message::after:hover {
-    opacity: 1;
-}
+                const result = await response.json();
 
-</style>
+                if (!result.success) {
+                    showToast(result.message, 'error'); 
+                    return;
+                }
 
-<%- include("../../views/partials/user/footer") %>
+                window.location.href = "/checkout";
+
+            } catch (error) {
+                showToast("Something went wrong. Please try again later.", 'error');
+            }
+        }
+
+
+        // Attach event listener to the checkout button
+        document.addEventListener('DOMContentLoaded', async () => {
+            const checkoutButton = document.getElementById('checkout-button');
+
+            if (checkoutButton) {
+                checkoutButton.addEventListener('click', proceedToCheckout);
+
+                try {
+                    const response = await fetch('/checkout-check', { method: 'GET' });
+                    const result = await response.json();
+
+                    if (!result.success) {
+                        checkoutButton.disabled = true;
+                        checkoutButton.style.backgroundColor = "#ccc";  
+                    }
+                } catch (error) {
+                    console.error("Error checking cart status:", error);
+                }
+            }
+        });
+
+
+
+    </script>
+
+
+
+    <%- include("../../views/partials/user/footer") %>

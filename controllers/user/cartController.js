@@ -279,10 +279,10 @@ const removeItem = async (req, res) => {
 
 
 
-
 module.exports = {
     cartPage,
     addToCart,
     updateQuantity,
     removeItem,
+
 }

@@ -300,104 +300,112 @@
 
                             <!-- Offer Badge near Product Name -->
                             <% if (product.productOffer || product.category?.categoryOffer) { %>
-                            <% const productOffer=product.productOffer || 0; const
-                            categoryOffer=product.category?.categoryOffer || 0; const
-                             bestOffer=Math.max(productOffer, categoryOffer); %>
+                                <% const productOffer=product.productOffer || 0; const
+                                    categoryOffer=product.category?.categoryOffer || 0; const
+                                    bestOffer=Math.max(productOffer, categoryOffer); %>
 
-                            <span class="offer-badge"> <%= bestOffer %>% OFF</span> <% } %>
-
-
-                            <h5>Brand : <%= product.brand %>
-                            </h5>
-                            <br>
-
-                            <div class="rating">
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star-o"></i>
-                                <span> - 5 Reviews</span>
-                            </div>
+                                    <span class="offer-badge">
+                                        <%= bestOffer %>% OFF
+                                    </span>
+                                    <% } %>
 
 
-                            <h3 id="product-price"> ₹.<%= product.salePrice %>
-                                    <span>₹.<%= product.regularPrice %> </span>
-                            </h3>
+                                        <h5>Brand : <%= product.brand %>
+                                        </h5>
+                                        <br>
 
-                            <p>
-                                <%= product.description %>
-                            </p>
+                                        <div class="rating">
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star-o"></i>
+                                            <span> - 5 Reviews</span>
+                                        </div>
 
-                            <div class="product__details__option">
-                                <div class="product__details__option__size">
-                                    <span>Size:</span>
-                                    <% if (product.availableSizes && product.availableSizes.length> 0) { %>
-                                        <% product.availableSizes.forEach(size=> { %>
-                                            <% const variant=product.variants.find(v=> v.size === size &&
-                                                v.quantity >
-                                                0); %>
-                                                <% if (variant) { %>
-                                                    <label for="size-<%= size %>" class="size-option">
-                                                        <input type="radio" id="size-<%= size %>" name="size"
-                                                            value="<%= size %>" data-price="<%= variant.salePrice %>"
-                                                            data-regular-price="<%= variant.regularPrice %>">
-                                                        <%= size %>
-                                                    </label>
-                                                    <% } %>
-                                                        <% }); %>
 
-                                                            <% } else { %>
-                                                                <p>No sizes available</p>
+                                        <h3 id="product-price"> ₹.<%= product.salePrice %>
+                                                <span>₹.<%= product.regularPrice %> </span>
+                                        </h3>
+
+                                        <p>
+                                            <%= product.description %>
+                                        </p>
+
+                                        <div class="product__details__option">
+                                            <div class="product__details__option__size">
+                                                <span>Size:</span>
+                                                <% if (product.availableSizes && product.availableSizes.length> 0) { %>
+                                                    <% product.availableSizes.forEach(size=> { %>
+                                                        <% const variant=product.variants.find(v=> v.size === size &&
+                                                            v.quantity >
+                                                            0); %>
+                                                            <% if (variant) { %>
+                                                                <label for="size-<%= size %>" class="size-option">
+                                                                    <input type="radio" id="size-<%= size %>"
+                                                                        name="size" value="<%= size %>"
+                                                                        data-price="<%= variant.salePrice %>"
+                                                                        data-regular-price="<%= variant.regularPrice %>">
+                                                                    <%= size %>
+                                                                </label>
                                                                 <% } %>
-                                </div>
-                            </div>
-                            <div class="product__details__cart__option">
-                                <div class="quantity">
-                                    <!-- <div class="pro-qty">
+                                                                    <% }); %>
+
+                                                                        <% } else { %>
+                                                                            <p>No sizes available</p>
+                                                                            <% } %>
+                                            </div>
+                                        </div>
+                                        <div class="product__details__cart__option">
+                                            <div class="quantity">
+                                                <!-- <div class="pro-qty">
                                         <input type="number" value="1" min="1" max="5" id="quantity" class="arrow">
                                     </div> -->
-                                    <div class="arrow-box">
-                                        <button class="arrow-btn" id="decrease" aria-label="Decrease quantity">
-                                            < </button>
-                                                <input value="1" min="1" max="5" id="quantity" class="arrow">
-                                                <button class="arrow-btn" id="increase" aria-label="Increase quantity">
-                                                    > </button>
-                                    </div>
-                                </div>
-                                <button class="primary-btn" onclick="addToCart('<%= product._id %>')" id="addToCartBtn"
-                                    disabled>Add to cart</button>
-                            </div>
-                            <div class="product__details__btns__option">
-                                <a href="javascript:void(0)" onclick="addToWishlist('<%= product._id %>')"><i
-                                        class="fa fa-heart"></i>
-                                    add to wishlist</a>
-                            </div>
-                            <div class="product__details__last__option">
-                                <h5><span>Guaranteed Safe Checkout</span></h5>
-                                <img src="img/shop-details/details-payment.png" alt="">
-                                <ul>
+                                                <div class="arrow-box">
+                                                    <button class="arrow-btn" id="decrease"
+                                                        aria-label="Decrease quantity">
+                                                        < </button>
+                                                            <input value="1" min="1" max="5" id="quantity"
+                                                                class="arrow">
+                                                            <button class="arrow-btn" id="increase"
+                                                                aria-label="Increase quantity">
+                                                                > </button>
+                                                </div>
+                                            </div>
+                                            <button class="primary-btn" onclick="addToCart('<%= product._id %>')"
+                                                id="addToCartBtn" disabled>Add to cart</button>
+                                        </div>
+                                        <div class="product__details__btns__option">
+                                            <a href="javascript:void(0)"
+                                                onclick="addToWishlist('<%= product._id %>')"><i
+                                                    class="fa fa-heart"></i>
+                                                add to wishlist</a>
+                                        </div>
+                                        <div class="product__details__last__option">
+                                            <h5><span>Guaranteed Safe Checkout</span></h5>
+                                            <img src="img/shop-details/details-payment.png" alt="">
+                                            <ul>
 
 
-                                    <!-- stock display -->
-                                    <li id="product-quantity">
-                                        <span>In Stock: </span>
-                                        <strong id="variant-quantity">
-                                            <% if (product.currentVariantQuantity> 0) { %>
-                                                <%= product.currentVariantQuantity %> left
-                                                    <% } else { %>
-                                                        Select a size to check stock
-                                                        <% } %>
-                                        </strong>
-                                    </li>
+                                                <!-- stock display -->
+                                                <li id="product-quantity">
+                                                    <span>In Stock: </span>
+                                                    <strong id="variant-quantity">
+                                                        <% if (product.currentVariantQuantity> 0) { %>
+                                                            <%= product.currentVariantQuantity %> left
+                                                                <% } else { %>
+                                                                    Select a size to check stock
+                                                                    <% } %>
+                                                    </strong>
+                                                </li>
 
 
-                                    <li><span>Category:</span>
-                                        <%= product.category.name %>
-                                    </li>
+                                                <li><span>Category:</span>
+                                                    <%= product.category.name %>
+                                                </li>
 
-                                </ul>
-                            </div>
+                                            </ul>
+                                        </div>
                         </div>
                     </div>
                 </div>
@@ -736,7 +744,16 @@
                     });
                     // showToast('Product has been added to your wishlist', 'success');
                 } else {
-                    throw new Error(result.message);
+                    if (result.message === 'This product is currently blocked and cannot be added to wishlist') {
+             
+                        showToast('This product is blocked and cannot be added to wishlist', 'error');
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: result.message || 'Failed to add product to wishlist'
+                        });
+                    }
                 }
             } catch (error) {
                 Swal.fire({
