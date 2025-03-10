@@ -144,34 +144,52 @@ const addToWishlist = async (req, res) => {
 
 
 
-
-const changeSize = async (req,res) => {
+const changeSize = async (req, res) => {
     try {
-
-        const { productId,size } = req.body;
+        const { productId, size } = req.body;
         const UserId = req.session.user;
 
-        if(!UserId){
-            return res.status(401).json({success:false, message:"User not Found"})
+        if (!UserId) {
+            return res.status(401).json({ success: false, message: "User not found" });
         }
 
-        const updatedWishlist = await Wishlist.findOneAndUpdate(
-            { UserId, "products.productId" : productId},
-            { $set: { "products.$.size" : size}},
-            { new : true }
-        )
-
-        if(!updatedWishlist){
-            return res.status(404).json({success:false, message:"Product not Found in WIshlist."});
+        const wishlist = await Wishlist.findOne({ UserId });
+        if (!wishlist) {
+            return res.status(404).json({ success: false, message: "Wishlist not found." });
         }
 
-        res.json({success: true, message:"Size updated Successfully.",updatedWishlist})
-     
+        const wishlistItem = wishlist.products.find(item => item.productId.toString() === productId);
+
+        if (!wishlistItem) {
+            return res.status(404).json({ success: false, message: "Product not found in Wishlist." });
+        }
+
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.status(404).json({ success: false, message: "Product not found." });
+        }
+
+        const selectedVariant = product.variants.find(variant => Number(variant.size) === Number(size));
+        if (!selectedVariant) {
+            return res.status(400).json({ success: false, message: "Invalid size selected." });
+        }
+
+        // Update size in wishlist
+        wishlistItem.size = Number(size);
+        await wishlist.save();
+
+        res.json({
+            success: true,
+            message: "Size updated successfully.",
+            salePrice: selectedVariant.salePrice, 
+        });
+
     } catch (error) {
-        console.error("Error in updating size.",error);
-        res.status(500).json({success:false, message:"Failed to update size"})
+        console.error("Error updating size:", error);
+        res.status(500).json({ success: false, message: "Failed to update size" });
     }
-}
+};
+
 
 
 

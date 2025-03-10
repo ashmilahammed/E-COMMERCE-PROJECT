@@ -56,6 +56,11 @@ const addToCart = async (req, res) => {
         const MAX_QUANTITY_PER_SIZE = 5;
 
 
+        if (!size || size === "N/A" || size === "null" || size === "undefined") {
+            return res.status(400).json({ success: false, message: "Please select a valid size before adding to cart" });
+        }
+
+
         const product = await Product.findById(productId);
         if (!product) {
             return res.status(404).json({ success: false, message: "Product not found" });
@@ -65,7 +70,9 @@ const addToCart = async (req, res) => {
             return res.status(400).json({ success: false, message: "This product cannot be added to the cart as it is blocked." });
         }
 
-        const variant = product.variants.find(v => v.size === parseInt(size));
+        // const variant = product.variants.find(v => v.size === parseInt(size));
+        const variant = product.variants.find(v => String(v.size) === String(size));
+
         if (!variant) {
             return res.status(400).json({ success: false, message: "Selected size not available" });
         }

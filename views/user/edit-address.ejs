@@ -1,4 +1,38 @@
 <%- include("../../views/partials/user/header") %>
+
+    <style>
+        .form-control {
+            width: 100% !important;
+            height: 38px;
+            padding: 6px 12px;
+            font-size: 16px;
+            line-height: 1.5;
+            border-radius: 4px;
+            border: 1px solid #ced4da;
+        }
+
+        select.form-control {
+            -webkit-appearance: menulist;
+            -moz-appearance: menulist;
+            appearance: menulist;
+            padding-right: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            margin-bottom: 0.25rem;
+            font-size: 16px;
+        }
+
+        .row.mb-50 {
+            margin-bottom: 1rem !important;
+        }
+    </style>
+
+
     <div class="container mt-4">
         <h3 class="mt-3" style="color: #046963; margin-bottom:70px">Edit User Address</h3>
         <form id="addressForm" method="POST" action="/editAddress?id=<%= address._id.toLocaleString() %>"
@@ -6,8 +40,12 @@
             <div class="row mb-50">
                 <div class="form-group col-md-4">
                     <label for="addressType">Address Type:</label>
-                    <input type="text" class="form-control border-3" value="<%= address.addressType %>" id="addressType"
-                        name="addressType">
+                    <!-- <input type="text" class="form-control border-3" value="<%= address.addressType %>" id="addressType" name="addressType"> -->
+                    <select class="form-control border-3" id="addressType" name="addressType">
+                        <option value="HOME" <%=address.addressType==='HOME' ? 'selected' : '' %>>Home</option>
+                        <option value="WORK" <%=address.addressType==='WORK' ? 'selected' : '' %>>Work</option>
+                        <option value="OTHER" <%=address.addressType==='OTHER' ? 'selected' : '' %>>Other</option>
+                    </select>
                 </div>
                 <div class="form-group col-md-4">
                     <label for="name">Name:</label>
@@ -50,41 +88,10 @@
             <button type="submit" id="submitButton" class="btn btn-primary">Submit</button>
         </form>
     </div>
+    <br><br><br>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    
-<!-- <script>
-
-
-   document.getElementById('submitButton').addEventListener('click', function (event) {
-       if (!validateForm()) {
-           event.preventDefault();
-       }
-   });
-
-
-   function validateForm() {
-       let isValid = true;
-       const requiredFields = ["addressType", "name", "city", "landMark", "state", "pincode", "phone", "altPhone"];
-       requiredFields.forEach(function (field) {
-           const input = document.getElementById(field);
-           if (input.value.trim() === "") {
-               Swal.fire({
-                   title: 'Error',
-                   text: `Please fill all the field.`,
-                   icon: 'error'
-               });
-               isValid = false;
-           }
-       });
-
-
-       return isValid;
-   }
-
-
-</script> -->
 
 
     <script>
@@ -93,8 +100,7 @@
                 event.preventDefault();
             }
         });
-
-        function validateForm() {
+         function validateForm() {
             let isValid = true;
             let errorMessages = [];
 
@@ -112,13 +118,13 @@
                 if (errorElement) {
                     errorElement.remove();
                 }
-                input.classList.remove("is-invalid"); 
+                input.classList.remove("is-invalid");
 
                 if (inputValue === "") {
                     displayErrorMessage(input, "This field is required.");
                     isValid = false;
                 } else {
-                   
+
                     if ((field === "name" || field === "city" || field === "landMark" || field === "state") && !namePattern.test(inputValue)) {
                         errorMessages.push(`${capitalize(field)} should contain alphabets only.`);
                         isValid = false;
@@ -137,7 +143,7 @@
             const phone = document.getElementById('phone').value.trim();
             const altPhone = document.getElementById('altPhone').value.trim();
 
-             if (phone === altPhone) errorMessages.push("Phone number and alternate phone number should be different.")
+            if (phone === altPhone) errorMessages.push("Phone number and alternate phone number should be different.")
 
 
             if (!isValid && errorMessages.length > 0) {

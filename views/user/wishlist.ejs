@@ -104,6 +104,7 @@
                                                         onchange="updateSize('<%= item._id %>', this.value)">
                                                         <% if (item.availableSizes && item.availableSizes.length> 0) {
                                                             %>
+                                                            <option value="">Select a size</option>
                                                             <% item.availableSizes.forEach(size=> { %>
                                                                 <option value="<%= size %>" <%=item.size===size
                                                                     ? 'selected' : '' %>><%= size %>
@@ -115,14 +116,20 @@
                                                     </select>
                                                 </td>
 
+
                                                 <td>
                                                     <span class="fw-bold">₹<%= item.salePrice %></span>
                                                 </td>
                                                 <td>
-                                                    <button class="btn btn-primary btn-sm"
+                                                    <!-- <button class="btn btn-primary btn-sm"
                                                         onclick="addToCart('<%= item._id %>', '<%= item.size %>')">
                                                         Add to Cart
+                                                    </button> -->
+                                                    <button class="btn btn-primary btn-sm"
+                                                        onclick="addToCart('<%= item._id %>')">
+                                                        Add to Cart
                                                     </button>
+
                                                 </td>
                                                 <td>
                                                     <button class="btn btn-outline-danger btn-sm"
@@ -179,6 +186,12 @@
                         timer: 1500
                     });
 
+                    // Update sale price dynamically
+                    const priceElement = document.querySelector(`tr[data-product-id="${productId}"] .fw-bold`);
+                    if (priceElement) {
+                        priceElement.textContent = `₹${result.salePrice}`;
+                    }
+
 
                     setTimeout(() => {
                         // location.reload();
@@ -198,9 +211,23 @@
 
 
 
-        async function addToCart(productId, size) {
+
+        async function addToCart(productId) {
             try {
-                // Ask for confirmation before adding to cart
+                // Get the selected size from the dropdown
+                const sizeDropdown = document.querySelector(`tr[data-product-id="${productId}"] select`);
+                const selectedSize = sizeDropdown ? sizeDropdown.value : null;
+
+
+                if (!selectedSize || selectedSize === "N/A" || selectedSize === "null" || selectedSize === "undefined" || selectedSize === "") {
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'Size Required!',
+                        text: 'Please select a valid size before adding to cart!',
+                    });
+                    return;
+                }
+
                 const confirmAdd = await Swal.fire({
                     title: 'Add to Cart?',
                     text: 'Are you sure you want to add this item to your cart?',
@@ -211,18 +238,17 @@
                     confirmButtonText: 'Yes, add it!'
                 });
 
-                if (!confirmAdd.isConfirmed) return; 
+                if (!confirmAdd.isConfirmed) return;
 
                 const response = await fetch('/cart/add', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ productId, size })
+                    body: JSON.stringify({ productId, size: selectedSize })
                 });
 
                 const result = await response.json();
 
                 if (result.success) {
-
                     Swal.fire({
                         icon: 'success',
                         title: 'Added to Cart!',
@@ -231,7 +257,7 @@
                         timer: 1500
                     });
 
-                    await removeFromWishlist(productId, size, false, false);
+                    await removeFromWishlist(productId, selectedSize, false, false);
 
                 } else {
                     throw new Error(result.message);
@@ -247,6 +273,7 @@
         }
 
 
+
         async function removeFromWishlist(productId, size, showConfirmation = true, showSuccessMessage = true) {
             try {
                 if (showConfirmation) {
@@ -260,7 +287,7 @@
                         confirmButtonText: 'Yes, remove it!'
                     });
 
-                    if (!result.isConfirmed) return; 
+                    if (!result.isConfirmed) return;
                 }
 
                 const response = await fetch('/wishlist/remove', {
