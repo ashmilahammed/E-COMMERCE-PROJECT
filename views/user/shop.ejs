@@ -225,7 +225,6 @@
             gap: 10px;
         }
 
-        /* Toast Message */
         .toast-message {
             padding: 12px 18px;
             border-radius: 3px;
@@ -241,23 +240,20 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        /* Success Toast */
+
         .toast-message.success {
             background-color: #28a745;
         }
 
-        /* Error Toast */
         .toast-message.error {
             background-color: #dc3545;
         }
 
-        /* Warning Toast */
         .toast-message.warning {
             background-color: #ffc107;
             color: #333;
         }
 
-        /* Fade Out Animation */
         .toast-message.fade-out {
             opacity: 0;
         }
@@ -275,6 +271,247 @@
             border-radius: 12px;
             font-size: 12px;
             color: #666;
+        }
+
+
+
+
+        /* Mobile Responsive Product Display Enhancement */
+        @media (max-width: 991px) {
+
+            /* Adjust product layout for tablets and mobile */
+            .col-lg-9 {
+                width: 100%;
+            }
+
+            .col-lg-3 {
+                width: 100%;
+                margin-bottom: 30px;
+            }
+
+            .product__item {
+                margin-bottom: 25px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+                border-radius: 8px;
+                overflow: hidden;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+
+            .product__item:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
+            }
+
+            /* Enhance product image display */
+            .product__item__pic {
+                height: 0;
+                padding-bottom: 100%;
+                /* Maintain aspect ratio */
+                position: relative;
+                overflow: hidden;
+            }
+
+
+            .product__item:hover .product__item__pic img {
+                transform: scale(1.05);
+            }
+
+            /* Improve product text area */
+            .product__item__text {
+                padding: 15px;
+                background-color: #fff;
+            }
+
+            .product__item__text h6 {
+                font-size: 15px;
+                margin-bottom: 6px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            /* Add to cart button enhancement */
+            /* .add-cart {
+                display: inline-block;
+                padding: 8px 20px;
+                background-color: #46698f;
+                color: #fff !important;
+                border-radius: 25px;
+                font-size: 14px;
+                font-weight: 500;
+                transition: all 0.3s;
+                text-decoration: none;
+                margin-top: 10px;
+                border: none;
+            } */
+
+            /* .add-cart:hover {
+                background-color: #334f6c;
+                transform: translateY(-2px);
+            } */
+
+            /* Filter sidebar for mobile */
+            .shop__sidebar {
+                margin-bottom: 20px;
+                background-color: #f8f9fa;
+                padding: 15px;
+                border-radius: 8px;
+            }
+
+            /* Better size badges display */
+            .size-badges {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 5px;
+                margin: 8px 0;
+            }
+
+            .size-badge {
+                padding: 3px 8px;
+                border-radius: 12px;
+                background-color: #f0f0f0;
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 767px) {
+
+            /* Smaller devices adjustments */
+            .col-lg-4.col-md-6.col-sm-6 {
+                width: 50%;
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+
+            .row {
+                margin-left: -8px;
+                margin-right: -8px;
+            }
+
+            .shop__product__option .col-lg-6 {
+                width: 100%;
+                text-align: center;
+                margin-bottom: 10px;
+            }
+
+            .shop__product__option__right {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .shop__product__option__right select {
+                padding: 8px;
+                border-radius: 5px;
+                border: 1px solid #ddd;
+                background-color: #fff;
+            }
+
+            /* Pagination for mobile */
+            .product__pagination {
+                margin-top: 20px;
+            }
+
+            .product__pagination .btn {
+                min-width: 35px;
+                height: 35px;
+                padding: 0 8px;
+                margin: 3px;
+                font-size: 14px;
+            }
+
+            /* Price display */
+            .product__item__text p {
+                margin: 5px 0;
+                font-size: 14px;
+                display: flex;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+        }
+
+
+        @media (max-width: 575px) {
+
+            /* Phone-sized screens */
+            .col-lg-4.col-md-6.col-sm-6 {
+                width: 100%;
+            }
+
+            .shop__sidebar__search input {
+                font-size: 14px;
+                padding: 10px;
+            }
+
+            /* Offer badges for mobile */
+            .offer-badge {
+                font-size: 10px;
+                padding: 4px 6px;
+            }
+
+            .product__item__text h6 {
+                font-size: 14px;
+            }
+
+            /* Collapsible filters for very small screens */
+            .card-heading a {
+                font-size: 14px;
+                padding: 10px 0;
+                display: block;
+            }
+
+            .breadcrumb-option {
+                padding: 30px 0;
+            }
+
+            .breadcrumb__text h4 {
+                font-size: 24px;
+            }
+
+            #toast-container {
+                top: 10px;
+                left: 10px;
+                right: 10px;
+            }
+
+            .toast-message {
+                min-width: auto;
+                width: 100%;
+                max-width: 100%;
+                font-size: 12px;
+                padding: 10px 15px;
+            }
+        }
+
+        /* Enhanced hover effects and animations */
+        .product__hover {
+            transition: opacity 0.3s ease;
+        }
+
+        .product__item:hover .product__hover {
+            opacity: 1;
+        }
+
+        /* Wishlist button enhancement */
+        .product__hover li a img {
+            transition: transform 0.3s ease;
+        }
+
+        .product__hover li a:hover img {
+            transform: scale(1.2);
+        }
+
+
+        .text-muted strike {
+            opacity: 0.7;
+            font-size: 0.9em;
+        }
+
+        /* Smooth scroll behavior */
+        html {
+            scroll-behavior: smooth;
         }
     </style>
 
@@ -357,29 +594,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- brands  -->
-                                    <!-- <div class="card">
-                                        <div class="card-heading">
-                                            <a data-toggle="collapse" data-target="#collapseTwo">Branding</a>
-                                        </div>
-                                        <div id="collapseTwo" class="collapse show" data-parent="#accordionExample">
-                                            <div class="card-body">
-                                                <div class="shop__sidebar__brand">
-                                                    <ul>
-
-                                                        <% for(let i=0;i<brand.length;i++) { %>
-
-                                                        <li>
-                                                            <a href="/shop?brand=<%= brand[i]._id %>"><%= brand[i].brandName %></a>
-                                                        </li>
-
-                                                        <% } %>
-                                                        
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div> -->
 
                                     <!-- Brands Filter -->
                                     <div class="card">
@@ -653,7 +867,7 @@
                                                         <i class="fa fa-star-o"></i>
                                                     </div>
 
-                                                    <p>price:<strong>₹<%= products[i].salePrice.toLocaleString('en-IN')
+                                                    <p>price:<strong style="color: rgb(255, 56, 56);">₹<%= products[i].salePrice.toLocaleString('en-IN')
                                                                 %>
 
                                                         </strong> <span class="text-muted"><strike>₹<%=
@@ -667,14 +881,8 @@
                                                     <!-- <div class="product__color__select">
                                             <label for="pc-4">
                                                 <input type="radio" id="pc-4">
-                                            </label>
-                                            <label class="active black" for="pc-5">
-                                                <input type="radio" id="pc-5">
-                                            </label>
-                                            <label class="grey" for="pc-6">
-                                                <input type="radio" id="pc-6">
-                                            </label>
-                                        </div> -->
+                                            </label>                                 
+                                                  </div> -->
                                         </div>
                                     </div>
 
@@ -690,7 +898,6 @@
                             <div class="col-lg-12">
                                 <div class="product__pagination">
 
-                                    <!-- <a class="active" href="#">1</a> -->
                                     <% if (currentPage> 1) { %>
                                         <a class="btn" href="/shop?page=<%= currentPage - 1 %>">Prev</a>
                                         <% } %>

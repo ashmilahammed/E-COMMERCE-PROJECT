@@ -76,32 +76,6 @@ const getWalletHistory = async (req, res) => {
 
   
 
-// const getWalletHistory = async (req, res) => {
-//   try {
-//     const userId = req.params.userId; 
-
-//     const wallet = await Wallet.findOne({ userId }).select("balance transactions");
-//     if (!wallet) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Wallet not found",
-//       });
-//     }
-
-//     res.status(200).json({
-//       success: true,
-//       balance: wallet.balance,
-//       transactions: wallet.transactions,
-//     });
-//   } catch (error) {
-//     console.error("Error fetching wallet history:", error);
-//     res.status(500).json({ success: false, message: "Server error" });
-//   }
-// };
-
-
-
-
 
 const getWalletBalance =  async (req, res) => {
     try {

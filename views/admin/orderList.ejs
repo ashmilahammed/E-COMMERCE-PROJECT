@@ -339,50 +339,6 @@
                                                     <hr class="dropdown-divider">
                                                 </li>
 
-                                                <!-- <% if (order.orderStatus !=='Cancelled' ) { %>
-                                                    <li class="status-change-container">
-                                                        <a class="dropdown-item change-status-trigger" href="#"
-                                                            data-order-id="<%= order._id %>">
-                                                            <i class="bi bi-arrow-repeat me-2"></i> Change Status
-                                                        </a>
-                                                        <div class="status-change-dropdown"
-                                                            data-order-id="<%= order._id %>">
-                                                            <div class="dropdown-header">
-                                                                <h6>Change Order Status</h6>
-                                                                <button type="button" class="btn-close"
-                                                                    aria-label="Close"></button>
-                                                            </div>
-                                                            <div class="status-option status-update"
-                                                                data-status="Pending">
-                                                                <span
-                                                                    class="status-option-icon status-processing-submenu"></span>
-                                                                Pending
-                                                            </div>
-                                                            <div class="status-option status-update"
-                                                                data-status="Shipped">
-                                                                <span
-                                                                    class="status-option-icon status-shipped-submenu"></span>
-                                                                Shipped
-                                                            </div>
-                                                            <div class="status-option status-update"
-                                                                data-status="Delivered">
-                                                                <span
-                                                                    class="status-option-icon status-delivered-submenu"></span>
-                                                                Delivered
-                                                            </div>
-                                                            <div class="status-option status-update"
-                                                                data-status="Cancelled">
-                                                                <span
-                                                                    class="status-option-icon status-cancelled-submenu"></span>
-                                                                Cancelled
-                                                            </div>
-                                                        </div>
-                                                    </li>
-
-                                                    <% } else { %>
-                                                        <li class="dropdown-item disabled">Status cannot be changed
-                                                            (Cancelled)</li>
-                                                        <% } %> -->
 
                                                 <% if (order.orderStatus !=='Cancelled' && order.orderStatus
                                                     !=='Delivered' ) { %>
@@ -453,36 +409,8 @@
             </table>
         </div>
 
+        
         <!-- Pagination -->
-        <!-- <nav class="mt-4">
-            <ul class="pagination justify-content-center">
-                <% if (currentPage> 1) { %>
-                    <li class="page-item">
-                        <a class="page-link" href="?page=<%= currentPage - 1 %>">
-                            <i class="bi bi-chevron-left"></i>
-                        </a>
-                    </li>
-                    <% } %>
-
-                        <% for(let i=1; i <=totalPages; i++) { %>
-                            <li class="page-item <%= currentPage === i ? 'active' : '' %>">
-                                <a class="page-link" href="?page=<%= i %>">
-                                    <%= i %>
-                                </a>
-                            </li>
-                            <% } %>
-
-                                <% if (currentPage < totalPages) { %>
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page=<%= currentPage + 1 %>">
-                                            <i class="bi bi-chevron-right"></i>
-                                        </a>
-                                    </li>
-                                    <% } %>
-            </ul>
-        </nav> -->
-
-
         <nav class="mt-4">
             <ul class="pagination justify-content-center">
                 <% if (currentPage> 1) { %>

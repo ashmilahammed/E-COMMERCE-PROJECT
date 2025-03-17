@@ -1,17 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page Template</title>
+    <title>Login Page</title>
+
     <style>
         /* Global Styles */
-        body, html {
+        :root {
+            --primary: #222222;
+            --secondary: #3f3d56;
+            --text: #333;
+            --text-light: #666;
+            --background: linear-gradient(to right, #d4d4d4, #ffffff);
+            --card-bg: #ffffff;
+            --error: #ff1900;
+            --radius: 6px;
+        }
+
+        body,
+        html {
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
-            background-color: #121212;
-            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            height: 100%;
+            overflow: hidden;
         }
 
         .container {
@@ -25,125 +41,201 @@
         .card {
             display: flex;
             flex-direction: row;
-            width: 930px;
-            height: 590px;
-            background: #1e1e1e;
-            color: white;
-            border-radius: 10px;
+            width: 950px;
+            height: 550px;
+            font-size: 1.8rem;
+            background: var(--card-bg);
+            border-radius: var(--radius);
             overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
         }
 
-        /* Left Image Section */
+        /* Left Illustration Section */
         .image-container {
             flex: 1;
-            background: url('/images/nike white.webp') no-repeat center center;
+            background: url(/images/nike\ white.webp);
             background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('/api/placeholder/400/320');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.3;
+            mix-blend-mode: overlay;
+        }
+
+        .brand-content {
+            position: relative;
+            z-index: 1;
+            color: white;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .brand-content h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.6rem;
+            font-weight: 700;
+            color: rgb(255, 255, 255);
+        }
+
+        .brand-content p {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            opacity: 0.9;
+            margin: 0;
+            color: rgb(255, 255, 255);
         }
 
         /* Right Content Section */
         .content-panel {
-            flex: 1.5;
-            padding: 30px;
+            flex: 1.2;
+            padding: 25px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: center;
         }
 
         .login-panel {
-            text-align: center;
+            width: 100%;
         }
 
         h4 {
-            margin-bottom: 20px;
-            font-weight: normal;
-            font-size: 1.5rem;
+            font-size: 30px;
+            margin: 0 0 1rem 0;
+            color: var(--secondary);
+            font-weight: 600;
+            /* margin-left: 210px; */
+            text-align: center;
         }
 
         .btn {
-            padding: 12px 20px;
+            padding: 10px;
             width: 100%;
             border: none;
-            border-radius: 5px;
-            font-size: 16px;
+            border-radius: var(--radius);
+            font-size: 15px;
+            font-weight: 500;
             cursor: pointer;
-            margin-top: 15px;
+            margin-top: 1rem;
             color: white;
-            background: linear-gradient(to right,rgb(255, 55, 55) , rgb(21, 49, 255));
-        }
-
-        .btn-google {
-            /* background-color: #2f7fff; */
-            background: linear-gradient(to right, rgb(255, 178, 54), rgb(255, 151, 54));
-            color: white;
-            padding: 12px 20px;
-            width: 100%;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-
-        .btn-google:hover {
-            /* background-color: rgb(27, 79, 212); */
-            background: linear-gradient(to right, rgb(176, 120, 29), rgb(221, 139, 61));
+            background: var(--primary);
+            transition: all 0.3s ease;
         }
 
         .btn:hover {
-            /* background-color: rgb(143, 143, 143); */
-            background: linear-gradient(to right, rgb(185, 8, 8),rgba(12, 12, 159, 0.96));
+            background: #000000;
+        }
+
+        .btn-google {
+            background-color: white;
+            color: var(--text);
+            border: 1px solid #353535;
+            padding: 10px;
+            width: 100%;
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-google:hover {
+            background-color: #e2e2e2;
+        }
+
+        .btn-google svg {
+            width: 16px;
+            height: 16px;
         }
 
         .divider {
-            margin: 20px 0;
+            margin: 1rem 0;
             position: relative;
             text-align: center;
         }
 
         .divider p {
             display: inline-block;
-            background: #1e1e1e;
+            background: var(--card-bg);
             padding: 0 10px;
-            color: #ccc;
+            color: var(--text-light);
+            font-size: 0.8rem;
+            margin: 10px;
         }
 
-        .divider::before, .divider::after {
+        .divider::before,
+        .divider::after {
             content: "";
             position: absolute;
             top: 50%;
-            width: 40%;
+            width: 45%;
             height: 1px;
-            background: #e3e3e3;
+            background: #000000;
         }
 
         .divider::before {
-            left: 5%;
+            left: 0;
         }
 
         .divider::after {
-            right: 5%;
+            right: 0;
         }
 
         .login-with-email {
             text-align: left;
-            margin-top: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 0.8rem;
+            position: relative;
         }
 
         .login-with-email label {
             display: block;
-            margin: 10px 0 5px;
+            margin-bottom: 4px;
             font-size: 0.9rem;
-            color: #ccc;
+            color: var(--text);
+            font-weight: 500;
         }
 
         .login-with-email input {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #2e2e2e;
-            color: #fff;
+            padding: 8px 12px;
+            border: 1px solid #e1e4e8;
+            border-radius: var(--radius);
+            background-color: #f8f9fa;
+            color: var(--text);
+            font-size: 15px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .login-with-email input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: white;
+        }
+
+        .login-with-email input::placeholder {
+            color: #a0aec0;
         }
 
         /* Password Options Container */
@@ -151,28 +243,37 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 10px 0;
+            margin-bottom: 0.5rem;
         }
 
         .show-password {
             display: flex;
             align-items: center;
-            gap: 5px;;
-            font-size: small;
+            gap: 4px;
+            font-size: 0.8rem;
+            color: var(--text-light);
         }
 
-        .show-password input[type="checkbox"] {
-            margin: 0;
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
         }
 
-        .forgot-password {
+        .checkbox-container input[type="checkbox"] {
+            width: 14px;
+            height: 14px;
             margin: 0;
+            cursor: pointer;
+            accent-color: var(--primary);
         }
 
         .forgot-password a {
-            color: #2f7fff;
+            color: var(--primary);
             text-decoration: none;
-            font-size: 14px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
         }
 
         .forgot-password a:hover {
@@ -180,45 +281,63 @@
         }
 
         .link-container {
-            margin-top: 15px;
+            margin-top: 0.8rem;
             text-align: center;
         }
 
         .link-container p {
-            font-size: 15px;
-            color: white;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin: 0;
         }
 
         .link-container a {
-            color: #2f7fff;
+            color: var(--primary);
             text-decoration: none;
-            font-weight: bold;
+            font-weight: 600;
+            font-size: 14px;
         }
 
         .link-container a:hover {
             text-decoration: underline;
         }
 
-        .text-panel {
-            margin-top: 20px;
-            text-align: left;
-        }
-
-        .text-panel h3 {
-            margin-bottom: 10px;
-            font-size: 1.2rem;
-            font-weight: normal;
-        }
-
-        .text-panel p {
-            font-size: 0.9rem;
-            line-height: 1.5;
-            color: #ccc;
-        }
-
         .error-message {
-            color: red;
-            font-size: 14px;
+            color: var(--error);
+            font-size: 0.75rem;
+            margin-top: 2px;
+            display: block;
+            font-weight: 500;
+        }
+
+        .message {
+            background-color: rgba(255, 25, 0, 0.1);
+            color: var(--error);
+            padding: 8px;
+            border-radius: var(--radius);
+            margin: 0.5rem 0;
+            font-size: 0.8rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 850px) {
+            .card {
+                flex-direction: column;
+                width: 90%;
+                max-width: 400px;
+                height: auto;
+                min-height: 0;
+                max-height: 95vh;
+            }
+
+            .image-container {
+                height: 120px;
+                min-height: 0;
+            }
+
+            .content-panel {
+                padding: 20px;
+            }
         }
     </style>
 </head>
@@ -227,54 +346,79 @@
     <form action="/login" method="post" id="loginForm">
         <div class="container">
             <div class="card">
-                <!-- Image Container -->
-                <div class="image-container"></div>
+                <!-- Left Illustration Section -->
+                <div class="image-container">
+                    <div class="image-overlay"></div>
+                    <div class="brand-content">
+                        <h2>Welcome Back</h2>
+                        <p>Sign in to continue your journey</p>
+                    </div>
+                </div>
 
-                <!-- Content Panel -->
+                <!-- Right Content Panel -->
                 <div class="content-panel">
                     <div class="login-panel">
-                        <h4>Log in to your account</h4>
+                        <h4>Sign in</h4>
+
                         <a href="/auth/google">
-
-                            <button type="button" class="btn-google">Log In with Google</button>
-
+                            <button type="button" class="btn-google">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="16px" height="16px">
+                                    <path fill="#FFC107"
+                                        d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
+                                    <path fill="#FF3D00"
+                                        d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" />
+                                    <path fill="#4CAF50"
+                                        d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z" />
+                                    <path fill="#1976D2"
+                                        d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z" />
+                                </svg>
+                                Continue with Google
+                            </button>
                         </a>
-                    
 
-                        <div class="divider"><p>OR</p></div>
+                        <div class="divider">
+                            <p>OR</p>
+                        </div>
 
                         <div class="login-with-email">
-                            <label for="email">Email address</label>
-                            <input type="email" id="email" name="email" placeholder="Enter your email address" />
-                            <span id="emailError" class="error-message"></span>
-
-                            <label for="password">Password</label>
-                            <input type="password" id="password" name="password" placeholder="Enter your password" />
-                            <span id="passwordError" class="error-message"></span>
-                        </div>
-
-                        <!-- Password Options Container -->
-                        <div class="password-options">
-                            <div class="show-password">
-                                <input type="checkbox" id="showPassword" />
-                                <label id="" for="showPassword">Show Password</label>
+                            <div class="input-group">
+                                <label for="email">Email address</label>
+                                <input type="email" id="email" name="email" placeholder="Enter your email" />
+                                <span id="emailError" class="error-message"></span>
                             </div>
-                            <div class="forgot-password">
-                                <a href="/forgot-password">Forgot Password?</a>
+
+                            <div class="input-group">
+                                <label for="password">Password</label>
+                                <input type="password" id="password" name="password"
+                                    placeholder="Enter your password" />
+                                <span id="passwordError" class="error-message"></span>
                             </div>
-                        </div>
 
-                        <% if(locals.message && message.length > 0) { %>
-                            <div class="message" style="color: red;">
-                                <%=message%>
+                            <!-- Password Options Container -->
+                            <div class="password-options">
+                                <div class="show-password">
+                                    <label class="checkbox-container">
+                                        <input type="checkbox" id="showPassword" />
+                                        <span>Show password</span>
+                                    </label>
+                                </div>
+                                <div class="forgot-password">
+                                    <a href="/forgot-password">Forgot password?</a>
+                                </div>
                             </div>
-                        <% } %>
 
-                        <button type="submit" class="btn">Sign In</button>
+                            <% if(locals.message && message.length> 0) { %>
+                                <div class="message">
+                                    <%=message%>
+                                </div>
+                                <% } %>
 
-                        <!-- Link Container -->
-                        <div class="link-container">
-                            <p>Don't have an account? <a href="/signup">Sign Up</a></p>
+                                    <button type="submit" class="btn">Sign In</button>
+
+                                    <!-- Link Container -->
+                                    <div class="link-container">
+                                        <p>Don't have an account? <a href="/signup">Create account</a></p>
+                                    </div>
                         </div>
                     </div>
                 </div>
@@ -282,43 +426,59 @@
         </div>
     </form>
 
-    <script>
-        const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-        const form = document.getElementById("loginForm");
-        const emailField = document.getElementById("email");
-        const passwordField = document.getElementById("password");
-        const emailError = document.getElementById("emailError");
-        const passwordError = document.getElementById("passwordError");
-
-        form.addEventListener("submit", function (event) {
-            let valid = true;
-            emailError.textContent = "";
-            passwordError.textContent = "";
-
-            if (emailField.value.trim() === "") {
-                emailError.textContent = "Email is required.";
-                valid = false;
-            } else if (!emailPattern.test(emailField.value)) {
-                emailError.textContent = "Enter a valid email address.";
-                valid = false;
-            }
-
-            if (passwordField.value.trim() === "") {
-                passwordError.textContent = "Password is required.";
-                valid = false;
-            }
-
-            if (!valid) {
-                event.preventDefault(); // Prevent form submission
-            }
-        });
-
-        document.getElementById("showPassword").addEventListener("change", () => {
-            passwordField.type = passwordField.type === "password" ? "text" : "password";
-        });
-    </script>
 
 </body>
+
+<script>
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    const form = document.getElementById("loginForm");
+    const emailField = document.getElementById("email");
+    const passwordField = document.getElementById("password");
+    const emailError = document.getElementById("emailError");
+    const passwordError = document.getElementById("passwordError");
+
+    form.addEventListener("submit", function (event) {
+        let valid = true;
+        emailError.textContent = "";
+        passwordError.textContent = "";
+
+        if (emailField.value.trim() === "") {
+            emailError.textContent = "Email is required.";
+            valid = false;
+        } else if (!emailPattern.test(emailField.value)) {
+            emailError.textContent = "Enter a valid email address.";
+            valid = false;
+        }
+
+        if (passwordField.value.trim() === "") {
+            passwordError.textContent = "Password is required.";
+            valid = false;
+        }
+
+        if (!valid) {
+            event.preventDefault();
+        }
+    });
+
+    document.getElementById("showPassword").addEventListener("change", () => {
+        passwordField.type = passwordField.type === "password" ? "text" : "password";
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    let message = "<%= message %>";
+
+    if (message) {
+        Swal.fire({
+            icon: "error",
+            title: "Access Denied",
+            text: message
+        });
+    }
+</script>
+
+
 
 
 </html>

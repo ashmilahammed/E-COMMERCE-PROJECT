@@ -14,43 +14,57 @@
    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
  }
 
-
+ /* Updated timer styling to match second page */
  .otp-timer-wrapper {
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   margin-bottom: 10px;
+   margin-top: 1rem;
    width: 100%;
- }
-
-
- .otp-timer {
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   width: 60px;
-   height: 60px;
-   border-radius: 50%;
-   background-color: #f0f0f0;
-   font-size: 14px;
-   color: black;
    text-align: center;
  }
 
+ .otp-timer {
+   font-size: 14px;
+   color: #666;
+   margin-bottom: 10px;
+ }
 
  .form-group {
    width: 100%;
    text-align: center;
  }
 
-
  .btn-primary {
    margin-top: 15px;
  }
 
-
  .resend-button {
    margin-top: 10px;
+ }
+
+ /* Add hover effect for login link */
+ .login-link {
+   color: #6c757d;
+   text-decoration: none;
+   transition: color 0.3s ease;
+ }
+
+ .login-link:hover {
+   color: #007bff;
+   text-decoration: underline;
+ }
+
+ /* Style for disabled button */
+ .btn-link:disabled {
+   color: #adb5bd;
+   cursor: not-allowed;
+   opacity: 0.6;
+ }
+ 
+ /* New style for OTP expired message */
+ .otp-expired-message {
+   margin-top: 0.5rem;
+   color: red;
+   font-size: 14px;
+   display: none;
  }
 </style>
 
@@ -65,7 +79,8 @@
      <form onsubmit="return ValidateOtpForm()">
        <div class="form-group">
          <label for="otp">Enter OTP:</label>
-         <input type="text" id="otp" name="otp" class="form-control" required>
+         <!-- <input type="text" id="otp" name="otp" class="form-control" required> -->
+         <input type="text" id="otp" name="otp" class="form-control" placeholder="Enter OTP" maxlength="6" pattern="\d*"/>
        </div>
        <div class="form-group">
          <button type="submit" class="btn btn-primary">Verify OTP</button>
@@ -73,10 +88,11 @@
      </form>
 
      <div class="form-group otp-timer-wrapper">
-       <div class="otp-timer" id="otpTimer"></div>
+       <div class="otp-timer" id="timer-text">Time Remaining: <span id="otpTimer">60</span> seconds</div>
+       <div class="otp-expired-message" id="otp-expired-message">OTP expired! Please click resend to get a new OTP.</div>
      </div>
      <div class="form-group">
-       <button type="button" class="btn btn-link resend-button" onclick="resendOtp()">Resend OTP</button>
+       <button type="button" id="resendBtn" class="btn btn-link resend-button" onclick="resendOtp()" disabled>Resend OTP</button>
      </div>
 
     <% if(locals.message && message.length > 0) { %>
@@ -87,7 +103,7 @@
 
    </div>
    <div class="text-muted text-center pt-25">
-     Already verified? <a href="/login">Login now</a>
+     Already verified? <a href="/login" class="login-link">Login now</a>
    </div>
  </div>
 </div>
@@ -97,53 +113,36 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-
     let otpTimerInterval;
     let timer = 60;
-
-
-    function updateTimerColor(percentage) {
-        const timerElement = document.getElementById('otpTimer');
-        if(percentage > 50){
-            timerElement.style.backgroundColor = '#28a745';
-
-        }else if(percentage > 25){
-            timerElement.style.backgroundColor = '#ffc107';
-
-        }else{
-            timerElement.style.backgroundColor = '#dc3545';
-        }
-    }
-
-
+    const resendBtn = document.getElementById('resendBtn');
+    const timerElement = document.getElementById('otpTimer');
+    const otpExpiredMessage = document.getElementById('otp-expired-message');
 
     function startOtpTimer(){
-        const timerElement = document.getElementById('otpTimer');
+        // Disable resend button at the start of timer
+        resendBtn.disabled = true;
+        
         otpTimerInterval = setInterval(function(){
-            const minutes = Math.floor(timer/60);
-            const seconds = timer % 60;
-            timerElement.textContent = `${minutes}:${seconds < 10? '0':''}${seconds}`;
-            updateTimerColor((timer/60)*100);
+            timer--;
+            timerElement.textContent = timer;
 
-            if(--timer < 0){
+            if(timer <= 0){
                 clearInterval(otpTimerInterval);
-                timerElement.textContent = 'Expired';
-                timerElement.style.backgroundColor = 'red';
+                resendBtn.disabled = false;
+                otpExpiredMessage.style.display = 'block';
+                document.getElementById('timer-text').style.display = 'none';
             }
-        },1000);
+        }, 1000);
     }
 
-
     initialiseOtpTimer();
-
 
     function initialiseOtpTimer() {
         clearInterval(otpTimerInterval);
         timer = 60;
         startOtpTimer();
     }
-
-
 
     function ValidateOtpForm() {
         const otpInput = document.getElementById('otp').value;
@@ -164,8 +163,8 @@
                 }else {
                     Swal.fire({
                         icon: "error",
-                        title: "Invalid OTP.",
-                        text: "response.message"
+                        title: "Invalid OTP",
+                        text: "Please try again"
                     })
                 }
             },
@@ -181,14 +180,14 @@
         return false;
     }
 
-
-
     function resendOtp() {
         clearInterval(otpTimerInterval);
         timer = 60;
+        otpExpiredMessage.style.display = 'none';
+        document.getElementById('timer-text').style.display = 'block';
         startOtpTimer();
+        
         $.ajax({
-
             type: "POST",
             url: "/resend-forgot-otp",
             success: function (response){
@@ -198,7 +197,6 @@
                     title: "Resend OTP Successfull.",
                     showConfirmButton : false,
                     timer: 1500,
-
                   })
                 }else {
                     Swal.fire({
@@ -215,15 +213,7 @@
                     text: "Failed to resend OTP. Please try again."
                 })
             }
-
         })
     }
-
-
 </script>
 <%- include("../../views/partials/user/footer") %>
-
-
-
-
-

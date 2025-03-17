@@ -164,12 +164,6 @@
                                             value="1" required>
                                         <div id="quantity-error" class="error-message"></div>
 
-                                        <!-- <label for="status" class="form-label">Status:</label>
-                                        <select name="variants[0][status]" class="form-select border" required>
-                                            <option value="Available">Available</option>
-                                            <option value="out of stock">Out of Stock</option>
-                                            <option value="Discontinued">Discontinued</option>
-                                        </select> -->
                                         <br>
                                         <button type="button" class="btn btn-danger mt-2"
                                             onclick="removeVariant(this)">Remove Variant</button>
@@ -261,10 +255,8 @@
     <script>
 
         async function validateAndSubmit() {
-
-            // form validation first to display all error messages
+            // Form validation 
             const isFormValid = validateForm();
-
 
             const input1 = document.getElementById('input1');
             const input2 = document.getElementById('input2');
@@ -281,34 +273,62 @@
                 return;
             }
 
-
             if (isFormValid && imagesUploaded) {
-                Swal.fire({
-                    title: 'Publishing...',
-                    text: 'Please wait while we process your submission',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-
-                // Submit the form using Fetch API
-                const form = document.querySelector('form');
-                const formData = new FormData(form);
+                const productName = document.getElementById('product_name').value.trim();
 
                 try {
-                    const response = await fetch(form.action, {
+                    const response = await fetch('/admin/checkProductName', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ productName: productName })
+                    });
+
+                    if (!response.ok) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Server Error',
+                            text: 'Could not verify product name. Try again later.',
+                        });
+                        return;
+                    }
+                    const result = await response.json();
+
+                    if (result.exists) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Duplicate Product',
+                            text: 'A product with this name already exists. Please use a different name.',
+                        });
+                        return;
+                    }
+
+
+                    // If no duplicate, proceed with form submission
+                    Swal.fire({
+                        title: 'Publishing...',
+                        text: 'Please wait while we process your submission',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Submit the form using Fetch API
+                    const form = document.querySelector('form');
+                    const formData = new FormData(form);
+
+                    const submitResponse = await fetch(form.action, {
                         method: "POST",
                         body: formData
                     });
 
-                    const result = await response.json();
+                    const submitResult = await submitResponse.json();
 
-                    if (result.success) {
+                    if (submitResult.success) {
                         Swal.fire({
                             icon: 'success',
                             title: 'Product Added!',
-                            text: result.message,
+                            text: submitResult.message,
                             timer: 1000,
                             showConfirmButton: false,
                         }).then(() => {
@@ -317,11 +337,10 @@
                     } else {
                         Swal.fire({
                             icon: 'error',
-                            title: 'Duplicate Product',
-                            text: result.message,
+                            title: 'Error',
+                            text: submitResult.message,
                         });
                     }
-
                 } catch (error) {
                     Swal.fire({
                         icon: 'error',
@@ -333,7 +352,7 @@
         }
 
 
-
+        
         function viewImage1(event) {
             document.getElementById("imgView1").src = URL.createObjectURL(event.target.files[0]);
         }

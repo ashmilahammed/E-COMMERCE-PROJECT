@@ -26,10 +26,7 @@ const productDetails = async (req, res) => {
 
         const findCategory = product.category;
 
-        // const categoryOffer = findCategory?.categoryOffer || 0;
-        // const productOffer = product.productOffer || 0;
-        // const totalOffer = categoryOffer + productOffer;
-
+        
         const now = new Date();
         const categoryOffer = (findCategory?.endDate && now > findCategory.endDate) ? 0 : (findCategory?.categoryOffer || 0);
         const productOffer = (product.offerEndDate && now > product.offerEndDate) ? 0 : (product.productOffer || 0);

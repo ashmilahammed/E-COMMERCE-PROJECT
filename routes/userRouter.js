@@ -49,14 +49,17 @@ router.post("/resend-forgot-otp",profileController.resendOtp);
 router.post("/reset-password",profileController.postNewPassword);
 
 router.get("/userProfile",userAuth,profileController.userProfile);
-router.patch("/update-profile",userAuth,profileController.updateProfile)
+router.patch("/update-profile",userAuth,profileController.updateProfile);
+
 router.get("/change-email",userAuth,profileController.changeEmail);
 router.post("/change-email",userAuth,profileController.changeEmailValid);
 router.post("/verify-email-otp",userAuth,profileController.verifyEmailOtp);
 router.post("/update-email",userAuth,profileController.updateEmail);
+
 router.get("/change-password",userAuth,profileController.changePassword);
 router.post("/change-password",userAuth,profileController.changePasswordValid);
 router.post("/verify-changepassword-otp",userAuth,profileController.verifyChangePassOtp);
+router.post("/resend-changepassword-otp",userAuth,profileController.resendOtp)
 
 //Address management
 router.get("/addAddress",userAuth,profileController.addAddress);
@@ -82,6 +85,7 @@ router.post('/checkout',userAuth,checkoutController.placeOrder);
 router.post('/add-address',userAuth,checkoutController.addAddress);
 router.post('/checkout/editAddress',userAuth,checkoutController.editAddress);
 
+router.get('/check-blocked-products',userAuth,checkoutController.checkBlockedProducts);
 
 //Order management 
 router.get("/order-details/:orderId", userAuth, checkoutController.getOrderDetails);
@@ -97,7 +101,6 @@ router.post("/returnProduct",userAuth,checkoutController.returnProduct)
 //razorpay
 router.post("/verify-payment",userAuth,checkoutController.verifyPayment);
 router.post("/retry-payment",userAuth,checkoutController.retryPayment)
-
 
 
 //wishlist management

@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const {Schema} = mongoose;
 
+
+
 const cartSchema = new Schema({
     userId: {
         type : Schema.Types.ObjectId,
@@ -34,7 +36,6 @@ const cartSchema = new Schema({
         totalPrice: {
             type : Number,
             required : true
-            // default: function () { return this.quantity * this.price; } // Auto-calculate
         },
         status: {
             type : String,

@@ -65,14 +65,6 @@ const couponSchema = new mongoose.Schema({
 
 
 
-// // Middleware to ensure `couponCode` is always saved in uppercase
-// couponSchema.pre("save", function (next) {
-//     this.couponCode = this.couponCode.toUpperCase();
-//     next();
-// });
-
-
-
 const Coupon = mongoose.model("Coupon", couponSchema);
 module.exports = Coupon;
 

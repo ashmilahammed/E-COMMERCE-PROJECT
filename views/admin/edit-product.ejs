@@ -217,15 +217,6 @@
                                                         <div class="error-message"></div>
                                                     </div>
 
-                                                    <!-- <div class="col-md-6">
-                                                        <label class="form-label">Status:</label>
-                                                        <select name="variants[<%= index %>][status]" class="form-select border" required>
-                                                            <option value="Available" <%= variant.status === 'Available' ? 'selected' : '' %>>Available</option>
-                                                            <option value="out of stock" <%= variant.status === 'out of stock' ? 'selected' : '' %>>Out of Stock</option>
-                                                            <option value="Discontinued" <%= variant.status === 'Discontinued' ? 'selected' : '' %>>Discontinued</option>
-                                                        </select>
-                                                        <div class="error-message"></div>
-                                                    </div> -->
                                                 </div>
                                             </div>
                                             <% }); %>
@@ -261,15 +252,6 @@
                                                                 <div class="error-message"></div>
                                                             </div>
 
-                                                            <!-- <div class="col-md-6">
-                                                    <label class="form-label">Status:</label>
-                                                    <select name="variants[0][status]" class="form-select border" required>
-                                                        <option value="Available">Available</option>
-                                                        <option value="out of stock">Out of Stock</option>
-                                                        <option value="Discontinued">Discontinued</option>
-                                                    </select>
-                                                    <div class="error-message"></div>
-                                                </div> -->
                                                         </div>
                                                     </div>
                                                     <% } %>
@@ -557,7 +539,6 @@
                         return;
                     }
 
-                    // Show loading state
                     Swal.fire({
                         title: 'Deleting...',
                         text: 'Please wait while we delete the image',
@@ -567,7 +548,7 @@
                         }
                     });
 
-                    // Send POST request with JSON data
+
                     fetch('/admin/deleteImage', {
                         method: 'POST',
                         headers: {
@@ -613,6 +594,7 @@
                 }
             });
         }
+
 
         function addVariant() {
             const variantContainer = document.getElementById('variant-container').getElementsByClassName('card-body')[0];
@@ -685,6 +667,8 @@
             }
         }
 
+
+        //validation
         function validateForm() {
             let isValid = true;
 
@@ -703,19 +687,17 @@
                 isValid = false;
             }
 
-            // Validate product name
+
             const productName = getInputValue('product_name');
             if (!productName) {
                 showError('productName', 'Product name is required');
             }
 
-            // Validate description
             const description = getInputValue('descriptionid');
             if (!description) {
                 showError('description', 'Description is required');
             }
 
-            // Validate variants
             const variantContainer = document.getElementById('variant-container');
             if (variantContainer) {
                 const variants = variantContainer.getElementsByClassName('variant');
@@ -747,7 +729,7 @@
                         isValid = false;
                     }
 
-                    // Validate price values
+
                     if (regularPrice.value && salePrice.value) {
                         const regPrice = parseFloat(regularPrice.value);
                         const salesPrice = parseFloat(salePrice.value);
@@ -766,14 +748,3 @@
 
 
 
-
-
-    <!-- <div class="col-md-6">
-        <label class="form-label">Status:</label>
-        <select name="variants[${newIndex}][status]" class="form-select border" required>
-            <option value="Available">Available</option>
-            <option value="out of stock">Out of Stock</option>
-            <option value="Discontinued">Discontinued</option>
-        </select>
-        <div class="error-message"></div>
-    </div> -->

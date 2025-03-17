@@ -2,7 +2,7 @@
 
 
     <style>
-        /* Add this to your stylesheet or in a <style> tag in your header */
+
         .loading-state {
             position: relative;
         }
@@ -263,26 +263,26 @@
                 fetch(`/admin/dashboard-data?filter=${filter}`)
                     .then(response => response.json())
                     .then(data => {
-                        // Update summary stats
+
                         document.getElementById("revenueValue").innerText = `₹ ${data.revenue.toLocaleString()}`;
                         document.getElementById("ordersValue").innerText = `${data.totalOrders.toLocaleString()} orders`;
                         document.getElementById("productsValue").innerText = `${data.totalProducts.toLocaleString()} products`;
                         document.getElementById("usersValue").innerText = `${data.totalUsers.toLocaleString()} users`;
                         document.getElementById("categoriesCount").innerText = `In ${data.totalCategories.toLocaleString()} Categories`;
 
-                        // Prepare data structures for charts
+ 
                         const categoryLabels = data.categoryPerformance.map(item => item.category);
                         const categoryValues = data.categoryPerformance.map(item => item.totalSales);
 
                         const brandLabels = data.brandPerformance.map(item => item.brand);
                         const brandValues = data.brandPerformance.map(item => item.totalSales);
 
-                        // Time series data
+      
                         const timeLabels = data.timeSeriesData.labels;
                         const revenueData = data.timeSeriesData.revenueData;
                         const orderData = data.timeSeriesData.orderData;
 
-                        // Update charts
+              
                         updateSalesChart(timeLabels, revenueData, filter);
                         updateOrdersChart(timeLabels, orderData, filter);
                         updateCategoryChart(categoryLabels, categoryValues);
@@ -295,12 +295,14 @@
                     })
                     .catch(error => {
                         console.error("Error fetching dashboard data:", error);
-                        // Remove loading state even on error
+
                         document.querySelectorAll(".card").forEach(card => {
                             card.classList.remove("loading-state");
                         });
                     });
             }
+
+
 
             function loadBestSelling(filter = "weekly") {
                 document.querySelector(".table").closest(".card").classList.add("loading-state");
@@ -336,27 +338,28 @@
                     })
                     .catch(error => {
                         console.error("Error fetching best-selling data:", error);
-                        // Remove loading state even on error
+    
                         document.querySelector(".table").closest(".card").classList.remove("loading-state");
                     });
             }
 
             function formatLabels(labels, filter) {
                 if (filter === "yearly") {
-                    // For yearly, convert YYYY-MM to Month Year
+
                     return labels.map(label => {
                         const [year, month] = label.split("-");
                         const date = new Date(year, parseInt(month) - 1);
                         return date.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
                     });
                 } else {
-                    // For weekly and monthly, convert YYYY-MM-DD to readable dates
+
                     return labels.map(label => {
                         const date = new Date(label);
                         return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
                     });
                 }
             }
+
 
             function updateSalesChart(labels, data, filter) {
                 if (salesChart) salesChart.destroy();
@@ -404,6 +407,7 @@
                 });
             }
 
+            
             function updateOrdersChart(labels, data, filter) {
                 if (ordersChart) ordersChart.destroy();
 

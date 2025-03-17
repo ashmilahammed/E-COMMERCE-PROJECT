@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login</title>
     <style>
-        body, html {
+        body,
+        html {
             margin: 0;
             padding: 0;
             height: 100%;
@@ -28,7 +30,7 @@
 
         h1.brand {
             font-size: 26px;
-            color: #8b5e34; 
+            color: #8b5e34;
             font-weight: bold;
             margin-bottom: 10px;
         }
@@ -42,6 +44,7 @@
         .input-container {
             margin-bottom: 15px;
             text-align: left;
+            position: relative;
         }
 
         input {
@@ -96,48 +99,100 @@
 
         .show-password-container input[type="checkbox"] {
             margin-right: 10px;
-            accent-color: #8b5e34; /* Change the checkbox color */
+            accent-color: #8b5e34;
             width: 15px;
             height: 15px;
-           
         }
 
         .show-password-container label {
             font-size: 13px;
-            color: rgb(42, 42, 42); /* Red color for the label */
-            font-weight:normal;
+            color: rgb(42, 42, 42);
+            font-weight: normal;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 12px;
+            position: absolute;
+            bottom: -16px;
+            left: 0;
+        }
+
+        .message {
+            margin-top: 10px;
+            color: red;
+            font-size: 14px;
         }
     </style>
 </head>
+
 <body>
     <div class="login-container">
         <h1 class="brand">BIG STEPPER</h1>
         <h2>Admin Login</h2>
-        <form action="/admin/login" method="POST">
+        <form action="/admin/login" method="POST" id="adminLoginForm">
             <div class="input-container">
                 <label for="email">Email</label>
-                <input type="email" id="email" name="email" placeholder="Email" required>
+                <input type="email" id="email" name="email" placeholder="Email">
+                <span id="emailError" class="error-message"></span>
             </div>
             <div class="input-container">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                <input type="password" id="password" name="password" placeholder="Enter your password">
+                <span id="passwordError" class="error-message"></span>
             </div>
             <div class="show-password-container">
                 <input type="checkbox" id="showPassword">
                 <label for="showPassword">Show Password</label>
             </div>
-            <button type="submit" class="btn">Sign in</button>
-            <a href="/admin/forgot-password" class="forgot-password">Forget password?</a>
+            <% if(locals.message && message.length> 0) { %>
+                <div class="message">
+                    <%= message %>
+                </div>
+                <% } %>
+                    <button type="submit" class="btn">Sign in</button>
+                    <a href="/admin/forgot-password" class="forgot-password">Forget password?</a>
         </form>
     </div>
 
     <script>
+        const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+        const form = document.getElementById("adminLoginForm");
+        const emailField = document.getElementById("email");
+        const passwordField = document.getElementById("password");
+        const emailError = document.getElementById("emailError");
+        const passwordError = document.getElementById("passwordError");
         const showPasswordCheckbox = document.getElementById('showPassword');
-        const passwordField = document.getElementById('password');
 
-        showPasswordCheckbox.addEventListener('change', function() {
+        // Form validation
+        form.addEventListener("submit", function (event) {
+            let valid = true;
+            emailError.textContent = "";
+            passwordError.textContent = "";
+
+            if (emailField.value.trim() === "") {
+                emailError.textContent = "Email is required.";
+                valid = false;
+            } else if (!emailPattern.test(emailField.value)) {
+                emailError.textContent = "Enter a valid email address.";
+                valid = false;
+            }
+
+            if (passwordField.value.trim() === "") {
+                passwordError.textContent = "Password is required.";
+                valid = false;
+            }
+
+            if (!valid) {
+                event.preventDefault();
+            }
+        });
+
+        // Show/hide password functionality
+        showPasswordCheckbox.addEventListener('change', function () {
             passwordField.type = this.checked ? 'text' : 'password';
         });
     </script>
 </body>
+
 </html>

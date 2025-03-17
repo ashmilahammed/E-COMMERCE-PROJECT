@@ -133,7 +133,6 @@
                 </tr>
             </thead>
             <tbody id="productTableBody">
-                <!-- Example product rows -->
 
 
                 <% for(let i=0;i<products.length;i++) { %>
@@ -214,6 +213,8 @@
         </div>
     </div>
     <br>
+
+
 
     <script>
         
@@ -376,79 +377,6 @@
         });
 
     </script>
-
-    <!-- <script>
-
-        async function addOffer(productId) {
-            const { value: amount } = await Swal.fire({
-                title: 'Offer in Percentage',
-                input: 'number',
-                inputLabel: 'percentage',
-                inputPlaceHolder: '%'
-            })
-
-            $.ajax({
-                url: "/admin/addProductOffer",
-                method: "POST",
-                data: {
-                    percentage: amount,
-                    productId: productId
-                },
-                success: (response) => {
-                    if (response.success === true) {
-                        location.reload()
-                        Swal.fire('Offer added', 'The offer has been removed', 'success')
-                    } else {
-                        alert("failed")
-                    }
-                }
-            })
-
-        }
-
-
-
-        function removeOffer(productId) {
-            try {
-                Swal.fire({
-                    title: 'Remove offer',
-                    text: 'Are you sure you want to remove this offer?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3885d6',
-                    cancelButtonColor: 'd33',
-                    confirmButtonText: 'Yes, remove it!',
-                    timer: 2000,
-                    timeProgressBar: true
-                }).then(async (result => {
-                    if(result.isConfirmed){
-                        $.ajax({
-                            url: '/admin/removeProductOffer',
-                            method: 'post',
-                            data: {
-                                productId : productId
-                            },
-                            success: (response) => {
-                                if(response.success === true){
-                                    Swal.fire('Removed!','The offer has been removed', 'success');
-                                    location.reload()
-                                }else if(response.success === false) {
-                                    Swal.fire('failed');
-                                }else{
-                                    alert('failed')
-                                }
-                            }
-                        })
-                    }
-                }))
-
-            } catch (error) {
-                console.error(error)
-            }
-        }
-
-    </script> -->
-
 
     <script>
 

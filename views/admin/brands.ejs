@@ -28,7 +28,6 @@
 
         td {
             word-wrap: break-word;
-            /* Prevents long text from overflowing */
         }
 
         /* Action buttons styles */
@@ -210,10 +209,6 @@
                                         onclick="unblockBrand('<%= brand._id %>')">Unblock</button>
                                     <% } %>
 
-                                        <!-- <a href="/admin/deleteBrand?brandId=<%= brand._id %>">
-                                            <button class="action-btn edit-btn"
-                                                onclick="return confirmDelete()">Delete</button>
-                                        </a> -->
                                         <a href="#" onclick="confirmDelete('<%= brand._id %>')">
                                             <button class="action-btn edit-btn">Delete</button>
                                         </a>

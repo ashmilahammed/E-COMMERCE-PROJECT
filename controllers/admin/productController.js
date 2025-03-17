@@ -226,13 +226,9 @@ const getEditProduct = async (req, res) => {
     try {
         const productId = req.query.productId;
 
-        // console.log( productId);
-
         const product = await Product.findById(productId)
             .populate('category')
             .lean();
-
-        // console.log(product);
 
         if (!product) {
             console.log('Product not found');
@@ -448,6 +444,20 @@ const removeProductOffer = async (req, res) => {
 
 
 
+///
+const checkProductName = async (req, res) => {
+    try {
+        const productExists = await Product.findOne({ productName: { $regex: new RegExp("^" + req.body.productName + "$", "i") } });
+        return res.json({ exists: !!productExists });
+
+    } catch (error) {
+        console.error("Error checking product name:", error);
+        return res.status(500).json({ error: 'Server error' });
+    }
+};
+
+
+
 
 module.exports = {
     getProductAddPage,
@@ -459,5 +469,7 @@ module.exports = {
     editProduct,
     deleteSingleImage,
     addProductOffer,
-    removeProductOffer  
+    removeProductOffer,
+    
+    checkProductName
 }

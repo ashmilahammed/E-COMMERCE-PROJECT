@@ -195,7 +195,6 @@ const verifyOtp = async (req, res) => {
 
         console.log(otp);
 
-
         if (req.session.userOtp && otp.toString() === req.session.userOtp.toString()) {
 
             const user = req.session.userData
@@ -206,13 +205,17 @@ const verifyOtp = async (req, res) => {
                 email: user.email,
                 phone: user.phone,
                 password: passwordHash
-            })
+            }) 
 
             await saveUserData.save();
-            req.session.user = saveUserData._id;
+
+            // req.session.user = saveUserData._id;  
+            delete req.session.userOtp;
+            delete req.session.userData;
+            
             res.json({
                 success: true,
-                redirectUrl: "/",
+                redirectUrl: "/login",
                 message: "OTP verified succesfully"
             })
 
@@ -256,19 +259,23 @@ const resendOtp = async (req, res) => {
 }
 
 
+
 const loadLogin = async (req, res) => {
     try {
-
         if (!req.session.user) {
-            return res.render("login")
-        } else {
-            res.redirect("/")
-        }
+            const message = req.session.blockMessage || null;
+            req.session.blockMessage = null; 
+            return res.render("login", { message });
 
+        } else {
+            res.redirect("/");
+        }
     } catch (error) {
-        res.redirect("/pageNotFound")
+        console.error("Error in loadLogin:", error);
+        res.redirect("/pageNotFound");
     }
-}
+};
+
 
 
 const login = async (req, res) => {
@@ -426,7 +433,6 @@ const loadShoppingpage = async (req, res) => {
 
         const totalProducts = await Product.countDocuments(filters);
         const totalPages = Math.ceil(totalProducts / limit);
-        // const brands = await Product.distinct("brand", { isBlocked: false });
         const brands = await Brand.find({ isBlocked: false }).select("brandName");
         const categoriesWithIds = categories.map(category => ({ _id: category._id, name: category.name }));
 

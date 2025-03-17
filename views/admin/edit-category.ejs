@@ -59,7 +59,7 @@
                 const descriptionInput = document.querySelector("textarea[name='description']");
 
                 if (!nameInput.value.trim() || !descriptionInput.value.trim()) {
-                    event.preventDefault(); // Prevent form submission
+                    event.preventDefault();
                     Swal.fire({
                         icon: "error",
                         title: "Validation Error",

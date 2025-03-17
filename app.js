@@ -69,9 +69,17 @@ app.use((err, req, res, next) => {
 
 
 
+
 app.use((req, res, next) => {
-    if (req.session.user) {
-        return res.status(404).render("page-404");
+    if (req.originalUrl.startsWith("/admin")) {
+
+        if (req.session.admin) {
+            return res.status(404).render("error-admin");
+        }
+    } else {
+        if (req.session.user) {
+            return res.status(404).render("page-404");
+        }
     }
     next();
 });

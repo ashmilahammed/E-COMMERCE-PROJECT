@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zxx">
 
@@ -11,11 +10,14 @@
     <title>BIG STEPPER</title>
 
     <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Montserrat:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Montserrat:wght@300&display=swap"
+        rel="stylesheet">
 
-     <!-- Font Awesome -->
-     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
     <!-- Css Styles -->
     <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
@@ -28,13 +30,12 @@
     <link rel="stylesheet" href="css/style.css" type="text/css">
 
 
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">     
-    
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 
-      
+
+
     <style>
-        
         #profile-name {
             display: inline-flex;
             align-items: center;
@@ -44,7 +45,7 @@
             text-decoration: none;
             padding: 5px 10px;
             margin-right: 10px;
-            max-width: 160px;
+            max-width: 200px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -98,7 +99,7 @@
             right: 0;
             top: 100%;
         }
-        
+
         .dropdown-content a {
             color: black;
             padding: 12px 16px;
@@ -125,7 +126,7 @@
             color: #ff4646 !important;
             text-decoration: none;
         }
-        
+
         .header__logo {
             position: relative;
             padding: 15px 0;
@@ -191,113 +192,189 @@
         .header__logo a:hover .logo-text span {
             color: #333;
         }
+
+
+        /* Ensure header layout is responsive */
+        .header__menu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .header__menu ul li {
+            margin: 0 15px;
+        }
+
+        .header__menu ul li a {
+            text-decoration: none;
+            font-weight: 600;
+            color: #1a1a1a;
+            padding: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .header__menu ul li a:hover {
+            color: #ff3a3a;
+        }
+
+        /* Mobile menu toggle */
+        .canvas__open {
+            display: none;
+            font-size: 22px;
+            cursor: pointer;
+            position: absolute;
+            right: 15px;
+            top: 20px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 991px) {
+            .header__menu {
+                display: none;
+                width: 100%;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                background-color: #fff;
+                z-index: 999;
+                text-align: center;
+            }
+
+            .header__menu.active {
+                display: block;
+            }
+
+            .header__menu ul {
+                flex-direction: column;
+            }
+
+            .header__menu ul li {
+                margin: 10px 0;
+            }
+
+            .canvas__open {
+                display: block;
+            }
+
+            .header__nav__option {
+                justify-content: flex-end;
+                padding: 10px 0;
+            }
+
+            .header__top__links {
+                margin-right: 0;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .header__logo {
+                text-align: left;
+            }
+
+            .header__nav__option {
+                text-align: right;
+            }
+        }
     </style>
 
 
 
 </head>
-    <!-- Page Preloder -->
-    <div id="preloder">
-        <div class="loader"></div>
-    </div>
+<!-- Page Preloder -->
+<div id="preloder">
+    <div class="loader"></div>
+</div>
 
-    <!-- Offcanvas Menu Begin -->
-    <!-- <div class="offcanvas-menu-overlay"></div>
-    <div class="offcanvas-menu-wrapper">
-        <div class="offcanvas__option">
-            <div class="offcanvas__links">
-                <a href="#">Sign in</a>
-                <a href="#">FAQs</a>
-            </div>
-            <div class="offcanvas__top__hover">
-                <span>Usd <i class="arrow_carrot-down"></i></span>
-                <ul>
-                    <li>USD</li>
-                    <li>EUR</li>
-                    <li>USD</li>
-                </ul>
-            </div>
-        </div>
-        <div class="offcanvas__nav__option">
-            <a href="#" class="search-switch"><img src="img/icon/search.png" alt=""></a>
-            <a href="#"><img src="img/icon/heart.png" alt=""></a>
-            <a href="#"><img src="img/icon/cart.png" alt=""> <span>0</span></a>
-            <div class="price">$0.00</div>
-        </div>
-        <div id="mobile-menu-wrap"></div>
-        <div class="offcanvas__text">
-            <p>Free shipping, 30-day return or refund guarantee.</p>
-        </div>
-    </div> -->
-    <!-- Offcanvas Menu End -->
 
-    <!-- Header Section Begin -->
-    <header class="header">
-        <div class="header__top">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-6 col-md-7">
-                        <div class="header__top__left">
-                            <p>Free shipping, 30-day return or refund guarantee.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!-- Header Section Begin -->
+<header class="header">
+    <div class="header__top">
         <div class="container">
             <div class="row">
-                <div class="col-lg-3 col-md-3">
-                    <div class="header__logo">
-                        <a href="/">
-                            <div class="logo-text">
-                                Big Stepper
-                                <span>PREMIUM</span>
-                            </div>
-                        </a>
+                <div class="col-lg-6 col-md-7">
+                    <div class="header__top__left">
+                        <p>Free shipping, 30-day return or refund guarantee.</p>
                     </div>
                 </div>
-                <div class="col-lg-6 col-md-6">
-                    <nav class="header__menu mobile-menu">
-                        <ul>
-                            <li class="active"><a href="/">Home</a></li>
-                            <li><a href="/shop">Shop</a></li>
-
-                            <!-- <li><a href="./blog.html">Blog</a></li> -->
-                            <li><a href="/contacts">Contacts</a></li>
-
-                        </ul>
-                    </nav>
-                </div>
-
-                <div class="header__nav__option">
-                    <div class="header__top__links">
-                        <% if (locals.user) { %>
-                            <div class="dropdown">
-                                <a href="#" id="profile-name" class="sign-in-link">
-                                    <i class="icon material-icons md-person">person</i>
-                                    <%= locals.user.fullName %>
-                                </a>
-                                <div class="dropdown-content">
-                                    <a href="/userProfile">Profile</a>
-                                    <a href="/logout">Logout</a>
-                                </div>
-                            </div>
-                            <% } else { %>
-                                <a class="sign-in" href="/signup">Sign up</a>
-                                <a class="sign-in" href="/login">Log in</a>
-                                <% } %>
-                    </div>
-                    <!-- <a href="#" class="search-switch"><img src="img/icon/search.png" alt="Search"></a> -->
-                    <a href="/wishlist"><img src="img/icon/heart.png" alt="Wishlist"></a>
-                    <a href="/cart"><img src="img/icon/cart.png" alt="Cart"> <span></span></a>
-                    <!-- <div class="price">$0.00</div> -->
-                </div>
-
             </div>
-            <div class="canvas__open"><i class="fa fa-bars"></i></div>
         </div>
-    </header>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-3">
+                <div class="header__logo">
+                    <a href="/">
+                        <div class="logo-text">
+                            Big Stepper
+                            <span>PREMIUM</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6">
+                <nav class="header__menu mobile-menu">
+                    <ul>
+                        <li class="active"><a href="/">Home</a></li>
+                        <li><a href="/shop">Shop</a></li>
 
-    
+                        <!-- <li><a href="./blog.html">Blog</a></li> -->
+                        <li><a href="/contacts">Contacts</a></li>
 
-    <!-- Header Section End -->
+                    </ul>
+                </nav>
+            </div>
+
+            <div class="header__nav__option">
+                <div class="header__top__links">
+                    <% if (locals.user) { %>
+                        <div class="dropdown">
+                            <a href="#" id="profile-name" class="sign-in-link">
+                                <i class="icon material-icons md-person">person</i>
+                                <%= locals.user.fullName %>
+                            </a>
+                            <div class="dropdown-content">
+                                <a href="/userProfile">Profile</a>
+                                <a href="/logout">Logout</a>
+                            </div>
+                        </div>
+                        <% } else { %>
+                            <a class="sign-in" href="/signup">Sign up</a>
+                            <a class="sign-in" href="/login">Log in</a>
+                            <% } %>
+                </div>
+                <!-- <a href="#" class="search-switch"><img src="img/icon/search.png" alt="Search"></a> -->
+                <a href="/wishlist"><img src="img/icon/heart.png" alt="Wishlist"></a>
+                <a href="/cart"><img src="img/icon/cart.png" alt="Cart"> <span></span></a>
+                <!-- <div class="price">$0.00</div> -->
+            </div>
+
+        </div>
+        <div class="canvas__open"><i class="fa fa-bars"></i></div>
+    </div>
+</header>
+
+
+<!-- Header Section End -->
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/jquery.slicknav.js"></script>
+<script>
+    $(document).ready(function () {
+        // Initialize Slicknav for mobile menu (if using slicknav.min.css)
+        $('.header__menu').slicknav({
+            prependTo: '.header',
+            label: ''
+        });
+
+        // Manual toggle for canvas__open (if not using Slicknav)
+        $('.canvas__open').on('click', function () {
+            $('.header__menu').toggleClass('active');
+        });
+    });
+</script>

@@ -232,6 +232,125 @@
         .toast-message::after:hover {
             opacity: 1;
         }
+
+
+
+
+
+        @media (max-width: 767px) {
+
+            /* Make the table scrollable horizontally on medium screens */
+            .shopping__cart__table {
+                overflow-x: auto;
+            }
+
+            .shopping__cart__table table {
+                min-width: 650px;
+            }
+        }
+
+
+        @media (max-width: 575px) {
+
+            /* Transform table to card layout on mobile */
+            .shopping__cart__table table thead {
+                display: none;
+            }
+
+            .shopping__cart__table table tbody tr {
+                display: block;
+                position: relative;
+                padding: 15px;
+                margin-bottom: 15px;
+                border: 1px solid #e1e1e1;
+                border-radius: 5px;
+                background-color: #fff;
+            }
+
+            .shopping__cart__table table tbody td {
+                display: block;
+                width: 100%;
+                text-align: left;
+                padding: 5px 0;
+                border: none;
+            }
+
+            .product__cart__item {
+                display: flex;
+                align-items: center;
+                width: 100%;
+                padding: 0 !important;
+            }
+
+            .product__cart__item__pic {
+                width: 70px;
+                height: 70px;
+            }
+
+            /* Add labels for better context */
+            .cart__size {
+                display: flex !important;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0 !important;
+                border-top: 1px solid #f0f0f0;
+                margin-top: 8px;
+            }
+
+            .cart__size:before {
+                content: "Size:";
+                font-weight: bold;
+            }
+
+            .quantity__item {
+                display: flex !important;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0 !important;
+                border-top: 1px solid #f0f0f0;
+            }
+
+            .quantity__item:before {
+                content: "Quantity:";
+                font-weight: bold;
+            }
+
+            .cart__price {
+                display: flex !important;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0 !important;
+                border-top: 1px solid #f0f0f0;
+                font-weight: bold;
+            }
+
+            .cart__price:before {
+                content: "Total:";
+                font-weight: bold;
+            }
+
+            /* Reposition remove button */
+            .cart__close {
+                position: absolute;
+                top: 10px;
+                right: 250px;
+                width: auto !important;
+                padding: 0 !important;
+            }
+
+            .continue__btn {
+                text-align: center;
+                margin-bottom: 15px;
+            }
+
+            .col-lg-4 {
+                width: 100%;
+            }
+
+            .cart__total {
+                margin-top: 20px;
+            }
+        }
     </style>
 
 
@@ -350,26 +469,10 @@
                                 <a href="/shop">Continue Shopping</a>
                             </div>
                         </div>
-                        <!-- <div class="col-lg-6 col-md-6 col-sm-6">
-                            <div class="continue__btn update__btn">
-                                <a href="#"><i class=""></i> Update cart</a>
-                            </div>
-                        </div> -->
+
                     </div>
                 </div>
                 <div class="col-lg-4">
-                    <!-- <div class="cart__total">
-                        <h6>Cart total</h6>
-                        
-                        <ul>
-
-                            <li>Total <span>₹ <%= cart ? cart.cartTotal : 0 %></span></li>
-
-                        </ul>
-                        <% if (cart && cart.items && cart.items.length > 0) { %>
-                            <a href="/checkout" class="primary-btn">Proceed to checkout</a>
-                        <% } %>
-                    </div> -->
 
                     <div class="cart__total">
                         <h6>Cart total</h6>
@@ -381,7 +484,8 @@
                         </ul>
                         <% if (cart && cart.items && cart.items.length> 0) { %>
                             <!-- <a href="/checkout" class="primary-btn">Proceed to checkout</a> -->
-                            <button id="checkout-button" class="primary-btn" style="width: 100%;">Proceed to Checkout</button>
+                            <button id="checkout-button" class="primary-btn" style="width: 100%;">Proceed to
+                                Checkout</button>
                             <% } %>
                     </div>
 
@@ -411,7 +515,7 @@
 
                 const data = await response.json();
                 if (data.success) {
-                    location.reload(); // Refresh to show updated cart
+                    location.reload();
                 } else {
                     alert(data.message || 'Error updating quantity');
                 }
@@ -420,6 +524,8 @@
                 alert('Error updating quantity');
             }
         }
+
+
 
         async function removeItem(productId, size) {
             try {
@@ -436,7 +542,7 @@
         `;
                 toastContainer.appendChild(confirmToast);
 
-                // Add event listeners to buttons
+
                 const confirmButton = confirmToast.querySelector('#confirmRemove');
                 const cancelButton = confirmToast.querySelector('#cancelRemove');
 
@@ -446,10 +552,10 @@
                     cancelButton.addEventListener('click', () => resolve(false));
                 });
 
-                // Remove the confirmation toast
+
                 toastContainer.removeChild(confirmToast);
 
-                // If not confirmed, exit
+
                 if (!confirmed) {
                     return;
                 }
@@ -476,6 +582,8 @@
                 showToast('Error removing item', 'error');
             }
         }
+
+
 
         async function changeQuantity(productId, size, change) {
             const quantityInput = document.querySelector(`input[data-product-id="${productId}"][data-size="${size}"]`);
@@ -530,6 +638,8 @@
         }
 
 
+
+
         function showToast(message, type = 'success') {
             const toastContainer = document.getElementById('toast-container') || createToastContainer();
             const toast = document.createElement('div');
@@ -557,7 +667,7 @@
 
         async function proceedToCheckout() {
             try {
-                const response = await fetch('/checkout-check', { 
+                const response = await fetch('/checkout-check', {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' }
                 });
@@ -565,7 +675,7 @@
                 const result = await response.json();
 
                 if (!result.success) {
-                    showToast(result.message, 'error'); 
+                    showToast(result.message, 'error');
                     return;
                 }
 
@@ -590,7 +700,7 @@
 
                     if (!result.success) {
                         checkoutButton.disabled = true;
-                        checkoutButton.style.backgroundColor = "#ccc";  
+                        checkoutButton.style.backgroundColor = "#ccc";
                     }
                 } catch (error) {
                     console.error("Error checking cart status:", error);

@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="/css/style.css" type="text/css">
 
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"> -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
@@ -48,14 +48,14 @@
         .header__nav__option a[href="/wishlist"]::before {
             content: "\f004";
             /* Heart icon */
-            color: #e74c3c;
+            color: #4c4c4c;
         }
 
         /* Cart icon */
         .header__nav__option a[href="/cart"]::before {
             content: "\f07a";
             /* Shopping cart icon */
-            color: #3498db;
+            color: #4e4e4e;
         }
 
         /* Hover effect */
@@ -229,19 +229,22 @@
 
 
     <div class="order-details-wrapper">
+
         <style>
             .order-details-wrapper {
-                min-height: calc(100vh - 200px);
-                padding: 40px 0;
-                background-color: #e0e0e0;
+                min-height: calc(100vh - 150px);
+                padding: 20px 0;
+                background-color: #eaeaea;
+                /* font-family: 'Poppins', sans-serif; */
             }
 
             .order-card {
-                background: #fff;
+                background: #ffffff;
                 border-radius: 8px;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
                 padding: 20px;
                 margin-bottom: 20px;
+                border: 1px solid #eee;
             }
 
             .order-card-header {
@@ -250,27 +253,43 @@
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
+                padding-bottom: 10px;
+                border-bottom: 1px solid #d2d2d2;
+                color: #000000;
             }
 
             .order-item {
                 display: flex;
-                justify-content: space-between;
                 align-items: center;
                 margin-bottom: 15px;
-                border-bottom: 1px solid #eee;
-                padding-bottom: 15px;
+                padding-bottom: 30px;
+                border-bottom: 1px solid #d2d2d2;
             }
 
             .order-item img {
-                width: 80px;
-                height: 80px;
+                width: 90px;
+                height: 90px;
                 object-fit: cover;
-                border-radius: 5px;
+                border-radius: 6px;
                 margin-right: 15px;
             }
 
             .order-item-details {
                 flex-grow: 1;
+                font-size: 0.9rem;
+            }
+
+            .order-item-details h5 {
+                font-size: 1.1rem;
+                font-weight: 600;
+                margin-bottom: 5px;
+                color: #950000;
+            }
+
+            .order-item-details p {
+                margin: 0;
+                color: #000000;
+                line-height: 1.6;
             }
 
             .order-item-status {
@@ -278,50 +297,75 @@
                 align-items: center;
             }
 
+
             .status-badge {
-                font-size: 0.85rem;
-                padding: 5px 10px;
-                border-radius: 15px;
-                margin-right: 15px;
+                font-size: 0.75rem;
+                padding: 4px 8px;
+                border-radius: 12px;
+                font-weight: 500;
+                text-transform: uppercase;
             }
 
             .total-price {
                 font-size: 1.1rem;
                 font-weight: bold;
+                margin-top: 10px;
+                color: #2c3e50;
+                text-align: right;
+                padding-left: 20px;
+            }
+
+            .total-price p {
+                margin: 5px 0;
+                /* Reduced spacing between subtotal and total */
+            }
+
+            .total-price strong {
+                font-weight: 800;
+                color: #000000;
+            }
+
+            .order-tracking,
+            .shipping-details,
+            .payment-details {
                 margin-top: 15px;
-            }
-
-            .order-tracking {
-                margin-top: 20px;
-                padding: 15px;
-                background-color: #f9f9f9;
+                padding: 12px;
+                background-color: #fafafa;
                 border-radius: 8px;
+                font-size: 0.9rem;
             }
 
+            /* Button Styles */
             .cancel-btn {
-                background-color: red;
+                background-color: #f11d06;
                 color: white;
-                border-radius: 3px;
-                padding: 3px 10px;
+                border-radius: 4px;
+                padding: 4px 10px;
+                border: none;
+                transition: background-color 0.2s;
+                font-weight: 400;
+            }
+
+            .cancel-btn:hover {
+                background-color: #c52715;
             }
 
             .retry-btn {
-                border-radius: 3px;
+                background-color: #1294ea;
+                color: white;
+                border-radius: 4px;
                 padding: 3px 10px;
+                border: none;
+                font-weight: 500;
             }
 
-            .request-return-btn {
-                border-radius: 3px;
-                padding: 3px 10px;
-                font-size: 14px;
-            }
-
+            .request-return-btn,
             .btn-info {
-                border-radius: 3px;
+                border-radius: 4px;
                 padding: 3px 10px;
                 font-size: 14px;
+                font-weight: 500;
             }
-
 
 
             /* Modal styles for cancellation */
@@ -339,12 +383,48 @@
                 min-height: 100px;
             }
 
+
+
+            /* Status Badges */
             .badge-delivered {
                 background-color: #00bd2c;
                 color: white;
+                padding: 5px 10px;
+            }
+
+            .badge-cancelled {
+                background-color: #fb2d16;
+                color: white;
+                padding: 5px 10px;
+            }
+
+            .badge-pending {
+                background-color: #f39c12;
+                color: white;
+                padding: 5px 10px;
+            }
+
+            .badge-shipped {
+                background-color: #1abc9c;
+                color: white;
+                padding: 5px 10px;
+            }
+
+            /* Typography */
+            h2.text-center {
+                font-size: 1.9rem;
+                font-weight: 700;
+                margin-bottom: 20px;
+                color: #29241f;
+            }
+
+            h5 {
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: #450000;
+                margin-bottom: 8px;
             }
         </style>
-
 
 
         <div class="container py-5">
@@ -362,8 +442,9 @@
                             Order ID: <%= order.orderId %>
                                 <span class="badge 
                         <%= order.orderStatus === 'Delivered' ? 'badge-delivered' : 
-                            order.orderStatus === 'Cancelled' ? 'bg-danger' : 
-                            order.orderStatus === 'Pending' ? 'bg-warning' : 
+                            order.orderStatus === 'Cancelled' ? 'badge-cancelled' : 
+                            order.orderStatus === 'Pending' ? 'badge-pending' : 
+                            order.orderStatus === 'Shipped' ? 'badge-shipped' : 
                             'bg-info' %>">
                                     <%= order.orderStatus %>
                                 </span>
@@ -433,76 +514,86 @@
 
 
 
-                                    <!-- Dynamic Button -->
-                                    <% if (order.orderStatus==='Cancelled' ) { %>
-                                        <button type="button" class="btn btn-secondary"
-                                            style="padding: 3px 10px; background-color:rgb(79, 79, 79);" disabled>Order
-                                            Cancelled</button>
+                                    <div class="d-flex justify-content-between align-items-center mt-3">
 
-                                        <% } else if (order.orderStatus==='Delivered' ) { %>
-                                            <!-- <p class="text-success fw-bold">Your Products have Delivered!</p> -->
-                                            <button type="button" class="btn"
-                                                style="font-size: 15px; background-color:rgb(170, 105, 0) ;color: white; padding: 3px 8px;"
-                                                onclick="downloadInvoice('<%= order._id %>')">
-                                                Download Invoice
-                                            </button>
+                                        <!-- Buttons on the Right -->
+                                        <div>
+                                            <% if (order.orderStatus==='Cancelled' ) { %>
+                                                <button type="button" class="btn btn-secondary"
+                                                    style="padding: 3px 10px; background-color:rgb(79, 79, 79);"
+                                                    disabled>
+                                                    Order Cancelled
+                                                </button>
 
-                                            <% } else if (order.payment.method==='RAZORPAY' &&
-                                                order.payment.status==='Pending' ) { %>
-                                                <button type="button" class="btn btn-primary retry-btn"
-                                                    onclick="retryPayment('<%= order.orderId %>')">Retry
-                                                    Payment</button>
+                                                <% } else if (order.orderStatus==='Delivered' ) { %>
+                                                    <button type="button" class="btn"
+                                                        style="font-size: 15px; background-color:rgb(170, 105, 0); color: white; padding: 3px 8px;"
+                                                        onclick="downloadInvoice('<%= order._id %>')">
+                                                        Download Invoice
+                                                    </button>
 
-                                                <% } else { %>
-                                                    <button type="button" class="cancel-btn btn btn-danger"
-                                                        data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
-                                                        Cancel Order</button>
-                                                    <% } %>
+                                                    <% } else if (order.payment.method==='RAZORPAY' &&
+                                                        order.payment.status==='Pending' ) { %>
+                                                        <p class="text-danger fw-bold mb-2">
+                                                            Your payment has failed. Please retry.
+                                                        </p>
+                                                        <button type="button" class="btn btn-primary retry-btn"
+                                                            onclick="retryPayment('<%= order.orderId %>')">
+                                                            Retry Payment
+                                                        </button>
+
+                                                        <% } else { %>
+                                                            <button type="button" class="cancel-btn btn btn-danger"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#cancelOrderModal">
+                                                                Cancel Order
+                                                            </button>
+                                                            <% } %>
+                                        </div>
+
+                                        <!-- Price Details on the Left -->
+                                        <div class="total-price text-start">
+                                            <p><strong>Subtotal:</strong> ₹<%= order.pricing.subtotal.toFixed(2) %>
+                                            </p>
+                                            <p><strong>Total:</strong> ₹<%= order.pricing.finalAmount.toFixed(2) %>
+                                            </p>
+                                        </div>
+                                    </div>
 
 
 
-                                                        <div class="total-price text-end">
-                                                            <p><strong>Subtotal: </strong>₹<%=
-                                                                    order.pricing.subtotal.toFixed(2) %>
-                                                            </p>
-                                                            <p><strong>Total: </strong>₹<%=
-                                                                    order.pricing.finalAmount.toFixed(2) %>
-                                                            </p>
-                                                        </div>
 
-                                                        <div class="shipping-details">
-                                                            <h5 style="font-weight: bold;">Shipping Address </h5>
-                                                            <p>
-                                                                <%= order.shippingAddress.name %><br>
-                                                                    <%= order.shippingAddress.landMark %>,
-                                                                        <%= order.shippingAddress.city %>,
-                                                                            <%= order.shippingAddress.state %> -
-                                                                                <%= order.shippingAddress.pincode %><br>
-                                                                                    Phone: <%=
-                                                                                        order.shippingAddress.phone %>
-                                                            </p>
-                                                        </div>
+                                    <div class="shipping-details">
+                                        <h5 style="font-weight: bold;">Shipping Address </h5>
+                                        <p>
+                                            <%= order.shippingAddress.name %><br>
+                                                <%= order.shippingAddress.landMark %>,
+                                                    <%= order.shippingAddress.city %>,
+                                                        <%= order.shippingAddress.state %> -
+                                                            <%= order.shippingAddress.pincode %><br>
+                                                                Phone: <%= order.shippingAddress.phone %>
+                                        </p>
+                                    </div>
 
-                                                        <div class="payment-details">
-                                                            <h5 style="font-weight: bold;">Payment Details </h5>
-                                                            <p>
-                                                                <strong>Method:</strong>
-                                                                <%= order.payment.method %><br>
-                                                                    <strong>Status:</strong>
-                                                                    <%= order.payment.status %>
-                                                            </p>
-                                                        </div>
+                                    <div class="payment-details">
+                                        <h5 style="font-weight: bold;">Payment Details </h5>
+                                        <p>
+                                            <strong>Method:</strong>
+                                            <%= order.payment.method %><br>
+                                                <strong>Status:</strong>
+                                                <%= order.payment.status %>
+                                        </p>
+                                    </div>
 
-                                                        <div class="order-tracking">
-                                                            <h5>Order Tracking</h5>
-                                                            <p>
-                                                                <strong>Order Date:</strong>
-                                                                <%= order.createdAt.toLocaleDateString() %><br>
-                                                                    <strong>Expected Delivery:</strong>
-                                                                    <%= order.expectedDeliveryDate.toLocaleDateString()
-                                                                        %>
-                                                            </p>
-                                                        </div>
+                                    <div class="order-tracking">
+                                        <h5>Order Tracking</h5>
+                                        <p>
+                                            <strong>Order Date:</strong>
+                                            <%= order.createdAt.toLocaleDateString() %><br>
+                                                <strong>Expected Delivery:</strong>
+                                                <%= order.expectedDeliveryDate.toLocaleDateString() %>
+                                        </p>
+                                    </div>
                         </div>
                     </div>
                 </div>
@@ -554,9 +645,9 @@
                                 <input type="hidden" id="returnProductId">
                                 <input type="hidden" id="returnVariantSize">
 
-                                <p><strong>Product:</strong> <span id="returnProductName">
+                                <!-- <p><strong>Product:</strong> <span id="returnProductName">
                                         << /span>
-                                </p>
+                                </p> -->
 
                                 <div class="mb-3">
                                     <label for="returnReasonTextarea" class="form-label">Reason for Return</label>
@@ -589,7 +680,7 @@
             const paymentMethod = '<%= order.payment.method %>';
             const cancelButton = document.querySelector('.cancel-btn');
 
-           
+
             // Handle cancellation form submission
             if (cancelButton) {
                 const cancelOrderForm = document.getElementById('cancelOrderForm');
@@ -619,14 +710,13 @@
                         })
                     })
                         .then(response => {
-                            // First check if the response is ok before trying to parse JSON
                             if (!response.ok) {
                                 throw new Error('Network response was not ok');
                             }
                             return response.json();
                         })
                         .then(data => {
-                            // Try to safely handle the modal closing
+
                             try {
                                 const cancelModal = bootstrap.Modal.getInstance(document.getElementById('cancelOrderModal'));
                                 if (cancelModal) {

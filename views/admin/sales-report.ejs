@@ -438,13 +438,6 @@
         });
 
 
-        // function downloadReport(type) {
-        //     if (type === "pdf") {
-        //         window.location.href = "/admin/download-pdf";
-        //     } else if (type === "excel") {
-        //         window.location.href = "/admin/download-excel"
-        //     }
-        // }
         function downloadReport(type) {
             const reportType = document.getElementById("report-type").value;
             const startDate = document.getElementById("start-date").value;
@@ -491,10 +484,6 @@
 
             window.location.href = url;
 
-            // showToast("Generating report...", "success");
-            // setTimeout(() => {
-            //     window.location.href = url;
-            // }, 1000); 
         }
 
 

@@ -148,7 +148,7 @@
             </div>
 
 
-            <!-- Pending Returns Section -->
+            <!--Returns Section -->
             <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="mb-0">Returns History</h5>
@@ -304,7 +304,7 @@
             }
         }
 
-        //  return request decision 
+        //  return request 
         function sendReturnRequest(orderId, productId, variantSize, action, comments) {
             fetch("/admin/process-return", {
                 method: "POST",
