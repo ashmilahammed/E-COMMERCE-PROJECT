@@ -645,9 +645,6 @@
                                 <input type="hidden" id="returnProductId">
                                 <input type="hidden" id="returnVariantSize">
 
-                                <!-- <p><strong>Product:</strong> <span id="returnProductName">
-                                        << /span>
-                                </p> -->
 
                                 <div class="mb-3">
                                     <label for="returnReasonTextarea" class="form-label">Reason for Return</label>
@@ -768,7 +765,6 @@
                 button.addEventListener("click", function () {
                     document.getElementById("returnOrderId").value = this.getAttribute("data-order-id");
                     document.getElementById("returnProductId").value = this.getAttribute("data-product-id");
-                    document.getElementById("returnProductName").textContent = this.getAttribute("data-product-name");
                     document.getElementById("returnVariantSize").value = this.getAttribute("data-variant-size");
                 });
             });
@@ -779,7 +775,7 @@
 
                 const orderId = document.getElementById("returnOrderId").value;
                 const productId = document.getElementById("returnProductId").value;
-                const variantSize = document.getElementById("returnVariantSize").value; // Include variant size
+                const variantSize = document.getElementById("returnVariantSize").value; 
                 const reason = document.getElementById("returnReasonTextarea").value.trim();
 
                 if (!reason) {
