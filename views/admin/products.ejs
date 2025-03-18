@@ -16,8 +16,10 @@
         td {
             padding: 10px;
             text-align: left;
+            vertical-align: middle;
             border-bottom: 1px solid #6d6d6d;
         }
+
 
         th {
             background-color: rgba(8, 129, 120, 0.2);
@@ -123,6 +125,7 @@
         <table>
             <thead>
                 <tr>
+                    <th class="column-header">Image</th>
                     <th class="column-header">Product Name</th>
                     <th class="column-header">Brand</th>
                     <th class="column-header">Category</th>
@@ -138,6 +141,16 @@
                 <% for(let i=0;i<products.length;i++) { %>
 
                     <tr>
+
+                        <td>
+                            <% if (products[i].productImage && products[i].productImage.length> 0) { %>
+                                <img src="/uploads/re-image/<%= products[i].productImage[0] %>" alt="Product Image"
+                                    style="width: 55px; height: 55px; object-fit: cover; border-radius: 5px;">
+                                <% } else { %>
+                                    <span>No Image</span>
+                                    <% } %>
+                        </td>
+
                         <td>
                             <%= products[i].productName %>
                         </td>
@@ -217,7 +230,7 @@
 
 
     <script>
-        
+
         async function blockProduct(productId) {
             Swal.fire({
                 title: "Are you sure?",

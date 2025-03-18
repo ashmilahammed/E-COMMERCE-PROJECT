@@ -141,7 +141,7 @@ const addCategoryOffer = async (req, res) => {
             return res.json({ success: false, message: "All fields are required." });
         }
 
-        if (percentage < 0 || percentage > 100) {
+        if (percentage < 1 || percentage > 99) {
             return res.json({ success: false, message: "Offer percentage must be between 0 and 100." });
         }
 

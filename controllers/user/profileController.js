@@ -76,32 +76,36 @@ const getForgotPassword = async (req ,res) => {
 }
 
 
-const forgotEmailValid = async (req,res) => {
+
+
+const forgotEmailValid = async (req, res) => {
     try {
+        const { email } = req.body;
+        const findUser = await User.findOne({ email: email });
 
-        const {email} = req.body;
-        const findUser = await User.findOne({email:email});
-        if(findUser){
-            const otp = generateOtp();
-            const emailSent = await sendVerificationEmail(email,otp);
-
-            if(emailSent){
-                req.session.userOtp = otp;
-                req.session.email = email;
-                res.render("forgotPass-otp");
-                console.log("OTP:",otp)
-
-            }else {
-                res.json({success : false,message : "Failed to send OTP. Please try again."})
-            }
-        }else {
-            res.render("forgot-password",{message: "User with this email does not exist"});
+        if (!findUser) {
+            return res.render("forgot-password", { message: "User with this email does not exist" });
         }
-        
+
+        const otp = generateOtp();
+        const emailSent = await sendVerificationEmail(email, otp);
+
+        console.log("OTP:",otp)
+
+        if (emailSent) {
+            req.session.userOtp = otp;
+            req.session.email = email;
+            return res.render("forgotPass-otp");
+    
+        } else {
+            return res.render("forgot-password", { message: "Failed to send OTP. Please try again." });
+        }
     } catch (error) {
-        res.redirect("/pageNotFound")
+        console.error("Error in forgotEmailValid:", error);
+        return res.redirect("/pageNotFound");
     }
-}
+};
+
 
 
 const verifyForgotPassOtp = async (req,res) =>{

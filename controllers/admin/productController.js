@@ -373,6 +373,10 @@ const addProductOffer = async (req, res) => {
             return res.json({ success: false, message: "All fields are required!" });
         }
 
+        if (percentage < 1 || percentage > 99) {
+            return res.json({ success: false, message: "Offer percentage must be between 1 and 99!" });
+        }
+
         const start = new Date(startDate);
         const expiry = new Date(expiryDate);
 
