@@ -124,18 +124,20 @@
                     <div class="col-12">
                         <div class="table-responsive">
                             <table class="table align-middle">
-                                <thead>
-                                    <tr>
-                                        <th>Product</th>
-                                        <th>Size</th>
-                                        <th>Price</th>
-                                        <th>Add to Cart</th>
-                                        <th>Remove</th>
-                                    </tr>
-                                </thead>
+
+                                
                                 <tbody>
-                                    <% if (wishlist.length> 0) { %>
-                                        <% wishlist.forEach(item=> { %>
+                                    <% if (wishlist.length > 0) { %>
+                                        <thead>
+                                            <tr>
+                                                <th>Product</th>
+                                                <th>Size</th>
+                                                <th>Price</th>
+                                                <th>Add to Cart</th>
+                                                <th>Remove</th>
+                                            </tr>
+                                        </thead>
+                                        <% wishlist.forEach(item => { %>
                                             <tr data-product-id="<%= item._id %>">
                                                 <td>
                                                     <div class="d-flex align-items-center">
@@ -154,25 +156,21 @@
                                                         </div>
                                                     </div>
                                                 </td>
-
+                                
                                                 <td>
                                                     <select class="form-select stylish-dropdown"
                                                         onchange="updateSize('<%= item._id %>', this.value)">
-                                                        <% if (item.availableSizes && item.availableSizes.length> 0) {
-                                                            %>
+                                                        <% if (item.availableSizes && item.availableSizes.length > 0) { %>
                                                             <option value="">Select a size</option>
-                                                            <% item.availableSizes.forEach(size=> { %>
-                                                                <option value="<%= size %>" <%=item.size===size
-                                                                    ? 'selected' : '' %>><%= size %>
-                                                                </option>
-                                                                <% }); %>
-                                                                    <% } else { %>
-                                                                        <option disabled>No sizes available</option>
-                                                                        <% } %>
+                                                            <% item.availableSizes.forEach(size => { %>
+                                                                <option value="<%= size %>" <%= item.size === size ? 'selected' : '' %>><%= size %></option>
+                                                            <% }); %>
+                                                        <% } else { %>
+                                                            <option disabled>No sizes available</option>
+                                                        <% } %>
                                                     </select>
                                                 </td>
-
-
+                                
                                                 <td>
                                                     <span class="fw-bold">₹<%= item.salePrice %></span>
                                                 </td>
@@ -185,7 +183,6 @@
                                                         onclick="addToCart('<%= item._id %>')">
                                                         Add to Cart
                                                     </button>
-
                                                 </td>
                                                 <td>
                                                     <button class="btn btn-outline-danger btn-sm"
@@ -194,23 +191,24 @@
                                                     </button>
                                                 </td>
                                             </tr>
-                                            <% }); %>
-                                                <% } else { %>
-                                                    <tr id="empty-wishlist">
-                                                        <td colspan="5" class="text-center py-5">
-                                                            <div class="d-flex flex-column align-items-center">
-                                                                <i class="fi-rs-heart"
-                                                                    style="font-size: 3rem; color: #ddd;"></i>
-                                                                <h5 class="mt-3 mb-2">Your wishlist is empty</h5>
-                                                                <p class="text-muted mb-4">Browse our store and explore!
-                                                                </p>
-                                                                <a href="/shop" class="btn btn-primary">Continue
-                                                                    Shopping</a>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                    <% } %>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <tr id="empty-wishlist">
+                                            <td colspan="5" class="text-center py-5">
+                                                <div class="d-flex flex-column align-items-center">
+                                                    <i class="fi-rs-heart" style="font-size: 3rem; color: #ddd;"></i>
+                                                    <h5 class="mt-3 mb-2">Your wishlist is empty</h5>
+                                                    <p class="text-muted mb-4">Browse our store and explore!</p>
+                                                    <a href="/shop" class="btn btn-primary">Continue Shopping</a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% } %>
                                 </tbody>
+                                
+
+
+
                             </table>
                         </div>
                     </div>
