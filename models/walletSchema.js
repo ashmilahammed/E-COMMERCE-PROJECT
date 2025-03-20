@@ -56,7 +56,7 @@ const walletSchema = new Schema({
 });
 
 
-// Middleware to update 'lastUpdated' field before saving
+//  update 'lastUpdated' field before saving
 walletSchema.pre('save', function (next) {
     this.lastUpdated = Date.now();
     next();
