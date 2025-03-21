@@ -551,13 +551,27 @@
                                                             <% } %>
                                         </div>
 
-                                        <!-- Price Details on the Left -->
+
+                                        <!-- Price Details -->
                                         <div class="total-price text-start">
                                             <p><strong>Subtotal:</strong> ₹<%= order.pricing.subtotal.toFixed(2) %>
                                             </p>
-                                            <p><strong>Total:</strong> ₹<%= order.pricing.finalAmount.toFixed(2) %>
-                                            </p>
+
+                                            <% if (order.pricing.coupon && order.pricing.coupon.discount> 0) { %>
+                                                <p><strong>Coupon Discount:</strong> -₹<%=
+                                                        order.pricing.coupon.discount.toFixed(2) %>
+                                                </p>
+                                                <% } %>
+                                                    <!-- <% if (order.pricing.productOffersTotal> 0) { %>
+                                                        <p><strong>Product Offers:</strong> -₹<%=
+                                                                order.pricing.productOffersTotal.toFixed(2) %>
+                                                        </p>
+                                                        <% } %> -->
+                                                            <p><strong>Total:</strong> ₹<%=
+                                                                    order.pricing.finalAmount.toFixed(2) %>
+                                                            </p>
                                         </div>
+
                                     </div>
 
 
@@ -775,7 +789,7 @@
 
                 const orderId = document.getElementById("returnOrderId").value;
                 const productId = document.getElementById("returnProductId").value;
-                const variantSize = document.getElementById("returnVariantSize").value; 
+                const variantSize = document.getElementById("returnVariantSize").value;
                 const reason = document.getElementById("returnReasonTextarea").value.trim();
 
                 if (!reason) {

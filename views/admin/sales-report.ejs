@@ -185,10 +185,11 @@
             list-style: none;
             display: flex;
             padding: 0;
+            gap: 5px;
         }
 
         .pagination .page-item {
-            margin: 0 5px;
+            margin: 0 2px;
         }
 
         .pagination .page-link {
@@ -212,10 +213,18 @@
             color: white;
         }
 
+        .pagination .disabled .page-link {
+            background-color: #f1f1f1;
+            color: #999;
+            cursor: not-allowed;
+            border: none;
+        }
+
         .pagination .page-item:first-child .page-link,
         .pagination .page-item:last-child .page-link {
             font-weight: bold;
         }
+
 
 
         .order-status {
@@ -252,7 +261,6 @@
             background: linear-gradient(to right, #ffeb3b, #fbc02d);
             color: #333;
         }
-
     </style>
 
 
@@ -362,45 +370,73 @@
 
 
                         <% }) %>
-                    <% } else { %>
+                            <% } else { %>
                                 <tr>
                                     <td colspan="7" style="text-align: center;">No data available. Generate a report to
                                         view details.</td>
                                 </tr>
-                             <% } %>
+                                <% } %>
             </tbody>
 
         </table>
 
 
         <!-- Pagination -->
-        <nav class="pagination-container">
-            <ul class="pagination">
-                <% if (currentPage> 1) { %>
-                    <li class="page-item">
-                        <a class="page-link" href="?page=<%= currentPage - 1 %>">
-                            <i class="bi bi-chevron-left"></i> Prev
-                        </a>
-                    </li>
-                    <% } %>
+        <% if (totalPages> 1) { %>
+            <nav class="pagination-container">
+                <ul class="pagination">
+                    <% if (currentPage> 1) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<%= currentPage - 1 %>">
+                                <i class="bi bi-chevron-left"></i> Prev
+                            </a>
+                        </li>
+                        <% } %>
 
-                        <% for(let i=1; i <=totalPages; i++) { %>
-                            <li class="page-item <%= currentPage === i ? 'active' : '' %>">
-                                <a class="page-link" href="?page=<%= i %>">
-                                    <%= i %>
-                                </a>
-                            </li>
-                            <% } %>
-
-                                <% if (currentPage < totalPages) { %>
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page=<%= currentPage + 1 %>">
-                                            Next <i class="bi bi-chevron-right"></i>
-                                        </a>
-                                    </li>
+                            <!-- Show first page always -->
+                            <% if (currentPage> 3) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1">1</a>
+                                </li>
+                                <% if (currentPage> 4) { %>
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
                                     <% } %>
-            </ul>
-        </nav>
+                                        <% } %>
+
+                                            <!-- Show pages around current page -->
+                                            <% for (let i=Math.max(1, currentPage - 2); i <=Math.min(totalPages,
+                                                currentPage + 2); i++) { %>
+                                                <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                                    <a class="page-link" href="?page=<%= i %>">
+                                                        <%= i %>
+                                                    </a>
+                                                </li>
+                                                <% } %>
+
+                                                    <!-- Show last page always -->
+                                                    <% if (currentPage < totalPages - 2) { %>
+                                                        <% if (currentPage < totalPages - 3) { %>
+                                                            <li class="page-item disabled"><span
+                                                                    class="page-link">...</span></li>
+                                                            <% } %>
+                                                                <li class="page-item">
+                                                                    <a class="page-link" href="?page=<%= totalPages %>">
+                                                                        <%= totalPages %>
+                                                                    </a>
+                                                                </li>
+                                                                <% } %>
+
+                                                                    <% if (currentPage < totalPages) { %>
+                                                                        <li class="page-item">
+                                                                            <a class="page-link"
+                                                                                href="?page=<%= currentPage + 1 %>">
+                                                                                Next <i class="bi bi-chevron-right"></i>
+                                                                            </a>
+                                                                        </li>
+                                                                        <% } %>
+                </ul>
+            </nav>
+            <% } %>
 
 
     </div>
@@ -420,7 +456,7 @@
             tableBody.innerHTML = "";
 
             orders.forEach(order => {
-                
+
                 const statusClass = order.orderStatus.toLowerCase();
                 let row = `
             <tr>

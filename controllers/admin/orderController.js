@@ -161,7 +161,7 @@ const updateOrderStatus = async (req, res) => {
           amount: refundAmount,
           orderId: orderId,
           status: 'Completed',
-          description: `Refund for admin cancellation of Order`,
+          description: `Refund for admin cancellation of <b>Order ID: ${orderId}</b>`,
           date: new Date()
         });
         wallet.lastUpdated = new Date();
@@ -176,7 +176,7 @@ const updateOrderStatus = async (req, res) => {
           amount: refundAmount,
           orderId: orderId,
           status: 'Completed',
-          description: `Refund for admin cancellation of Order`,
+          description: `Refund for admin cancellation of <b>Order ID: ${orderId}</b>`,
           date: new Date()
         });
         wallet.lastUpdated = new Date();

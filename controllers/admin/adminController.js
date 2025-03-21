@@ -84,6 +84,7 @@ const logout = async (req, res) => {
 
 
 
+
 const getSalesReport = async (req, res) => {
     try {
         const perPage = 10;
@@ -92,21 +93,28 @@ const getSalesReport = async (req, res) => {
         const startDate = req.query.startDate;
         const endDate = req.query.endDate;
 
-
-        // let filter = { orderStatus: "Delivered"}; 
-        let filter = { orderStatus: { $in: ["Delivered", "Cancelled"] } }
+        let filter = { orderStatus: { $in: ["Delivered", "Cancelled"] } };
 
         const today = new Date();
+        today.setHours(0, 0, 0, 0); // Normalize to start of the day
+
         if (reportType === "daily") {
             filter.createdAt = {
-                $gte: new Date(today.setHours(0, 0, 0, 0)),
-                $lt: new Date(today.setHours(23, 59, 59, 999)),
+                $gte: new Date(today),
+                $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000),
             };
         } else if (reportType === "weekly") {
-            const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
+            const dayOfWeek = today.getDay();
+            const startOfWeek = new Date(today);
+            startOfWeek.setDate(today.getDate() - dayOfWeek);
+            startOfWeek.setHours(0, 0, 0, 0);
+
+            const endOfWeek = new Date(today);
+            endOfWeek.setHours(23, 59, 59, 999);
+
             filter.createdAt = {
-                $gte: new Date(startOfWeek.setHours(0, 0, 0, 0)),
-                $lt: new Date(today.setHours(23, 59, 59, 999)),
+                $gte: startOfWeek,
+                $lt: endOfWeek,
             };
         } else if (reportType === "monthly") {
             filter.createdAt = {
@@ -125,20 +133,29 @@ const getSalesReport = async (req, res) => {
             };
         }
 
-
-        const allOrders = await Order.find(filter).select("pricing");
+        const allOrders = await Order.find(filter).select("pricing orderItems");
 
         let totalSales = 0;
         let totalDiscount = 0;
         let totalCouponDiscount = 0;
+        let totalRefunds = 0;
 
         allOrders.forEach(order => {
             totalSales += order.pricing.finalAmount;
             totalDiscount += order.pricing.productOffersTotal;
             totalCouponDiscount += order.pricing.coupon.discount;
+
+            // Deduct refund amounts for returned products
+            order.orderItems.forEach(item => {
+                if (item.returnRequest?.status === "Approved") {
+                    totalRefunds += Number(item.price.salePrice) * item.variant.quantity;
+                }
+            });
         });
 
-        //Pagination
+        totalSales -= totalRefunds;
+
+        // Pagination
         const totalOrders = allOrders.length;
         const totalPages = Math.ceil(totalOrders / perPage);
 
@@ -155,12 +172,13 @@ const getSalesReport = async (req, res) => {
             totalSales,
             totalDiscount,
             totalCouponDiscount,
+            totalRefunds,
             totalOrders,
             currentPage: page,
             totalPages,
             reportType,
             startDate,
-            endDate
+            endDate,
         });
 
     } catch (error) {
@@ -172,25 +190,38 @@ const getSalesReport = async (req, res) => {
 
 
 
+
 const downloadPdf = async (req, res) => {
     try {
         const reportType = req.query.reportType || "all";
         const startDate = req.query.startDate;
         const endDate = req.query.endDate;
 
-        let filter = {};
+
+        let filter = { orderStatus: { $in: ["Delivered", "Cancelled"] } };
+
+
         const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
 
         if (reportType === "daily") {
             filter.createdAt = {
-                $gte: new Date(today.setHours(0, 0, 0, 0)),
-                $lt: new Date(today.setHours(23, 59, 59, 999)),
+                $gte: new Date(today),
+                $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000),
             };
         } else if (reportType === "weekly") {
-            const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
+            const dayOfWeek = today.getDay();
+            const startOfWeek = new Date(today);
+            startOfWeek.setDate(today.getDate() - dayOfWeek);
+            startOfWeek.setHours(0, 0, 0, 0);
+
+            const endOfWeek = new Date(today);
+            endOfWeek.setHours(23, 59, 59, 999);
+
             filter.createdAt = {
-                $gte: new Date(startOfWeek.setHours(0, 0, 0, 0)),
-                $lt: new Date(today.setHours(23, 59, 59, 999)),
+                $gte: startOfWeek,
+                $lt: endOfWeek,
             };
         } else if (reportType === "monthly") {
             filter.createdAt = {
@@ -209,16 +240,37 @@ const downloadPdf = async (req, res) => {
             };
         }
 
-        // Fetch filtered orders
+
         const orders = await Order.find(filter)
             .populate("userId", "fullName email")
+            .populate("orderItems.product", "productName brand")
             .sort({ createdAt: -1 });
 
-        const totalSales = orders.length;
-        const totalOrderAmount = orders.reduce((sum, order) => sum + order.pricing.finalAmount, 0);
-        const totalCouponDiscount = orders.reduce((sum, order) => sum + order.pricing.coupon.discount, 0);
-        const totalOfferDiscount = orders.reduce((sum, order) => sum + order.pricing.productOffersTotal, 0);
 
+        let totalSales = 0;
+        let totalDiscount = 0;
+        let totalCouponDiscount = 0;
+        let totalRefunds = 0;
+        const totalOrders = orders.length;
+
+        orders.forEach(order => {
+            totalSales += order.pricing.finalAmount;
+            totalDiscount += order.pricing.productOffersTotal;
+            totalCouponDiscount += order.pricing.coupon.discount;
+
+            // Deduct refund amounts for returned products
+            if (order.orderItems) {
+                order.orderItems.forEach(item => {
+                    if (item.returnRequest?.status === "Approved") {
+                        totalRefunds += Number(item.price.salePrice) * item.variant.quantity;
+                    }
+                });
+            }
+        });
+
+        totalSales -= totalRefunds;
+
+        // Create PDF
         const reportsDir = path.join(__dirname, "../../public/reports");
         if (!fs.existsSync(reportsDir)) {
             fs.mkdirSync(reportsDir, { recursive: true });
@@ -232,24 +284,27 @@ const downloadPdf = async (req, res) => {
 
 
         // doc.fontSize(22)
-        //    .font("Helvetica-Bold")
-        //    .text("Big Stepper", { align: "center", underline: true });
+        //     .font("Helvetica-Bold")
+        //     .text("Big Stepper", { align: "center", underline: true });
         // doc.moveDown(0.5);
 
-        doc.fontSize(18).text("Sales Report", { align: "center" });
+        doc.fontSize(18).font("Helvetica-Bold").text("Sales Report", { align: "center" });
         doc.moveDown(1);
+
 
         doc.fontSize(12).font("Helvetica-Bold").text("Summary", { underline: true });
         doc.moveDown(0.5);
 
         doc.fontSize(11).font("Helvetica")
-            .text(`Total Sales Count: ${totalSales}`)
+            .text(`Total Orders: ${totalOrders}`)
             .moveDown(0.2)
-            .text(`Overall Order Amount: ₹${totalOrderAmount.toFixed(2)}`)
+            .text(`Total Sales (Net): ₹${totalSales.toFixed(2)}`)
             .moveDown(0.2)
-            .text(`Total Offer Discount: ₹${totalOfferDiscount.toFixed(2)}`)
+            .text(`Total Offer Discount: ₹${totalDiscount.toFixed(2)}`)
             .moveDown(0.2)
-            .text(`Total Coupon Discount: ₹${totalCouponDiscount.toFixed(2)}`);
+            .text(`Total Coupon Discount: ₹${totalCouponDiscount.toFixed(2)}`)
+            .moveDown(0.2)
+            .text(`Total Refunds: ₹${totalRefunds.toFixed(2)}`);
         doc.moveDown(1);
 
 
@@ -311,34 +366,97 @@ const downloadExcel = async (req, res) => {
     try {
         const { reportType, startDate, endDate } = req.query;
 
-        let filter = {};
+        let filter = { orderStatus: { $in: ["Delivered", "Cancelled"] } };
+
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); 
+
 
         if (reportType && reportType !== "all") {
-            const now = new Date();
             if (reportType === "daily") {
-                filter.createdAt = { $gte: new Date(now.setHours(0, 0, 0, 0)) };
+                filter.createdAt = {
+                    $gte: new Date(today),
+                    $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000),
+                };
             } else if (reportType === "weekly") {
-                const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+                const dayOfWeek = today.getDay();
+                const startOfWeek = new Date(today);
+                startOfWeek.setDate(today.getDate() - dayOfWeek);
                 startOfWeek.setHours(0, 0, 0, 0);
-                filter.createdAt = { $gte: startOfWeek };
+
+                const endOfWeek = new Date(today);
+                endOfWeek.setHours(23, 59, 59, 999);
+
+                filter.createdAt = {
+                    $gte: startOfWeek,
+                    $lt: endOfWeek,
+                };
             } else if (reportType === "monthly") {
-                filter.createdAt = { $gte: new Date(now.getFullYear(), now.getMonth(), 1) };
+                filter.createdAt = {
+                    $gte: new Date(today.getFullYear(), today.getMonth(), 1),
+                    $lt: new Date(today.getFullYear(), today.getMonth() + 1, 1),
+                };
             } else if (reportType === "yearly") {
-                filter.createdAt = { $gte: new Date(now.getFullYear(), 0, 1) };
+                filter.createdAt = {
+                    $gte: new Date(today.getFullYear(), 0, 1),
+                    $lt: new Date(today.getFullYear() + 1, 0, 1),
+                };
             } else if (reportType === "custom" && startDate && endDate) {
-                filter.createdAt = { $gte: new Date(startDate), $lte: new Date(endDate) };
+                filter.createdAt = {
+                    $gte: new Date(startDate),
+                    $lt: new Date(new Date(endDate).setHours(23, 59, 59, 999)),
+                };
             }
         }
 
+        
         const orders = await Order.find(filter)
             .populate("userId", "fullName email")
+            .populate("orderItems.product", "productName brand")
             .sort({ createdAt: -1 });
 
+
+        let totalSales = 0;
+        let totalDiscount = 0;
+        let totalCouponDiscount = 0;
+        let totalRefunds = 0;
+        const totalOrders = orders.length;
+
+        orders.forEach(order => {
+            totalSales += order.pricing.finalAmount;
+            totalDiscount += order.pricing.productOffersTotal;
+            totalCouponDiscount += order.pricing.coupon.discount;
+
+
+            if (order.orderItems) {
+                order.orderItems.forEach(item => {
+                    if (item.returnRequest?.status === "Approved") {
+                        totalRefunds += Number(item.price.salePrice) * item.variant.quantity;
+                    }
+                });
+            }
+        });
+
+        totalSales -= totalRefunds;
+
+        // Create Excel workbook
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet("Sales Report");
 
+
+        worksheet.addRow(["Sales Report Summary"]).style = { font: { bold: true, size: 14 } };
+        worksheet.addRow([]); // Empty row for spacing
+        worksheet.addRow(["Total Orders", totalOrders]);
+        worksheet.addRow(["Total Sales (Net)", `₹${totalSales.toFixed(2)}`]);
+        worksheet.addRow(["Total Offer Discount", `₹${totalDiscount.toFixed(2)}`]);
+        worksheet.addRow(["Total Coupon Discount", `₹${totalCouponDiscount.toFixed(2)}`]);
+        worksheet.addRow(["Total Refunds", `₹${totalRefunds.toFixed(2)}`]);
+        worksheet.addRow([]); // Empty row for spacing
+
+
         worksheet.columns = [
-            { header: "Order ID", key: "_id", width: 25 },
+            { header: "Order ID", key: "orderId", width: 25 },
             { header: "User", key: "user", width: 30 },
             { header: "Date", key: "date", width: 15 },
             { header: "Status", key: "status", width: 15 },
@@ -347,18 +465,52 @@ const downloadExcel = async (req, res) => {
             { header: "Coupon Discount", key: "couponDiscount", width: 15 }
         ];
 
+
+        worksheet.getRow(8).font = { bold: true };
+        worksheet.getRow(8).fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFD3D3D3" } 
+        };
+        worksheet.getRow(8).alignment = { vertical: "middle", horizontal: "center" };
+
+
+        // Add order data
         orders.forEach(order => {
+            let orderRefunds = 0;
+            if (order.orderItems) {
+                order.orderItems.forEach(item => {
+                    if (item.returnRequest?.status === "Approved") {
+                        orderRefunds += Number(item.price.salePrice) * item.variant.quantity;
+                    }
+                });
+            }
+            const netTotal = order.pricing.finalAmount - orderRefunds;
+
             worksheet.addRow({
-                // _id: order._id,
-                _id: order.orderId,
+                orderId: order.orderId,
                 user: order.userId ? `${order.userId.fullName} (${order.userId.email})` : "Guest",
                 date: new Date(order.createdAt).toLocaleDateString(),
                 status: order.orderStatus,
-                total: `₹${order.pricing.finalAmount.toFixed(2)}`,
+                total: `₹${netTotal.toFixed(2)}`,
                 offerDiscount: `₹${order.pricing.productOffersTotal.toFixed(2)}`,
-                couponDiscount: `₹${order.pricing.coupon.discount.toFixed(2)}` // ✅
+                couponDiscount: `₹${order.pricing.coupon.discount.toFixed(2)}`
             });
         });
+
+        // Style the data rows
+        worksheet.eachRow((row, rowNumber) => {
+            if (rowNumber > 8) { 
+                row.alignment = { vertical: "middle", horizontal: "left" };
+                row.border = {
+                    top: { style: "thin" },
+                    bottom: { style: "thin" },
+                    left: { style: "thin" },
+                    right: { style: "thin" }
+                };
+            }
+        });
+
 
         const reportsDir = path.join(__dirname, "../../public/reports");
         if (!fs.existsSync(reportsDir)) {
@@ -366,7 +518,6 @@ const downloadExcel = async (req, res) => {
         }
 
         const filePath = path.join(reportsDir, "sales_report.xlsx");
-
         await workbook.xlsx.writeFile(filePath);
 
         res.download(filePath, "sales_report.xlsx", (err) => {
@@ -384,7 +535,7 @@ const downloadExcel = async (req, res) => {
 
 
 
-
+////////////////
 
 
 // Updated getDateFilter function to include date grouping info
@@ -396,22 +547,22 @@ const getDateFilter = (filter) => {
     if (filter === "weekly") {
         startDate = new Date();
         startDate.setDate(startDate.getDate() - 7);
-        groupBy = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }; 
+        groupBy = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } };
     } else if (filter === "monthly") {
         startDate = new Date();
         startDate.setMonth(startDate.getMonth() - 1);
-        groupBy = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }; 
+        groupBy = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } };
     } else if (filter === "yearly") {
         startDate = new Date();
         startDate.setFullYear(startDate.getFullYear() - 1);
-        groupBy = { $dateToString: { format: "%Y-%m", date: "$createdAt" } }; 
+        groupBy = { $dateToString: { format: "%Y-%m", date: "$createdAt" } };
     } else {
         return { filter: {}, groupBy: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } } };
     }
 
-    return { 
+    return {
         filter: { createdAt: { $gte: startDate, $lte: new Date() } },
-        groupBy: groupBy 
+        groupBy: groupBy
     };
 };
 
@@ -427,12 +578,12 @@ const getDashboardData = async (req, res) => {
         // Get revenue over time
         const revenueOverTime = await Order.aggregate([
             { $match: dateFilter },
-            { 
-                $group: { 
+            {
+                $group: {
                     _id: groupBy,
                     revenue: { $sum: { $ifNull: ["$pricing.finalAmount", 0] } },
                     count: { $sum: 1 }
-                } 
+                }
             },
             { $sort: { _id: 1 } }
         ]);
@@ -441,7 +592,7 @@ const getDashboardData = async (req, res) => {
         const labels = revenueOverTime.map(item => item._id);
         const revenueData = revenueOverTime.map(item => item.revenue);
         const orderData = revenueOverTime.map(item => item.count);
-        
+
 
         const totalRevenue = revenueData.reduce((sum, val) => sum + val, 0);
         const totalOrders = orderData.reduce((sum, val) => sum + val, 0);
@@ -503,8 +654,8 @@ const getDashboardData = async (req, res) => {
         res.json({
             revenue: totalRevenue,
             totalOrders,
-            totalProducts,  
-            totalUsers,     
+            totalProducts,
+            totalUsers,
             totalCategories,
             timeSeriesData: {
                 labels,
@@ -561,11 +712,11 @@ const getBestSellingData = async (req, res) => {
                 $project: {
                     productName: "$productInfo.productName",
                     totalSales: 1,
-                    category: "$categoryInfo.name" 
+                    category: "$categoryInfo.name"
                 }
             }
         ]);
-        
+
 
         const bestSellingCategories = await Order.aggregate([
             { $match: dateFilter },

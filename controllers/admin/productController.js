@@ -231,7 +231,6 @@ const getEditProduct = async (req, res) => {
             .lean();
 
         if (!product) {
-            console.log('Product not found');
             return res.redirect("/admin/pageError");
         }
 
@@ -239,7 +238,6 @@ const getEditProduct = async (req, res) => {
         const brands = await Brand.find({ isBlocked: false }).lean();
 
         if (!categories || !brands) {
-            console.log('Categories or brands not found');
             return res.redirect("/admin/pageError");
         }
 
@@ -268,28 +266,40 @@ const getEditProduct = async (req, res) => {
 
 
 
+
 const editProduct = async (req, res) => {
     try {
         const productId = req.params.id;
         const updates = req.body;
-        const images = [];
+        const newImages = [];
 
-        //  image uploads
+        const existingProduct = await Product.findById(productId);
+        if (!existingProduct) {
+            return res.status(404).json("Product not found");
+        }
+
+        // Process new image uploads
         if (req.files && req.files.length > 0) {
             for (let i = 0; i < req.files.length; i++) {
                 const originalImagepath = req.files[i].path;
                 const resizedImagePath = path.join("public", "uploads", "product-images", req.files[i].filename);
                 await sharp(originalImagepath).resize({ width: 440, height: 440 }).toFile(resizedImagePath);
-                images.push(req.files[i].filename);
+                newImages.push(req.files[i].filename);
             }
         }
 
+
+        const existingImages = Array.isArray(updates.existingImages) 
+            ? updates.existingImages 
+            : updates.existingImages ? [updates.existingImages] : [];
+
+        // Combine existing and new images
+        const combinedImages = [...existingImages, ...newImages];
 
         const categoryId = await Category.findOne({ name: updates.category });
         if (!categoryId) {
             return res.status(400).json("Invalid Category name");
         }
-
 
         const variants = updates.variants.map(variant => ({
             size: Number(variant.size),
@@ -299,29 +309,20 @@ const editProduct = async (req, res) => {
             status: variant.status
         }));
 
-
         const updateData = {
             productName: updates.productName,
             description: updates.description,
             brand: updates.brand,
             category: categoryId._id,
-            variants: variants
+            variants: variants,
+            productImage: combinedImages
         };
-
-        // Only add images if new ones were uploaded
-        if (images.length > 0) {
-            updateData.productImage = images;
-        }
 
         const updatedProduct = await Product.findByIdAndUpdate(
             productId,
             updateData,
             { new: true, runValidators: true }
         );
-
-        if (!updatedProduct) {
-            return res.status(404).json("Product not found");
-        }
 
         res.redirect("/admin/products");
     } catch (error) {
@@ -332,25 +333,28 @@ const editProduct = async (req, res) => {
 
 
 
+
+
 const deleteSingleImage = async (req, res) => {
     try {
+
         const { imageNameToServer, productIdToServer } = req.body;
 
         await Product.findByIdAndUpdate(productIdToServer, {
             $pull: { productImage: imageNameToServer }
         });
 
-        const imagePath = path.join("public", "uploads", "re-image", imageNameToServer);
+        // const imagePath = path.join("public", "uploads", "re-image", imageNameToServer);
+          const imagePath = path.join(__dirname, "..", "public", "uploads", "re-image", imageNameToServer);
 
         if (fs.existsSync(imagePath)) {
             try {
                 await fs.promises.unlink(imagePath);
-                console.log(`Image ${imageNameToServer} deleted successfully.`);
             } catch (unlinkErr) {
-                console.error(`Failed to delete image: ${unlinkErr.message}`);
                 return res.status(500).json({ status: false, message: "Failed to delete image from server." });
             }
-        } else {
+        } 
+        else {
             console.log(`Image ${imageNameToServer} not found.`);
         }
 

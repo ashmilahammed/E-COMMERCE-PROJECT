@@ -743,7 +743,7 @@ const cancelOrder = async (req, res) => {
                 amount: refundAmount,
                 orderId: orderId,
                 status: 'Completed',
-                description: `Refund for cancellation of Order by you`,
+                description: `Refund for cancellation <b>Order ID: ${orderId}</b> by you`,
                 date: new Date()
             });
             wallet.lastUpdated = new Date();
