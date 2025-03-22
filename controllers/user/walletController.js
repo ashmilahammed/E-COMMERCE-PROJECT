@@ -1,6 +1,9 @@
 const Wallet = require("../../models/walletSchema");
 const User = require("../../models/userSchema");
 
+const Wishlist = require("../../models/wishlistSchema");
+const Cart = require("../../models/cartSchema");
+
 
 
 const walletAdd = async (req, res) => {
@@ -93,8 +96,47 @@ const getWalletBalance =  async (req, res) => {
 
 
 
+////////
+const getWishlistCount = async (req, res) => {
+    try {
+        const userId = req.session.user;
+        if (!userId) return res.json({ count: 0 });
+
+        const wishlist = await Wishlist.findOne({ UserId: userId });
+        const count = wishlist ? wishlist.products.length : 0;
+
+        res.json({ count });
+    } catch (error) {
+        console.error("Error fetching wishlist count:", error);
+        res.status(500).json({ count: 0 });
+    }
+};
+
+
+const getCartCount = async (req, res) => {
+    try {
+        const userId = req.session.user;
+        if (!userId) return res.json({ count: 0 });
+
+        const cart = await Cart.findOne({ userId });
+        const count = cart ? cart.items.reduce((sum, item) => sum + item.quantity, 0) : 0;
+
+        res.json({ count });
+    } catch (error) {
+        console.error("Error fetching cart count:", error);
+        res.status(500).json({ count: 0 });
+    }
+};
+
+
+
+
+
 module.exports = {
     walletAdd,
     getWalletHistory,
-    getWalletBalance
+    getWalletBalance,
+
+    getCartCount,
+    getWishlistCount
 }

@@ -345,8 +345,19 @@
                             <% } %>
                 </div>
                 <!-- <a href="#" class="search-switch"><img src="img/icon/search.png" alt="Search"></a> -->
-                <a href="/wishlist"><img src="img/icon/heart.png" alt="Wishlist"></a>
-                <a href="/cart"><img src="img/icon/cart.png" alt="Cart"> <span></span></a>
+
+                <!-- <a href="/wishlist"><img src="img/icon/heart.png" alt="Wishlist"></a>
+                <a href="/cart"><img src="img/icon/cart.png" alt="Cart"> <span></span></a> -->
+                <a href="/wishlist">
+                    <img src="img/icon/heart.png" alt="Wishlist">
+                    <span class="wishlist-count"></span>
+                </a>
+                <a href="/cart">
+                    <img src="img/icon/cart.png" alt="Cart">
+                    <span class="cart-count"></span>
+                </a>
+
+
                 <!-- <div class="price">$0.00</div> -->
             </div>
 
@@ -355,6 +366,33 @@
     </div>
 </header>
 
+<style>
+    .wishlist-count,
+    .cart-count {
+        background-color: rgb(255, 76, 76);
+        /* Red for visibility */
+        color: white;
+        font-size: 12px;
+        font-weight: bold;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: none;
+        /* Initially hidden */
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        padding: 2px;
+        line-height: 1;
+    }
+
+    a {
+        position: relative;
+        display: inline-block;
+    }
+</style>
 
 <!-- Header Section End -->
 
@@ -377,4 +415,42 @@
             $('.header__menu').toggleClass('active');
         });
     });
+
+
+
+
+
+    document.addEventListener("DOMContentLoaded", async function () {
+        try {
+            const cartResponse = await fetch('/cart/count');
+            const cartData = await cartResponse.json();
+            const cartCountElement = document.querySelector('.cart-count');
+
+            if (cartCountElement) {
+                if (cartData.count > 0) {
+                    cartCountElement.textContent = cartData.count;
+                    cartCountElement.style.display = "flex"; // Show when there's a count
+                } else {
+                    cartCountElement.style.display = "none"; // Hide when count is 0
+                }
+            }
+
+            const wishlistResponse = await fetch('/wishlist/count');
+            const wishlistData = await wishlistResponse.json();
+            const wishlistCountElement = document.querySelector('.wishlist-count');
+
+            if (wishlistCountElement) {
+                if (wishlistData.count > 0) {
+                    wishlistCountElement.textContent = wishlistData.count;
+                    wishlistCountElement.style.display = "flex";
+                } else {
+                    wishlistCountElement.style.display = "none"; 
+                }
+            }
+        } catch (error) {
+            console.error("Error loading counts:", error);
+        }
+    });
+
+
 </script>

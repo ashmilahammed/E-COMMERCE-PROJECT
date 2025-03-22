@@ -122,5 +122,10 @@ router.get("/invoice/:id",userAuth,invoiceController.generateInvoice)
 router.get("/contacts",userAuth,userController.contactPage)    
 
 
+//count 
+router.get('/cart/count',walletController.getCartCount);
+router.get('/wishlist/count',walletController.getWishlistCount);
+
+
 
 module.exports = router

@@ -727,6 +727,13 @@
 
                 const result = await response.json();
 
+                if (result.success) {
+    const wishlistCountElement = document.querySelector('.wishlist-count');
+    if (wishlistCountElement) {
+        wishlistCountElement.textContent = result.wishlistCount;
+    }
+}
+
 
                 if (result.success) {
                     Swal.fire({
